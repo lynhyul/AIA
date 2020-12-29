@@ -1,33 +1,26 @@
-#실습 train과 test 분리해서 소스를 완성하시오
-
 import numpy as np
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 
+#1. 데이터
 x = np.array([range(100), range(301,401), range(1,101)])
-y = np.array(range(711,811))
+y = np.array([range(711,811), range(1,101), range(201,301)])
 
 print(x.shape)  # (3,100)
-print(y.shape)  # (100,)
+print(y.shape)  # (3,100 )
+
 
 x = np.transpose(x)
+y = np.transpose(y)
+
 
 from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x,y, test_size=0.2 ,shuffle = True,\
     random_state=66)
 
-#x_train, x_test, y_train, y_test = train_test_split(x,y, \
-                           # train_size = 0.7, test_size =0.2,shuffle = True)
 
-print(x_train.shape)  # (80,3)
-print(y_train.shape)  # (80,)
-'''
-(3, 100)
-(100,)
-(80, 3)
-(80,)
-'''
-
+print(x_train.shape)    # (80,3)
+print(y_train.shape)    # (80,3)
 
 #2. 모델 구성
 
@@ -37,7 +30,7 @@ model = Sequential()
 model.add(Dense(10,input_dim =3))
 model.add(Dense(5))
 model.add(Dense(5))
-model.add(Dense(1))
+model.add(Dense(3))
 
 
 #3. 컴파일, 훈련
@@ -62,31 +55,29 @@ from sklearn.metrics import r2_score
 r2 = r2_score(y_test, y_predict)
 print("R2 : ",r2)
 
-
 '''
-loss : 1.6763805898989403e-09
-maae : 2.746581958490424e-05
-[[737.     ]
- [762.     ]
- [724.     ]
- [735.     ]
- [753.00006]
- [725.     ]
- [759.     ]
- [738.     ]
- [809.     ]
- [784.00006]
- [773.00006]
- [715.00006]
- [759.99994]
- [728.     ]
- [717.00006]
- [791.     ]
- [774.00006]
- [794.99994]
- [785.00006]
- [751.     ]]
-RMSE :  4.0943627517696345e-05
-R2 :  0.9999999999977625
+loss : 3.277571522630751e-06
+maae : 0.0013907949905842543
+[[719.0008      9.002897  208.9962   ]
+ [803.999      93.99776   294.00305  ]
+ [715.0009      5.0031657 204.99591  ]
+ [716.00085     6.003082  205.99599  ]
+ [762.9999     53.000237  252.99974  ]
+ [752.0001     42.000927  241.9989   ]
+ [711.0009      1.0034316 200.99559  ]
+ [783.9993     73.99903   274.00146  ]
+ [798.9991     88.99811   289.00266  ]
+ [778.9995     68.99929   269.00107  ]
+ [736.00055    26.001842  225.99759  ]
+ [729.0006     19.00226   218.997    ]
+ [737.00037    27.00185   226.9977   ]
+ [740.00037    30.001667  229.99792  ]
+ [776.9995     66.99945   267.0009   ]
+ [760.9998     51.0004    250.9996   ]
+ [790.99927    80.99864   281.00208  ]
+ [756.00006    46.00066   245.99918  ]
+ [749.0002     39.00111   238.99866  ]
+ [768.9997     58.999866  259.0002   ]]
+RMSE :  0.0018104064337507307
+R2 :  0.9999999958528946
 '''
- 

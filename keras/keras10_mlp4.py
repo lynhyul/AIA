@@ -1,43 +1,41 @@
-#실습 train과 test 분리해서 소스를 완성하시오
+#실습
+# x는 (100, 5) 데이터 임의로 구성
+# y는 (100, 2) 데이터 임의로 구성
+# 모델을 완성하시오.
 
 import numpy as np
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 
-x = np.array([range(100), range(301,401), range(1,101)])
-y = np.array(range(711,811))
+#1. 데이터
+x = np.array([range(100), range(301,401), range(1,101),  range(401,501),  range(501,601)])
+y = np.array([range(711,811), range(1,101)])
 
-print(x.shape)  # (3,100)
-print(y.shape)  # (100,)
+print(x.shape)  # (5,100)
+print(y.shape)  # (2,100 )
+
 
 x = np.transpose(x)
+y = np.transpose(y)
+
 
 from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x,y, test_size=0.2 ,shuffle = True,\
     random_state=66)
 
-#x_train, x_test, y_train, y_test = train_test_split(x,y, \
-                           # train_size = 0.7, test_size =0.2,shuffle = True)
 
-print(x_train.shape)  # (80,3)
-print(y_train.shape)  # (80,)
-'''
-(3, 100)
-(100,)
-(80, 3)
-(80,)
-'''
-
+print(x_train.shape)    # (80,3)
+print(y_train.shape)    # (80,3)
 
 #2. 모델 구성
 
 # from keras.layers import Dense 위와 똑같이 불러오나, keras1에선 위 보다 불러오는게 조금 느려진다.
 
 model = Sequential()
-model.add(Dense(10,input_dim =3))
+model.add(Dense(10,input_dim =5))
 model.add(Dense(5))
 model.add(Dense(5))
-model.add(Dense(1))
+model.add(Dense(2))
 
 
 #3. 컴파일, 훈련
@@ -62,31 +60,29 @@ from sklearn.metrics import r2_score
 r2 = r2_score(y_test, y_predict)
 print("R2 : ",r2)
 
-
 '''
-loss : 1.6763805898989403e-09
-maae : 2.746581958490424e-05
-[[737.     ]
- [762.     ]
- [724.     ]
- [735.     ]
- [753.00006]
- [725.     ]
- [759.     ]
- [738.     ]
- [809.     ]
- [784.00006]
- [773.00006]
- [715.00006]
- [759.99994]
- [728.     ]
- [717.00006]
- [791.     ]
- [774.00006]
- [794.99994]
- [785.00006]
- [751.     ]]
-RMSE :  4.0943627517696345e-05
-R2 :  0.9999999999977625
+loss : 4.94338525669491e-09
+maae : 4.998743679607287e-05
+[[719.00006     9.00003  ]
+ [804.0001     94.       ]
+ [714.9999      5.000045 ]
+ [715.9998      6.000042 ]
+ [763.00006    52.999977 ]
+ [752.         42.       ]
+ [710.99994     1.0000845]
+ [784.         73.999954 ]
+ [799.         88.99996  ]
+ [779.00006    69.00001  ]
+ [735.99994    25.999947 ]
+ [729.         19.000051 ]
+ [736.9999     27.000004 ]
+ [740.         30.000095 ]
+ [777.         66.99996  ]
+ [761.         51.000004 ]
+ [790.9998     80.99989  ]
+ [756.         46.00006  ]
+ [748.99994    39.00004  ]
+ [769.0001     59.00001  ]]
+RMSE :  7.03092130117426e-05
+R2 :  0.9999999999937451
 '''
- 
