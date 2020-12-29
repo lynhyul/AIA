@@ -53,7 +53,7 @@ model.fit(x,y, epochs = 100, batch_size=1, validation_split=0.2)
 #4. 평가, 예측
 loss, mae = model.evaluate(x, y)
 print('loss :',loss)
-print('maae :',mae)
+print('mae :',mae)
 
 y_predict = model.predict(x)
 print(y_predict)
