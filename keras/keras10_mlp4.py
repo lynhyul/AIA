@@ -37,7 +37,7 @@ model.add(Dense(5))
 model.add(Dense(5))
 model.add(Dense(2))
 
-
+,
 #3. 컴파일, 훈련
 model.compile(loss ='mse', optimizer='adam', metrics=['mae']) 
 model.fit(x_train,y_train, epochs = 100, batch_size=1, validation_split=0.2)
@@ -45,7 +45,7 @@ model.fit(x_train,y_train, epochs = 100, batch_size=1, validation_split=0.2)
 #4. 평가, 예측
 loss, mae = model.evaluate(x_test, y_test)
 print('loss :',loss)
-print('maae :',mae)
+print('mae :',mae)
 
 y_predict = model.predict(x_test)
 print(y_predict)
