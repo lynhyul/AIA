@@ -37,7 +37,7 @@ model.add(Dense(5))
 model.add(Dense(5))
 model.add(Dense(2))
 
-,
+
 #3. 컴파일, 훈련
 model.compile(loss ='mse', optimizer='adam', metrics=['mae']) 
 model.fit(x_train,y_train, epochs = 100, batch_size=1, validation_split=0.2)
