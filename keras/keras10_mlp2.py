@@ -7,19 +7,26 @@ from tensorflow.keras.layers import Dense
 x = np.array([range(100), range(301,401), range(1,101)])
 y = np.array(range(711,811))
 
+print(x.shape)  # (3,100)
+print(y.shape)  # (100,)
+
 x = np.transpose(x)
 
 from sklearn.model_selection import train_test_split
-x_train, x_test, y_train, y_test = train_test_split(x,y, test_size=0.2 ,shuffle = True)
+x_train, x_test, y_train, y_test = train_test_split(x,y, test_size=0.2 ,shuffle = True,\
+    random_state=66)
 
 #x_train, x_test, y_train, y_test = train_test_split(x,y, \
                            # train_size = 0.7, test_size =0.2,shuffle = True)
 
-print(x.shape)  # (3,100)
-print(y.shape)  # (100,)
-
-print(x)
-print(x.shape)  # (100,3)
+print(x_train.shape)
+print(y_train.shape)  # (100,3)
+'''
+(3, 100)
+(100,)
+(80, 3)
+(80,)
+'''
 
 
 #2. 모델 구성
