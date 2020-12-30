@@ -1,9 +1,9 @@
-#실습 train과 test 분리해서 소스를 완성하시오
-#다 :1 mlp
+#다:1 mlp 함수형
+#keras10_mlp2 함수로 바꾸시오.
 
 import numpy as np
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.layers import Dense, Input
 
 x = np.array([range(100), range(301,401), range(1,101)])
 y = np.array(range(711,811))
@@ -34,12 +34,20 @@ print(y_train.shape)  # (80,)
 
 # from keras.layers import Dense 위와 똑같이 불러오나, keras1에선 위 보다 불러오는게 조금 느려진다.
 
+'''
 model = Sequential()
 model.add(Dense(10,input_dim =3))
 model.add(Dense(5))
 model.add(Dense(5))
 model.add(Dense(1))
+'''
 
+input1 = Input(shape=(3,))
+aaa = Dense(10, activation='relu') (input1)
+aaa = Dense(3) (aaa)  # dense1의 출력을 입력으로 받아들인다.
+aaa = Dense(4) (aaa)  # dense2의 출력을 입력으로
+outputs = Dense(1) (aaa) # dense3의 출력을 입력으로
+model = Model(input1, outputs)  #입출력 정확하게 명시
 
 #3. 컴파일, 훈련
 model.compile(loss ='mse', optimizer='adam', metrics=['mae']) 
@@ -63,31 +71,29 @@ from sklearn.metrics import r2_score
 r2 = r2_score(y_test, y_predict)
 print("R2 : ",r2)
 
-
 '''
-loss : 1.6763805898989403e-09
-maae : 2.746581958490424e-05
-[[737.     ]
- [762.     ]
- [724.     ]
- [735.     ]
- [753.00006]
- [725.     ]
- [759.     ]
- [738.     ]
- [809.     ]
+loss : 2.7939677238464355e-09
+mae : 3.356933666509576e-05
+[[718.9999 ]
+ [804.     ]
+ [714.9999 ]
+ [715.99994]
+ [763.00006]
+ [752.     ]
+ [711.     ]
  [784.00006]
- [773.00006]
- [715.00006]
- [759.99994]
- [728.     ]
- [717.00006]
+ [799.     ]
+ [779.     ]
+ [736.     ]
+ [728.99994]
+ [736.99994]
+ [740.     ]
+ [777.     ]
+ [761.     ]
  [791.     ]
- [774.00006]
- [794.99994]
- [785.00006]
- [751.     ]]
-RMSE :  4.0943627517696345e-05
-R2 :  0.9999999999977625
+ [755.99994]
+ [749.     ]
+ [768.99994]]
+RMSE :  5.285799583645255e-05
+R2 :  0.9999999999964648
 '''
- 
