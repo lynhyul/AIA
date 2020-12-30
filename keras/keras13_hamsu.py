@@ -37,7 +37,7 @@ print(y_train.shape)    # (80,3)
 
 
 input1 = Input(shape=(5,))
-aaa = Dense(5, activation='relu') (input1)
+aaa = Dense(10, activation='relu') (input1)
 aaa = Dense(3) (aaa)  # dense1의 출력을 입력으로 받아들인다.
 aaa = Dense(4) (aaa)  # dense2의 출력을 입력으로
 outputs = Dense(2) (aaa) # dense3의 출력을 입력으로
