@@ -13,7 +13,7 @@ from tensorflow.keras.datasets import boston_housing
 (x_train,y_train),(x_test,y_test)= boston_housing.load_data()
 
 from sklearn.model_selection import train_test_split
-(x_train,x_val , y_train, y_val) = train_test_split(x_train,y_train, test_size = 0.2)
+(x_train,x_val , y_train, y_val) = train_test_split(x_train,y_train, train_size = 0.8)
 
 print(np.max(x_train), np.min(x_train)) #  711 0
 #print(dataset.DESCR)
@@ -46,7 +46,7 @@ model = Model(input1, output1)
 model.compile(loss = 'mse', optimizer= 'adam', metrics= ['mae'])
 
 
-model.fit(x_train, y_train, epochs = 300, batch_size= 8, validation_data= (x_val,y_val))
+model.fit(x_train, y_train, epochs = 400, batch_size= 8, validation_data= (x_val,y_val))
 
 # evaluate, predict
 loss = model.evaluate(x_test, y_test, batch_size=1, verbose =1)
