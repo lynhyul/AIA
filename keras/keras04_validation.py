@@ -37,7 +37,7 @@ loss = model.evaluate(x_test, y_test, batch_size=1)                 # 가장 중
 print("loss : ", loss)
 
 #result = model.predict([9])
-result = model.predict([x_train])
+result = model.predict(x_test)
 print("result : ", result)
-
+print(y_test)
 

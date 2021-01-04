@@ -20,6 +20,11 @@ print(datasets.feature_names)
 print(x.shape)      # 569,30
 print(y.shape)      # 569,
 print(x[:5])
+
+from tensorflow.keras.utils import to_categorical # 케라스 2.0버전
+#from keras.utils.np_utils import to_categorical -> 케라스 1.0버전(구버전)
+y = to_categorical(y)
+
 print(y)
 
 from sklearn.model_selection import train_test_split
@@ -41,32 +46,56 @@ model.add(Dense(80, activation= 'relu'))
 model.add(Dense(80, activation= 'relu'))
 model.add(Dense(60, activation= 'relu'))
 model.add(Dense(30, activation= 'relu'))
-model.add(Dense(1, activation= 'sigmoid'))
+model.add(Dense(2, activation= 'softmax'))
 
 #compile, fit
 #from tensorflow.keras.callbacks import EarlyStopping
 #early_stopping = EarlyStopping(monitor='loss', patience= 15, mode = 'auto')
 #model.compile(loss = 'mean_squared_error', optimizer='adam', metrics =['accuracy'])
-model.compile(loss = 'binary_crossentropy', optimizer='adam', metrics =['accuracy','mae'])
-model.fit(x_train,y_train, epochs = 300, batch_size=10, validation_split = 0.3) 
+model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics =['accuracy','mae'])
+model.fit(x_train,y_train, epochs = 100, batch_size=10, validation_split = 0.3) 
                                 #callbacks = early_stopping)
 
 loss = model.evaluate(x_test,y_test, batch_size=1)
 print("[loss, accuracy, mae] : ",loss)
 
 y_predict = model.predict(x_test[0:15])
-y_pred = list(map(int,np.round(y_predict,0)))
-y_predict = np.transpose(y_predict)
-y_pred = np.transpose(y_pred)
-print(y_predict)
-print("predict = ",y_pred)
+y_Mpred = np.argmax(y_predict,axis=-1)
+print("y_predcit: ",y_predict)
+print("y_MaxPredict: ",y_Mpred)
 print("target = ",y_test[0:15])
 
 '''
-[loss, accuracy, mae] :  [0.12791219353675842, 0.9649122953414917, 0.09085875749588013]
-[[1.0000000e+00 8.8559693e-01 1.0000000e+00 3.2461065e-04 9.8169839e-01
-  3.4595165e-01 1.0000000e+00 7.7419680e-01 1.0000000e+00 8.8512170e-01
-  4.1114306e-01 1.0000000e+00 9.9987423e-01 5.6803753e-03 9.5801550e-01]]
-predict =  [1 1 1 0 1 0 1 1 1 1 0 1 1 0 1]
-target =  [1 1 1 0 1 0 1 1 1 1 1 1 1 0 1]
-'''
+[loss, accuracy, mae] :  [0.17527081072330475, 0.9385964870452881, 0.0907108336687088]
+y_predcit:  [[6.1836294e-03 9.9381638e-01]
+ [6.2763073e-02 9.3723696e-01]
+ [2.6282005e-04 9.9973720e-01]
+ [9.9956757e-01 4.3246779e-04]
+ [2.9365592e-02 9.7063440e-01]
+ [1.5630312e-01 8.4369689e-01]
+ [2.0913752e-03 9.9790871e-01]
+ [8.6325482e-03 9.9136740e-01]
+ [1.6345013e-02 9.8365504e-01]
+ [2.1751712e-01 7.8248292e-01]
+ [8.0307603e-02 9.1969240e-01]
+ [2.3436521e-03 9.9765635e-01]
+ [1.0561855e-02 9.8943818e-01]
+ [9.1920197e-01 8.0797948e-02]
+ [4.7528666e-02 9.5247132e-01]]
+y_MaxPredict:  [1 1 1 0 1 1 1 1 1 1 1 1 1 0 1]
+target =  [[0. 1.]
+ [0. 1.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [0. 1.]
+ [0. 1.]
+ [0. 1.]
+ [0. 1.]
+ [0. 1.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]]
+ '''
