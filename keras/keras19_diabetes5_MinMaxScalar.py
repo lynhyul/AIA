@@ -23,8 +23,9 @@ from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x,y, test_size = 0.2, shuffle = True,
                                         random_state = 66)
 
-x_val = x_train[0:71]
-y_val = y_train[0:71]
+x_train, x_val, y_train, y_val = train_test_split(x,y, train_size = 0.8, shuffle = True,
+                                        random_state = 66)
+
 
 from sklearn.preprocessing import MinMaxScaler
 scaler = MinMaxScaler()
@@ -68,7 +69,7 @@ r2 = r2_score(y_test, y_predict)
 print("R2 : ",r2)
 
 '''
-loss :  [3852.2158203125, 50.84282684326172]
-RMSE :  62.06622916179996
-R2 :  0.4064417837838853
+loss :  [3652.09619140625, 49.9732551574707]
+RMSE :  60.432572336349914
+R2 :  0.43727687738509036
 '''

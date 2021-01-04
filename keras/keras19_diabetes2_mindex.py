@@ -14,7 +14,7 @@ print(np.max(x), np.min(y))
 print(dataset.feature_names) # ['age', 'sex', 'bmi', 'bp', 's1', 's2', 's3', 's4', 's5', 's6']
 print(dataset.DESCR)
 
-x = x/25.
+x = x/0.198
 
 from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x,y, test_size = 0.2, shuffle = True,
