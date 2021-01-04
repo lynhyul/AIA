@@ -44,12 +44,12 @@ model.add(Dense(30, activation= 'relu'))
 model.add(Dense(1, activation= 'sigmoid'))
 
 #compile, fit
-#from tensorflow.keras.callbacks import EarlyStopping
-#early_stopping = EarlyStopping(monitor='loss', patience= 15, mode = 'auto')
+from tensorflow.keras.callbacks import EarlyStopping
+early_stopping = EarlyStopping(monitor='loss', patience= 15, mode = 'auto')
 #model.compile(loss = 'mean_squared_error', optimizer='adam', metrics =['accuracy'])
 model.compile(loss = 'binary_crossentropy', optimizer='adam', metrics =['accuracy','mae'])
-model.fit(x_train,y_train, epochs = 300, batch_size=10, validation_split = 0.3) 
-                                #callbacks = early_stopping)
+model.fit(x_train,y_train, epochs = 300, batch_size=10, validation_split = 0.3, 
+                            callbacks = early_stopping)
 
 loss = model.evaluate(x_test,y_test, batch_size=1)
 print("[loss, accuracy, mae] : ",loss)

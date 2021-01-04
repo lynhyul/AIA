@@ -72,8 +72,12 @@ model.add(Dense(3, activation= 'softmax'))  #다중분류에서는 가지고싶�
 
 #3. compile fit
 
+from tensorflow.keras.callbacks import EarlyStopping
+early_stopping = EarlyStopping(monitor='loss', patience= 5, mode = 'auto')
+
 model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics=['acc'])
-model.fit(x_train,y_train, epochs=300, batch_size=8, validation_data=(x_val, y_val))
+model.fit(x_train,y_train, epochs=300, batch_size=8, validation_data=(x_val, y_val),  
+                                     callbacks = early_stopping)
 
 #4. evaluate , predict
 
