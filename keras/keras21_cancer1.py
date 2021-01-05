@@ -60,7 +60,7 @@ y_predict = np.transpose(y_predict)
 #y_predict = np.where(y_predict>=0.5,1,y_predict)
 y_pred = np.transpose(y_pred)
 print(y_predict)
-#print("predict = ",y_pred)
+print("predict = ",y_pred)
 print("target = ",y_test[0:15])
 
 '''
