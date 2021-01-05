@@ -24,8 +24,11 @@ y = to_categorical(y)
 
 print(y)
 
+
+
 from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x,y, test_size=0.2, random_state = 110)
+
 
 
 
@@ -50,7 +53,7 @@ model.add(Dense(2, activation= 'softmax'))
 #early_stopping = EarlyStopping(monitor='loss', patience= 15, mode = 'auto')
 #model.compile(loss = 'mean_squared_error', optimizer='adam', metrics =['accuracy'])
 model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics =['accuracy','mae'])
-model.fit(x_train,y_train, epochs = 100, batch_size=10, validation_split = 0.3) 
+model.fit(x_train,y_train, epochs = 100, batch_size=8, validation_split=0.2) 
                                 #callbacks = early_stopping)
 
 loss = model.evaluate(x_test,y_test, batch_size=1)
@@ -60,7 +63,7 @@ y_predict = model.predict(x_test[0:15])
 y_Mpred = np.argmax(y_predict,axis=-1)
 print("y_predcit: ",y_predict)
 print("y_MaxPredict: ",y_Mpred)
-print("target = ",y_test[0:15])
+print("target = \n",y_test[0:15])
 
 '''
 [loss, accuracy, mae] :  [0.17527081072330475, 0.9385964870452881, 0.0907108336687088]
