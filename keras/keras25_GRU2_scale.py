@@ -13,6 +13,14 @@ x_pred = np.array([50,60,70])
 print(x.shape)      # (13,3)
 print(y.shape)      # (13,)
 
+
+#from sklearn.preprocessing import MinMaxScaler
+#scaler = MinMaxScaler()
+#scaler.fit(x)
+#x = scaler.transform(x)
+#x_pred = x_pred.reshape(1,-1)
+#x_pred = scaler.transform(x_pred)
+
 x = x.reshape(13,3,1)
 
 #코딩 하시오!! LSTM
@@ -25,7 +33,7 @@ from tensorflow.keras.layers import Dense, LSTM, SimpleRNN, GRU
 
 model = Sequential()
 
-model.add(GRU(10, activation= 'relu', input_shape=(3,1)))
+model.add(GRU(40, activation= 'relu', input_shape=(3,1)))
 model.add(Dense(20, activation= 'relu'))
 model.add(Dense(30, activation= 'relu'))
 model.add(Dense(20, activation= 'relu'))
@@ -80,7 +88,7 @@ Non-trainable params: 0
 #from tensorflow.keras.callbacks import EarlyStopping
 #early_stopping = EarlyStopping(monitor='loss', patience=20, mode='auto')
 model.compile(loss = 'mse', optimizer='adam', metrics=['mae'])
-model.fit(x,y,epochs=200, batch_size=1)
+model.fit(x,y,epochs=400, batch_size=8)
 #callbacks = early_stopping)
 
 # 평가 및 예측
@@ -93,6 +101,6 @@ result = model.predict(x_pred)
 print(result)
 
 '''
-loss, mae :  [0.026785958558321, 0.11308310925960541]
-[[81.529816]]
+loss, mae :  [0.0013398104347288609, 0.03189714252948761]
+[[80.80089]]
 '''
