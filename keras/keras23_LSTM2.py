@@ -1,3 +1,5 @@
+#input_shape / input_length / input_dim
+
 #1. 데이터
 import numpy as np
 
@@ -16,10 +18,9 @@ from tensorflow.keras.layers import Dense, LSTM
 
 model = Sequential()
 
-model.add(LSTM(10, activation='relu', input_shape = (3,1))) # 여기서 LSTM이 명시 된 부분은 아웃풋을 의미.
-                                                            # (4,3,1)은 input_shape으로 할 때 제일 앞 숫자 무시 -> = (3,1)
-                                                            # LSTM구조를 쓰려면 3차원이 되어야한다. / RNN 대부분이 마찬가지
-model.add(Dense(20))        # 앞에 Dense이 명시 된 부분 또한 아웃풋을 의미한다.
+#model.add(LSTM(10, activation='relu', input_shape = (3,1)))
+model.add(LSTM(10, activation='relu', input_length=3, input_dim=1))  
+model.add(Dense(20))        
 model.add(Dense(10))
 model.add(Dense(1))
 
