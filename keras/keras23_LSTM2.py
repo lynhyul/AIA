@@ -1,4 +1,4 @@
-#input_shape / input_length / input_dim
+#input_shape을 input_length 와 input_dim을 이용하여 수정해보자.
 
 #1. 데이터
 import numpy as np
