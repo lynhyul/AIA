@@ -1,3 +1,4 @@
+# keras23_LSTM3_scale을 함수형으로 코딩
 import numpy as np
 
 x = np.array([[1,2,3], [2,3,4], [3,4,5], [4,5,6], [5,6,7],
@@ -5,18 +6,10 @@ x = np.array([[1,2,3], [2,3,4], [3,4,5], [4,5,6], [5,6,7],
             [9,10,11], [10,11,12],
             [20,30,40], [30,40,50], [40,50,60]])
 y = np.array([4,5,6,7,8,9,10,11,12,13,50,60,70])
-x_pred = np.array([50,60,70])   # (3,)
+x_pred = np.array([50,60,70])
 
 print(x.shape)      # (13,3)
 print(y.shape)      # (13,)
-
-
-#from sklearn.preprocessing import MinMaxScaler
-#scaler = MinMaxScaler()
-#scaler.fit(x)
-#x = scaler.transform(x)
-#x_pred = x_pred.reshape(1,-1)
-#x_pred = scaler.transform(x_pred)
 
 x = x.reshape(13,3,1)
 
@@ -25,24 +18,27 @@ x = x.reshape(13,3,1)
 
 #2. 모델 구성
 
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, LSTM
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.layers import Dense, LSTM, Input
 
 model = Sequential()
 
-model.add(LSTM(40, activation= 'relu', input_shape=(3,1)))
-model.add(Dense(50, activation= 'relu'))
-model.add(Dense(30, activation= 'relu'))
-model.add(Dense(20, activation= 'relu'))
-model.add(Dense(1))
+input1 = Input(shape= (3,1))
+lstm = LSTM(10, activation= 'relu') (input1)
+dense1 = Dense(50, activation= 'relu') (lstm)
+dense1 = Dense(30, activation= 'relu') (dense1)
+dense1 = Dense(20, activation= 'relu') (dense1)
+output1 = Dense(1) (dense1)
+
+model = Model(input1, output1)
 
 # 컴파일, 훈련
 
 
 #from tensorflow.keras.callbacks import EarlyStopping
-#early_stopping = EarlyStopping(monitor='loss', patience=20, mode='auto')
+#early_stopping = EarlyStopping(monitor='loss', patience=28, mode='auto')
 model.compile(loss = 'mse', optimizer='adam', metrics=['mae'])
-model.fit(x,y,epochs=400, batch_size=5)
+model.fit(x,y,epochs=200, batch_size=1) 
 #callbacks = early_stopping)
 
 # 평가 및 예측
@@ -55,6 +51,6 @@ result = model.predict(x_pred)
 print(result)
 
 '''
-loss, mae :  [0.00029631651705130935, 0.013974886387586594]
-[[80.53726]]
+loss, mae :  [0.01992235705256462, 0.08306995034217834]
+[[80.0175]]
 '''
