@@ -1,7 +1,7 @@
 import numpy as np
 
-a = np.array(range(1,11))
-size = 5                #size를 5로 정의하겠다.
+a = np.array(range(1,101))
+size = 6                #size를 5로 정의하겠다.
 
 def split_x(seq, size) :            #입력을 seq,size 받아들여서 아래와 같이 행동하겠다.
     aaa = []            # 빈 리스트 생성
@@ -18,10 +18,13 @@ def split_x(seq, size) :            #입력을 seq,size 받아들여서 아래�
     return np.array(aaa)                #aaa의 리스트를 출력해라
 
 dataset = split_x(a,size)
+x = dataset[:,:5]           # :(행),:(렬) => 슬라이싱
+y = dataset[:,-1:]
 print("====================")
 print(dataset)
 print(dataset.shape)            # (6,5)
-
+print(x)
+print(y)
 '''
 aaa.append([item for item in subset])
 [[ 1  2  3  4  5]
