@@ -39,13 +39,29 @@ print(y2.shape)      # (13,)
 
 
 # from sklearn.model_selection import train_test_split
-# x1_train, x1_test, y1_train,y1_test = train_test_split(x1,y1,test_size=0.2,
-#                                     random_state = 101)
-# x2_train, x2_test, y2_train,y2_test = train_test_split(x2,y2,test_size=0.2,
-#                                     random_state = 101)
+# x1_train, x1_test, y1_train, y1_test = train_test_split(x1,y1,test_size=0.2,
+#                                                 random_state=101)
+
+# x2_train, x2_test, y2_train, y2_test = train_test_split(x2,y2,train_size=0.8,
+#                                                 random_state=101)
+
+
+# from sklearn.preprocessing import MinMaxScaler
+# scaler = MinMaxScaler()
+# scaler.fit(x1_train)
+# x1_train = scaler.transform(x1_train)
+# scaler.fit(x2_train)
+# x2_train = scaler.transform(x2_train)
+# x1_test = scaler.transform(x1_test)
+# x2_test = scaler.transform(x2_test)
+# x1_pred = scaler.transform(x1_pred)
+# x2_pred = scaler.transform(x2_pred)
 
 x1 = x1.reshape(13,2,1)
 x2 = x2.reshape(13,3,1)
+
+# print(x1_train.shape)   # 13,3
+# print(x2_train.shape)   # 13,3
 
 
 #코딩 하시오!! LSTM
@@ -102,7 +118,7 @@ from tensorflow.keras.callbacks import EarlyStopping
 early_stopping = EarlyStopping(monitor='loss', patience=20, mode='auto')
 model.compile(loss = 'mse', optimizer='adam', metrics=['mae'])
 model.fit([x1,x2],[y1,y2],epochs=400, batch_size=5,
-callbacks = early_stopping)
+callbacks = early_stopping, validation_split=0.2)
 
 # 평가 및 예측
 
