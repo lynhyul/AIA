@@ -93,7 +93,7 @@ x_train, x_val, y_train, y_val = train_test_split(x,y,train_size = 0.8)
 
 from sklearn.preprocessing import MinMaxScaler
 scaler = MinMaxScaler()
-scaler.fit(x)
+scaler.fit(x_train)
 x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 x_val = scaler.transform(x_val)
@@ -109,3 +109,54 @@ print(x_val.shape)
 
 
 print(x_train.shape)   
+
+from tensorflow.keras.models import Sequential,Model
+from tensorflow.keras.layers import Dense, Input,LSTM
+
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.layers import Dense, LSTM, Input, Conv1D, Dropout, Flatten,MaxPooling1D
+
+
+model = Sequential()
+model.add(Conv1D(filters = 400, kernel_size = 2, input_shape=(5,1)))
+model.add(Conv1D(400,2))
+model.add(Conv1D(300,2))
+# model.add(MaxPooling1D(pool_size=2))
+# model.add(Dropout(0.2))
+model.add(Flatten())
+model.add(Dense(310, activation= 'relu'))
+model.add(Dense(315, activation= 'relu'))
+model.add(Dense(1))
+# model = Sequential()
+# model.add(LSTM(410, activation='relu', input_shape=(5,1)))
+# model.add(Dense(250, activation= 'relu'))
+# model.add(Dense(150, activation= 'relu'))
+# model.add(Dense(150, activation= 'relu'))
+# model.add(Dense(150, activation= 'relu'))
+# model.add(Dense(30, activation= 'relu'))
+# model.add(Dense(1))
+
+model.summary()
+
+# model = Model(input1, output1)
+
+#3. compile fit
+
+from tensorflow.keras.callbacks import EarlyStopping
+early_stopping = EarlyStopping(monitor='loss', patience= 30, mode = 'auto')
+
+model.compile(loss = 'mse', optimizer='adam', metrics=['acc'])
+model.fit(x_train,y_train, epochs=500, batch_size=30, validation_data=(x_val, y_val),  
+                                     callbacks = early_stopping)
+
+#4. evaluate , predict
+
+
+
+loss = model.evaluate(x_test,y_test, batch_size=1)
+print("loss : ",loss)
+
+
+x_pred = x_pred.reshape(1,5,1)
+y_predict = model.predict(x_pred)
+print("y_predcit: ",y_predict)
