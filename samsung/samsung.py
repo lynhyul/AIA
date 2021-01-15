@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-size = 2
+# size = 2
 
 df = pd.read_csv('../data/csv/삼성전자.csv', index_col=0,header=0,encoding='CP949')
 df.replace(',','',inplace=True, regex=True)
@@ -33,23 +33,37 @@ df = df.sort_values(by=['일자'], axis=0)
 
 print(df)
 
-df_x = df.iloc[:,[0,1,2,4,5,3]]
+df_x = df.iloc[:,[0,1,2,4,5]]
+
+df_x1 = df_x.iloc[:-1]
+print(df_x1)
+
+df_y = df.iloc[1:,[3]]
+
+x_pred = df_x.iloc[-1:]
+
+print(x_pred)
+
+# df_y = df.iloc[:,[]]
 
 #df_y = df.iloc[size:,[3]]
 #df_x_pred = df.iloc[-size:,[0,1,2,4,5]]
 
-x_data = df_x.to_numpy()
+x = df_x1.to_numpy()
+y = df_y.to_numpy()
+x_pred = x_pred.to_numpy()
 
+print(x_pred)
 
-def split_x(seq, size):
+# def split_x(seq, size):
 
-    aaa = []
-    for i in range(len(seq) - size + 1):
-        subset = seq[i : (i+size)]
-        aaa.append(subset)
-    return np.array(aaa)
+#     aaa = []
+#     for i in range(len(seq) - size + 1):
+#         subset = seq[i : (i+size)]
+#         aaa.append(subset)
+#     return np.array(aaa)
 
-total_data = split_x(x_data,size)
+# total_data = split_x(x_data,size)
 
 
 # npy 저장
@@ -57,11 +71,11 @@ total_data = split_x(x_data,size)
 
 
 
-x = total_data[:-1,:size, :-1]
-y = total_data[1:,size-1,-1:]
-x_pred = total_data[-1,:size,:-1]
-print(x_pred)
-print(x_pred.shape)
+# x = total_data[:-1,:size, :-1]
+# y = total_data[1:,size-1,-1:]
+# x_pred = total_data[-1,:size,:-1]
+# print(x_pred)
+# print(x_pred.shape)
 
 # # 상관 계수 시각화!
 # import matplotlib.pyplot as plt
@@ -70,3 +84,28 @@ print(x_pred.shape)
 # sns.set(font_scale=1.2)
 # sns.heatmap(data=df.corr(), square=True, annot=True, cbar=True)
 # plt.show()
+x_pred = x_pred.reshape(-1,5)
+
+
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x,y,test_size = 0.2, shuffle = True, random_state=101)
+x_train, x_val, y_train, y_val = train_test_split(x,y,train_size = 0.8)
+
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler()
+scaler.fit(x)
+x_train = scaler.transform(x_train)
+x_test = scaler.transform(x_test)
+x_val = scaler.transform(x_val)
+x_pred = scaler.transform(x_pred)
+
+
+x_train = x_train.reshape(x_train.shape[0],5,1)
+x_val = x_val.reshape(x_val.shape[0],5,1)
+x_test = x_test.reshape(x_test.shape[0],5,1)
+
+print(x_test.shape) 
+print(x_val.shape)  
+
+
+print(x_train.shape)   
