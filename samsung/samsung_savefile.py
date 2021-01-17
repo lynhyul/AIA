@@ -12,11 +12,10 @@ x2 = np.load('/content/코스닥.npy',allow_pickle=True)[0]
 
 
 from sklearn.model_selection import train_test_split
-x1_train, x1_test, y1_train, y1_test = train_test_split(x1,y1,test_size = 0.2, shuffle = True, random_state=101)
-x1_train, x1_val, y1_train, y1_val = train_test_split(x1_train,y1_train,train_size = 0.8)
+x1_train, x1_test, x2_train, x2_test, y1_train, y1_test = train_test_split(x1,x2,y1,test_size = 0.2, shuffle = True, random_state=101)
+x1_train, x1_val,x2_train,x2_val, y1_train, y1_val = train_test_split(x1_train,x2_train,y1_train,train_size = 0.8)
 
-x2_train, x2_test, y2_train, y2_test = train_test_split(x2,y2,test_size = 0.2, shuffle = True, random_state=101)
-x2_train, x2_val, y2_train, y2_val = train_test_split(x2_train,y2_train,train_size = 0.8)
+
 
 x1_train = x1_train.reshape(x1_train.shape[0],24)
 x1_test = x1_test.reshape(x1_test.shape[0],24)
@@ -105,13 +104,13 @@ model = Model(inputs = [input1,input2], outputs = [output1])
 # # 컴파일, 훈련
 
 
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-modelpath = '/content/삼성전자_{epoch:02d}-{val_loss:.4f}.hdf5'
-cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss',save_best_only=True,mode='auto')
+# from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+# modelpath = '/content/삼성전자_{epoch:02d}-{val_loss:.4f}.hdf5'
+# cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss',save_best_only=True,mode='auto')
 early_stopping = EarlyStopping(monitor='loss', patience=20, mode='auto')
 model.compile(loss = 'mse', optimizer='adam', metrics=['mae'])
 model.fit([x1_train,x2_train],y1_train,epochs=300, batch_size=30, validation_data=([x1_val,x2_val],[y1_val,y2_val]),
-callbacks = [early_stopping,cp])
+callbacks = [early_stopping])
 
 model.save('/content/삼성전자3.h5')
 
