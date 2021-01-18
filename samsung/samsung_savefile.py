@@ -1,14 +1,13 @@
 import numpy as np
 import pandas as pd
-import io
-from google.colab import drive
-drive.mount('/content/drive/')
 
-x1 = np.load('/content/삼성전자2.npy',allow_pickle=True)[0]
-y1 = np.load('/content/삼성전자2.npy',allow_pickle=True)[1]
-x_pred = np.load('/content/삼성전자2.npy',allow_pickle=True)[2]
 
-x2 = np.load('/content/코스닥.npy',allow_pickle=True)[0]
+x1 = np.load('../data/npy/삼성전자2.npy',allow_pickle=True)[0]
+y1 = np.load('../data/npy/삼성전자2.npy',allow_pickle=True)[1]
+x_pred = np.load('../data/npy/삼성전자2.npy',allow_pickle=True)[2]
+
+x2 = np.load('../data/npy/코스닥.npy',allow_pickle=True)[0]
+
 
 
 from sklearn.model_selection import train_test_split
@@ -24,7 +23,7 @@ x2_test = x2_test.reshape(x2_test.shape[0],24)
 x1_val = x1_val.reshape(x1_val.shape[0],24)
 x2_val = x2_val.reshape(x2_val.shape[0],24)
 x_pred = x_pred.reshape(x_pred.shape[0],24)
-x2_pred = x2_pred.reshape(x2_pred.shape[0],24)
+# x2_pred = x2_pred.reshape(x2_pred.shape[0],24)
 
 from sklearn.preprocessing import MinMaxScaler
 scaler = MinMaxScaler()
@@ -38,7 +37,7 @@ scaler.fit(x2_train)
 x2_train = scaler.transform(x2_train)
 x2_test = scaler.transform(x2_test)
 x2_val = scaler.transform(x2_val)
-x2_pred = scaler.transform(x2_pred)
+# x2_pred = scaler.transform(x2_pred)
 
 x1_train = x1_train.reshape(x1_train.shape[0],4,6)
 x1_test = x1_test.reshape(x1_test.shape[0],4,6)
@@ -47,13 +46,10 @@ x2_test = x2_test.reshape(x2_test.shape[0],4,6)
 x1_val = x1_val.reshape(x1_val.shape[0],4,6)
 x2_val = x2_val.reshape(x2_val.shape[0],4,6)
 x_pred = x_pred.reshape(x_pred.shape[0],4,6)
-x2_pred = x2_pred.reshape(x2_pred.shape[0],4,6)
+# x2_pred = x2_pred.reshape(x2_pred.shape[0],4,6)
 
 
-print(x_pred)
-print(x2_pred)
-print(y2_train)
- 
+
 
 from tensorflow.keras.models import Sequential, Model, save_model, load_model
 from tensorflow.keras.layers import Dense, LSTM, Input, Conv1D, Dropout, Flatten,MaxPooling1D
@@ -104,15 +100,15 @@ model = Model(inputs = [input1,input2], outputs = [output1])
 # # 컴파일, 훈련
 
 
-# from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 # modelpath = '/content/삼성전자_{epoch:02d}-{val_loss:.4f}.hdf5'
 # cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss',save_best_only=True,mode='auto')
 early_stopping = EarlyStopping(monitor='loss', patience=20, mode='auto')
 model.compile(loss = 'mse', optimizer='adam', metrics=['mae'])
-model.fit([x1_train,x2_train],y1_train,epochs=300, batch_size=30, validation_data=([x1_val,x2_val],[y1_val,y2_val]),
+model.fit([x1_train,x2_train],y1_train,epochs=300, batch_size=30, validation_data=([x1_val,x2_val],[y1_val]),
 callbacks = [early_stopping])
 
-model.save('/content/삼성전자3.h5')
+model.save('../data/h5/삼성전자3.h5')
 
 # 평가 및 예측
 
