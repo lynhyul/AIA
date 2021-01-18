@@ -11,7 +11,7 @@ x2 = np.load('../data/npy/코스닥.npy',allow_pickle=True)[0]
 
 
 from sklearn.model_selection import train_test_split
-x1_train, x1_test, x2_train, x2_test, y1_train, y1_test = train_test_split(x1,x2,y1,test_size = 0.2, shuffle = True, random_state=101)
+x1_train, x1_test, x2_train, x2_test, y1_train, y1_test = train_test_split(x1,x2,y1,test_size = 0.2, shuffle = False)
 x1_train, x1_val,x2_train,x2_val, y1_train, y1_val = train_test_split(x1_train,x2_train,y1_train,train_size = 0.8)
 
 
@@ -99,22 +99,40 @@ model = Model(inputs = [input1,input2], outputs = [output1])
 
 # # 컴파일, 훈련
 
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
+modelpath = '../data/modelcheckpoint/삼성전자_{epoch:02d}-{val_loss:.4f}.hdf5'
+early_stopping = EarlyStopping(monitor='val_loss', patience=20)
+cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss',save_best_only=True,mode='auto')
+
+reduce_lr = ReduceLROnPlateau(monitor='val_loss',patience=10, factor=0.5, verbose=1)
+#n번까지 참았는데도 개선이없으면 50퍼센트 감축시키겠다.
+
+model.compile(loss = 'mse', optimizer='adam', metrics=['mae'])
+model.fit([x1_train,x2_train],y1_train,epochs=300, batch_size=30, validation_data=([x1_val,x2_val],[y1_val]),
+callbacks = [early_stopping,cp,reduce_lr])
 
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 # modelpath = '/content/삼성전자_{epoch:02d}-{val_loss:.4f}.hdf5'
 # cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss',save_best_only=True,mode='auto')
 early_stopping = EarlyStopping(monitor='loss', patience=20, mode='auto')
 model.compile(loss = 'mse', optimizer='adam', metrics=['mae'])
-model.fit([x1_train,x2_train],y1_train,epochs=300, batch_size=30, validation_data=([x1_val,x2_val],[y1_val]),
-callbacks = [early_stopping])
 
 model.save('../data/h5/삼성전자3.h5')
 
 # 평가 및 예측
 
-loss = model.evaluate([x1_test,x2_test],y1_test)
+loss = model.evaluate([x1_test,x2_test],y1_test, batch_size=1)
 print("loss, mae : " ,loss)
 
 
 result= model.predict([x_pred,x_pred])
 print("시가(월요일,화요일) : ",result)
+
+'''
+before
+loss, mae :  [14084309.0, 2939.058837890625]
+
+after ad reduce_lr
+loss, mae :  [3049858.5, 1379.7821044921875]
+loss, mae :  [2949230.5, 1362.5491943359375
+'''

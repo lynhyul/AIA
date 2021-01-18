@@ -15,7 +15,7 @@ x2 = np.load('../data/npy/코스닥.npy',allow_pickle=True)[0]
 
 
 from sklearn.model_selection import train_test_split
-x1_train, x1_test, x2_train, x2_test, y1_train, y1_test = train_test_split(x1,x2,y1,test_size = 0.2, shuffle = True, random_state=101)
+x1_train, x1_test, x2_train, x2_test, y1_train, y1_test = train_test_split(x1,x2,y1,test_size = 0.2, shuffle = False)
 x1_train, x1_val,x2_train,x2_val, y1_train, y1_val = train_test_split(x1_train,x2_train,y1_train,train_size = 0.8)
 
 
@@ -62,18 +62,22 @@ from tensorflow.keras.layers import Dense, LSTM, Input, Conv1D, Dropout, Flatten
 # # 컴파일, 훈련
 
 
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 
 
 
-model = load_model('../data/h5/삼성전자3.h5')
+model = load_model('../data/modelcheckpoint/삼성전자_191-1288823.5000.hdf5')
 
 # 평가 및 예측
 
-loss = model.evaluate([x1_test,x2_test],y1_test)
+loss = model.evaluate([x1_test,x2_test],y1_test, batch_size=1)
 print("loss, mae : " ,loss)
 
 
 result= model.predict([x_pred,x_pred])
 print("시가(월요일,화요일) : ",result)
+
+'''
+loss, mae :  [14084309.0, 2939.058837890625]
+'''
+
