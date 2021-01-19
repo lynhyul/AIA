@@ -42,7 +42,7 @@ pred = X_test.to_numpy()
 
 x = x.reshape(1093,48,7)
 y = y.reshape(1093,48*2)
-pred = pred.reshape(567,48,7)
+
 # x = x.reshape(x.shape[0]/48,48,2)
 # y = y.reshape(y.shape[0]/48,48,2)
 
@@ -50,42 +50,44 @@ pred = pred.reshape(567,48,7)
 from sklearn.model_selection import train_test_split
 
 x_train, x_test, y_train, y_test = train_test_split(x,y,test_size = 0.2, shuffle = True, random_state=101)
-# x_train, x_val, y_train, y_val = train_test_split(x_train,y_train,train_size = 0.8)
+x_train, x_val, y_train, y_val = train_test_split(x_train,y_train,train_size = 0.8)
 
 print(x_train.shape) 
 
-# x_train = x_train.reshape(x_train.shape[0],x_train.shape[1]*x_train.shape[2])
-# x_test = x_test.reshape(x_test.shape[0],x_test.shape[1]*x_test.shape[2])
-# x_val = x_val.reshape(x_val.shape[0],x_val.shape[1]*x_val.shape[2])
+x_train = x_train.reshape(x_train.shape[0],x_train.shape[1]*x_train.shape[2])
+x_test = x_test.reshape(x_test.shape[0],x_test.shape[1]*x_test.shape[2])
+x_val = x_val.reshape(x_val.shape[0],x_val.shape[1]*x_val.shape[2])
 
 
 
-# print(x_train.shape)
+print(x_train.shape)
 
-# from sklearn.preprocessing import MinMaxScaler
-# scaler = MinMaxScaler()
-# scaler.fit(x_train)
-# x_train = scaler.transform(x_train)
-# x_test = scaler.transform(x_test)
-# x_val = scaler.transform(x_val)
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler()
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)
+x_test = scaler.transform(x_test)
+x_val = scaler.transform(x_val)
 
 
 
-# x_train = x_train.reshape(x_train.shape[0],48,7)
-# x_test = x_test.reshape(x_test.shape[0],48,7)
-# x_val = x_val.reshape(x_val.shape[0],48,7)
-# pred = pred.reshape(567,48,7)
+x_train = x_train.reshape(x_train.shape[0],48,7)
+x_test = x_test.reshape(x_test.shape[0],48,7)
+x_val = x_val.reshape(x_val.shape[0],48,7)
+pred = pred.reshape(567,48,7)
 
 
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, Input, LSTM, Dropout, Conv1D, Reshape, Flatten
 inputs = Input(shape=(48,7))
-dense1 = Conv1D(512, 2, padding='same')(inputs)
+dense1 = Conv1D(512, 2, padding='same',activation='relu')(inputs)
+dense1 = Conv1D(216, 2, padding='same',activation='relu')(inputs)
+dense1 = Conv1D(128, 2, padding='same',activation='relu')(inputs)
 dense1 = Flatten()(dense1)
-dense1 = Dense(128)(dense1)
-dense1 = Dense(64)(dense1)
-dense1 = Dense(32)(dense1)
-dense1 = Dense(16)(dense1)
+dense1 = Dense(64,activation='relu')(dense1)
+dense1 = Dense(32,activation='relu')(dense1)
+dense1 = Dense(16,activation='relu')(dense1)
+dense1 = Dense(8,activation='relu')(dense1)
 outputs = Dense(48*2)(dense1)
 
 model = Model(inputs=inputs, outputs=outputs)
@@ -119,19 +121,23 @@ for l in range(9):
     y_pred = model.predict(pred)
     y_pred = y_pred.reshape(27216,2)
     d.append(y_pred)
-    
+d = np.array(d)
+d = d.reshape(27216*9,2)
+df_data = pd.DataFrame(d)
+for i in range(9) :
+    df_data = df.quantile(q = ((i+1)/10.),axis = 0)[0]
+print(df_data)
 
-df_sub = pd.read_csv('../data/csv/sample_submission.csv', index_col = 0, header = 0)
 
-# submit 파일에 데이터들 덮어 씌우기!!
-for i in range(81):
-    for j in range(2):
-        for k in range(48):
-            df = pd.DataFrame(d[i,j,k])
-            for l in range(9):
-                df_sub.iloc[[i*96+j*48+k],[l]] = df.quantile(q = ((l+1)/10.),axis = 0)[0]
+# # submit 파일에 데이터들 덮어 씌우기!!
+# for i in range(81):
+#     for j in range(2):
+#         for k in range(48):
+#             df = pd.DataFrame(d[i,j,k])
+#             for l in range(9):
+#                 df_sub.iloc[[i*96+j*48+k],[l]] = df.quantile(q = ((l+1)/10.),axis = 0)[0]
 
-df_sub.to_csv('../data/csv/submit.csv')
+# df_sub.to_csv('../data/csv/submit.csv')
 
 
 
