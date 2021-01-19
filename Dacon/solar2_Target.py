@@ -41,7 +41,7 @@ pred = X_test.to_numpy()
 # print(x.shape)  #(52464, 7)
 
 x = x.reshape(1093,48,7)
-y = y.reshape(1093,48*2)
+y = y.reshape(1093,48,2)
 
 # x = x.reshape(x.shape[0]/48,48,2)
 # y = y.reshape(y.shape[0]/48,48,2)
@@ -78,7 +78,7 @@ pred = pred.reshape(567,48,7)
 
 
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Dense, Input, LSTM, Dropout, Conv1D, Reshape, Flatten
+from tensorflow.keras.layers import Dense, Input, LSTM, Dropout, Conv1D, Reshape, Flatten,Reshape
 inputs = Input(shape=(48,7))
 dense1 = Conv1D(512, 2, padding='same',activation='relu')(inputs)
 dense1 = Conv1D(216, 2, padding='same',activation='relu')(inputs)
@@ -86,9 +86,9 @@ dense1 = Conv1D(128, 2, padding='same',activation='relu')(inputs)
 dense1 = Flatten()(dense1)
 dense1 = Dense(64,activation='relu')(dense1)
 dense1 = Dense(32,activation='relu')(dense1)
-dense1 = Dense(16,activation='relu')(dense1)
-dense1 = Dense(8,activation='relu')(dense1)
-outputs = Dense(48*2)(dense1)
+dense1 = Dense(48*2,activation='relu')(dense1)
+dense1 = Reshape((48,2))(dense1)
+outputs = Dense(1)(dense1)
 
 model = Model(inputs=inputs, outputs=outputs)
 
@@ -122,7 +122,6 @@ for l in range(9):
     y_pred = y_pred.reshape(27216,2)
     d.append(y_pred)
 d = np.array(d)
-d = d.reshape(27216*9,2)
 df_data = pd.DataFrame(d)
 for i in range(9) :
     df_data = df.quantile(q = ((i+1)/10.),axis = 0)[0]

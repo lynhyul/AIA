@@ -64,7 +64,7 @@ cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss',save_best_only=True,
 reduce_lr = ReduceLROnPlateau(monitor='val_loss',patience=5, factor=0.5, verbose=1)
 #n번까지 참았는데도 개선이없으면 50퍼센트 감축시키겠다.
 
-model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics=['acc'])
+model.compile(loss = 'mse', optimizer='adam', metrics=['acc'])
 hist = model.fit(x_train,y_train, epochs=100, batch_size=256, validation_split=0.5,  
                                      callbacks = [early_stopping, cp,reduce_lr])
 
