@@ -12,7 +12,7 @@ train = pd.read_csv('../data/csv/train/train.csv',index_col=False)
 for i in range(81) :
     filepath = '../data/csv/test/{}.csv'.format(i)
     globals()['test{}'.format(i)] = pd.read_csv(filepath,index_col=False)
-    globals()['test_{}'.format(i)] = globals()['test{}'.format(i)].iloc[:,3:]
+    globals()['test_{}'.format(i)] =    globals()['test{}'.format(i)].iloc[:,3:]
 # sub = pd.read_csv('../data/csv/sample_submission.csv',index_col=False)
 
 train_x = train.iloc[:,3:]

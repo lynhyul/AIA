@@ -18,7 +18,7 @@ for i in range(81) :
     # globals()['test{}'.format(i)] = pd.read_csv(filepath,index_col=False)
     df = pd.read_csv(filepath,index_col=False)
     df = df[['Hour', 'TARGET', 'DHI', 'DNI', 'WS', 'RH', 'T']]
-    df = df.iloc[-48:,:] 
+    df = df.iloc[:-48,:] 
     df_test.append(df)
 X_test = pd.concat(df_test)
 print(X_test)
@@ -59,7 +59,7 @@ print(x_train.shape) #669,48,7
 x_train = x_train.reshape(x_train.shape[0],x_train.shape[1]*x_train.shape[2])
 x_test = x_test.reshape(x_test.shape[0],x_test.shape[1]*x_test.shape[2])
 x_val = x_val.reshape(x_val.shape[0],x_val.shape[1]*x_val.shape[2])
-pred = pred.reshape(81,336)
+pred = pred.reshape(486,336)
 
 
 print(x_train.shape)    #669, 336
@@ -78,7 +78,7 @@ pred = scaler.transform(pred)
 x_train = x_train.reshape(x_train.shape[0],48,7)
 x_test = x_test.reshape(x_test.shape[0],48,7)
 x_val = x_val.reshape(x_val.shape[0],48,7)
-pred = pred.reshape(81,48,7)
+pred = pred.reshape(486,48,7)
 
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 modelpath = '../data/modelcheckpoint/태양광_{epoch:02d}-{val_loss:.4f}.hdf5'
@@ -114,9 +114,9 @@ model.summary()
 #3. compile fit
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 modelpath = '../data/modelcheckpoint/태양광_{epoch:02d}-{val_loss:.4f}.hdf5'
-es = EarlyStopping(monitor='val_loss', patience=20)
+es = EarlyStopping(monitor='val_loss', patience=40)
 cp = ModelCheckpoint(filepath=modelpath, monitor='val_loss',save_best_only=True,mode='auto')
-lr = ReduceLROnPlateau(monitor='val_loss',patience=10, factor=0.5, verbose=1)
+lr = ReduceLROnPlateau(monitor='val_loss',patience=20, factor=0.5, verbose=1)
 # n번까지 참았는데도 개선이없으면 50퍼센트 감축시키겠다.
 model.compile(loss = 'mse', optimizer='adam', metrics=['mae'])
 # cp = ModelCheckpoint(filepath = '../data/modelcheckpoint/dacon%d.hdf5',monitor='val_loss', save_best_only=True)
@@ -130,28 +130,23 @@ print("loss : ", loss)
 print("predict : \n", y_pred[:,:,:1]) # day 1 Target
 print("predict : \n", y_pred[:,:,1:]) # day 2 Target
 y_pred = np.append(y_pred[:,:,:1],y_pred[:,:,1:],axis=0)
-print(y_pred.shape) # 162,48,1
+print(y_pred.shape) # 972, 48, 1
 
-df_sub = pd.read_csv('../data/csv/sample_submission.csv', index_col = 0, header = 0)
+
 
 
 def quantile_loss(q, y, pred):
   err = (y-pred)
   return mean(maximum(q*err, (q-1)*err), axis=-1)
 q_lst = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-
-q_d = []
+model1 = Sequential()
 for q in q_lst:  
-  model.compile(loss=lambda y,pred: quantile_loss(q,y,pred), optimizer='adam')
-  model.fit(x_train,y_train, epochs =100, batch_size=8,validation_data=(x_val,y_val)) 
-  q_pred = model.predict(pred)
-  q_d.append(q_pred)
-q_d = np.array(q_d)
-q_d = np.append(q_d[:,:,:,:1],q_d[:,:,:,1:],axis=0)  
-q_d = q_d.reshape(7776,9)
-q_d = pd.DataFrame(q_d)
-# q_d.to_csv("filename.csv", mode='w', header=False)
-q_d.to_csv('../data/csv/submit6.csv')
+  model1.compile(loss=lambda y,pred: quantile_loss(q,y,y_pred), optimizer='adam')
+  model1.fit(x_train,y_train, epochs =5, batch_size=1,validation_split=0.2)
+  q_pred = model1.predict(pred)
+print(q_pred) # 567,48,7
+print(q_pred.shape)
+q_pred.to_csv('../data/csv/submit5.csv')
 '''
 loss :  [163.5534210205078, 6.690919399261475]
 '''

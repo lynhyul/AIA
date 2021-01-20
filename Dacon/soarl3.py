@@ -4,11 +4,11 @@ import pandas as pd
 
 df = pd.read_csv('../data/csv/train/train.csv')
 
-df.drop(['Hour','Minute','Day'], axis =1, inplace = True)
+df.drop(['Minute','Day'], axis =1, inplace = True)
 # print(df.shape) # (52560, 7)
 
 data = df.to_numpy()
-data = data.reshape(1095,48,6)
+data = data.reshape(1095,48,7)
 
 def split_xy(data,timestep,ynum):
     x,y = [],[]
@@ -40,14 +40,11 @@ from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2
 
 drop = 0.3
 model = Sequential()
-model.add(Conv2D(512,2,padding = 'same', input_shape = (7,48,6)))
+model.add(Conv2D(512,2,padding = 'same', input_shape = (7,48,7)))
 model.add(LeakyReLU(alpha = 0.05))
 model.add(MaxPooling2D(2))
 model.add(Dropout(drop))
 model.add(Conv2D(256,2,padding = 'same'))
-model.add(LeakyReLU(alpha = 0.05))
-model.add(Dropout(drop))
-model.add(Conv2D(128,2,padding = 'same'))
 model.add(LeakyReLU(alpha = 0.05))
 model.add(Flatten())
 model.add(Dense(256))
@@ -77,9 +74,9 @@ for l in range(9):
     c = []
     for i in range(81):
         testx = pd.read_csv('../data/csv/test/%d.csv'%i)
-        testx.drop(['Hour','Minute','Day'], axis =1, inplace = True)
+        testx.drop(['Minute','Day'], axis =1, inplace = True)
         testx = testx.to_numpy()  
-        testx = testx.reshape(7,48,6)
+        testx = testx.reshape(7,48,7)
         testx,null_y = split_xy(testx,7,0)
         y_pred = model.predict(testx)
         y_pred = y_pred.reshape(2,48)
@@ -121,4 +118,4 @@ for i in range(81):
             for l in range(9):
                 df_sub.iloc[[i*96+j*48+k],[l]] = df.quantile(q = ((l+1)/10.),axis = 0)[0]
 
-df_sub.to_csv('../data/csv/submit.csv')
+df_sub.to_csv('../data/csv/submit6.csv')
