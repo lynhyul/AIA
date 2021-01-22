@@ -138,51 +138,44 @@ def quantile_loss(q, y_true, y_pred):
 quantiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 
 #2. 모델링
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Flatten, Dropout, Conv1D
-def mymodel():
-    model = Sequential()
-    model.add(Conv1D(256,2,padding = 'same', activation = 'relu',input_shape = (day,7)))
-    model.add(Conv1D(128,2,padding = 'same', activation = 'relu'))
-    model.add(Conv1D(64,2,padding = 'same', activation = 'relu'))
-    model.add(Conv1D(32,2,padding = 'same', activation = 'relu'))
-    model.add(Flatten())
-    model.add(Dense(128, activation = 'relu'))
-    model.add(Dense(64, activation = 'relu'))
-    model.add(Dense(32, activation = 'relu'))
-    model.add(Dense(16, activation = 'relu'))
-    model.add(Dense(7, activation = 'relu'))
-    model.add(Dense(1))
-    return model
-
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
-es = EarlyStopping(monitor = 'val_loss', patience = 30)
-lr = ReduceLROnPlateau(monitor = 'val_loss', patience = 10, factor = 0.25, verbose = 1)
-epochs = 1000
-bs = 64
+from tensorflow.keras.models import load_model
 
 for i in range(48):
-    x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.7,shuffle = True, random_state = 0)
+    print(f'{int(i/2)}시 {i%2*30}분 시간대 진행중...')
     # 내일!
     for j in quantiles:
-        model = mymodel()
-        filepath_cp = f'../data/modelcheckpoint/dacon_{i:2d}_y1seq_{j:.1f}.hdf5'
-        cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
+        filepath_cp = f'../data/modelcheckpoint/dacon_{i:2d}_y2seq_{j:.1f}.hdf5'
+        model = load_model(filepath_cp, compile = False)
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
-        model.fit(x_train,y1_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y1_val),callbacks = [es,cp,lr])
+        x = []
+        for k in range(81):
+            x.append(test[k,i])
+        x = np.array(x)
+        df_temp1 = pd.DataFrame(model.predict(x).round(2))
+        # df_temp1 = pd.concat(pred, axis = 0)
+        df_temp1[df_temp1<0] = 0
+        num_temp1 = df_temp1.to_numpy()
+        if i%2 == 0:
+            submission.loc[submission.id.str.contains(f"Day7_{int(i/2)}h00m"), [f"q_{j:.1f}"]] = num_temp1
+        elif i%2 == 1:
+            submission.loc[submission.id.str.contains(f"Day7_{int(i/2)}h30m"), [f"q_{j:.1f}"]] = num_temp1
+
     # 모레!
     for j in quantiles:
-        model = mymodel()
         filepath_cp = f'../data/modelcheckpoint/dacon_{i:2d}_y2seq_{j:.1f}.hdf5'
-        cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
+        model = load_model(filepath_cp, compile = False)
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
-        model.fit(x_train,y2_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y2_val),callbacks = [es,cp,lr]) 
+        x = []
+        for k in range(81):
+            x.append(test[k,i])
+        x = np.array(x)
+        df_temp2 = pd.DataFrame(model.predict(x).round(2))
+        # df_temp1 = pd.concat(pred, axis = 0)
+        df_temp2[df_temp2<0] = 0
+        num_temp2 = df_temp2.to_numpy()
+        if i%2 == 0:
+            submission.loc[submission.id.str.contains(f"Day8_{int(i/2)}h00m"), [f"q_{j:.1f}"]] = num_temp2
+        elif i%2 == 1:
+            submission.loc[submission.id.str.contains(f"Day8_{int(i/2)}h30m"), [f"q_{j:.1f}"]] = num_temp2
 
-  
-
-
-
-
-        '''
-         loss: 1.1494e-05 - <lambda>: 1.1494e-05 - val_loss: 2.1044e-05 - val_<lambda>: 2.1044e-05
-         '''
+submission.to_csv('../data/csv/0122_timeseries_scale2.csv', index = False)
