@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import tensorflow.keras.backend as K
 
+
 #### 매일 같은 시간대의 데이터끼리만 묶어서 시계열로 만드는 모델! 훈련시간 거의 두시간;;;
 
 train = pd.read_csv('../data/csv/train/train.csv')
@@ -144,7 +145,7 @@ for i in range(48):
     print(f'{int(i/2)}시 {i%2*30}분 시간대 진행중...')
     # 내일!
     for j in quantiles:
-        filepath_cp = f'../data/modelcheckpoint/dacon_{i:2d}_y2seq_{j:.1f}.hdf5'
+        filepath_cp = f'../data/modelcheckpoint/dacon2_{i:2d}_y2seq_{j:.1f}.hdf5'
         model = load_model(filepath_cp, compile = False)
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
         x = []
@@ -162,7 +163,7 @@ for i in range(48):
 
     # 모레!
     for j in quantiles:
-        filepath_cp = f'../data/modelcheckpoint/dacon_{i:2d}_y2seq_{j:.1f}.hdf5'
+        filepath_cp = f'../data/modelcheckpoint/dacon2_{i:2d}_y2seq_{j:.1f}.hdf5'
         model = load_model(filepath_cp, compile = False)
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
         x = []
@@ -178,4 +179,4 @@ for i in range(48):
         elif i%2 == 1:
             submission.loc[submission.id.str.contains(f"Day8_{int(i/2)}h30m"), [f"q_{j:.1f}"]] = num_temp2
 
-submission.to_csv('../data/csv/0122_timeseries_scale2.csv', index = False)
+submission.to_csv('../data/csv/0122_timeseries_scale3.csv', index = False)
