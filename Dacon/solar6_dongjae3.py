@@ -156,23 +156,23 @@ def mymodel():
 
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 es = EarlyStopping(monitor = 'val_loss', patience = 50)
-lr = ReduceLROnPlateau(monitor = 'val_loss', patience = 40, factor = 0.017, verbose = 1)
-epochs = 100000
+lr = ReduceLROnPlateau(monitor = 'val_loss', patience = 25, factor = 0.017, verbose = 1)
+epochs = 3000
 bs = 128
 
 for i in range(48):
-    x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.8,shuffle = True, random_state = 0)
+    x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.7,shuffle = True, random_state = 0)
     # 내일!
     for j in quantiles:
         model = mymodel()
-        filepath_cp = f'../data/modelcheckpoint/dacon8_{i:2d}_y1seq_{j:.1f}.hdf5'
+        filepath_cp = f'../data/modelcheckpoint/dacon5_{i:2d}_y1seq_{j:.1f}.hdf5'
         cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
         model.fit(x_train,y1_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y1_val),callbacks = [es,cp,lr])
     # 모레!
     for j in quantiles:
         model = mymodel()
-        filepath_cp = f'../data/modelcheckpoint/dacon8_{i:2d}_y2seq_{j:.1f}.hdf5'
+        filepath_cp = f'../data/modelcheckpoint/dacon5_{i:2d}_y2seq_{j:.1f}.hdf5'
         cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
         model.fit(x_train,y2_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y2_val),callbacks = [es,cp,lr]) 
