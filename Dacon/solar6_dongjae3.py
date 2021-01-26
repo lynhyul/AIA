@@ -142,12 +142,12 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten, Dropout, Conv1D
 def mymodel():
     model = Sequential()
-    model.add(Conv1D(512,2,padding = 'same', activation = 'relu',input_shape = (day,7)))
+    model.add(Conv1D(256,2,padding = 'same', activation = 'relu',input_shape = (day,7)))
+    model.add(Conv1D(128,2,padding = 'same', activation = 'relu'))
+    model.add(Conv1D(128,2,padding = 'same', activation = 'relu'))
     model.add(Conv1D(256,2,padding = 'same', activation = 'relu'))
-    model.add(Conv1D(256,2,padding = 'same', activation = 'relu'))
-    model.add(Conv1D(512,2,padding = 'same', activation = 'relu'))
     model.add(Flatten())
-    model.add(Dense(512, activation = 'relu'))
+    model.add(Dense(256, activation = 'relu'))
     model.add(Dense(256, activation = 'relu'))
     model.add(Dense(256, activation = 'relu'))
     model.add(Dense(512, activation = 'relu'))
@@ -155,24 +155,24 @@ def mymodel():
     return model
 
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
-es = EarlyStopping(monitor = 'val_loss', patience = 30)
-lr = ReduceLROnPlateau(monitor = 'val_loss', patience = 10, factor = 0.25, verbose = 1)
-epochs = 1000
+es = EarlyStopping(monitor = 'val_loss', patience = 50)
+lr = ReduceLROnPlateau(monitor = 'val_loss', patience = 40, factor = 0.017, verbose = 1)
+epochs = 100000
 bs = 128
 
 for i in range(48):
-    x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.7,shuffle = True, random_state = 0)
+    x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.8,shuffle = True, random_state = 0)
     # 내일!
     for j in quantiles:
         model = mymodel()
-        filepath_cp = f'../data/modelcheckpoint/dacon3_{i:2d}_y1seq_{j:.1f}.hdf5'
+        filepath_cp = f'../data/modelcheckpoint/dacon8_{i:2d}_y1seq_{j:.1f}.hdf5'
         cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
         model.fit(x_train,y1_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y1_val),callbacks = [es,cp,lr])
     # 모레!
     for j in quantiles:
         model = mymodel()
-        filepath_cp = f'../data/modelcheckpoint/dacon3_{i:2d}_y2seq_{j:.1f}.hdf5'
+        filepath_cp = f'../data/modelcheckpoint/dacon8_{i:2d}_y2seq_{j:.1f}.hdf5'
         cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
         model.fit(x_train,y2_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y2_val),callbacks = [es,cp,lr]) 

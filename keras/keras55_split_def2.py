@@ -30,3 +30,4 @@ x_column = 13
 y_column = 5
 x, y = split_xy(data, timesteps_x, timesteps_y, x_column, y_column)
 print(x.shape, y.shape) # (653, 5, 13) (653, 2, 5)
+print(x)
