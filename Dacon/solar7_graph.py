@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib import font_manager, rc
 from pandas import DataFrame
 
-pred = pd.read_csv('../data/csv/0122_timeseries_scale4.csv')
+pred = pd.read_csv('../data/csv/0122_timeseries_scale13.csv')
 
 ranges = 672        # 7일치로 보겠음
 hours = range(ranges)

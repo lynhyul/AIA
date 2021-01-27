@@ -34,13 +34,13 @@ def split_to_seq(data):
 # 해가 뜨는시간에 90도, 지는시간에 90도, 중간에는 0도!!
 def make_cos(dataframe): 
     dataframe /=dataframe
-    c = dataframe.dropna()
+    c = dataframe.dropna()      # nan값을 없앤다.
     d = c.to_numpy()
 
     def into_cosine(seq):
-        for i in range(len(seq)):
+        for i in range(len(seq)):   #길이의 배열을 넣으면 절반까지 드러나게, 그 후에는 내려가도록
             if i < len(seq)/2:
-                seq[i] = float((len(seq)-1)/2) - (i)
+                seq[i] = float((len(seq)-1)/2) - (i)    
             if i >= len(seq)/2:
                 seq[i] = seq[len(seq) - i - 1]
         seq = seq/ np.max(seq) * np.pi/2
