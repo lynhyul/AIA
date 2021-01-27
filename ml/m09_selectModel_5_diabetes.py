@@ -43,9 +43,9 @@ import sklearn
 print(sklearn.__version__)  # 0.23.2
 
 '''
-Deep learning (Tensorflow) Conv1
-RMSE:  46.126424477751314
-R2:  0.6364483119597577
+Deep learning (Tensorflow) Conv1d
+RMSE:  44.9913009554782
+R2:  0.6541214055043305
 
 ARDRegression 의 정답률 :  0.6246343099042484
 AdaBoostRegressor 의 정답률 :  0.5437738212678458
