@@ -8,11 +8,11 @@ y = dataset.target
 print(x.shape, y.shape) #(442, 10) (442,)
 
 from sklearn.model_selection import train_test_split
-x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = 0.8, shuffle=True, random_state=66)
+x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = 0.8, shuffle=True, random_state=110)
 from sklearn.model_selection import train_test_split
-x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, train_size = 0.8, shuffle=True, random_state=66)
+x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, train_size = 0.8, shuffle=True, random_state=110)
 
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 scaler = MinMaxScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)
@@ -28,33 +28,26 @@ from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.layers import Dense, Input, LSTM,Conv1D,MaxPooling1D,Dropout,Flatten
 
 model = Sequential()
-model.add(Conv1D(filters=64, kernel_size=2, padding='same', activation='relu', input_shape=(10,1))) 
-model.add(MaxPooling1D(pool_size=1))
-model.add(Conv1D(filters=52, kernel_size=2, padding='same', activation='relu')) 
-model.add(MaxPooling1D(pool_size=1))
-model.add(Conv1D(filters=32, kernel_size=2, padding='same', activation='relu')) 
-model.add(MaxPooling1D(pool_size=1))
-model.add(Conv1D(filters=12, kernel_size=2, padding='same', activation='relu')) 
-model.add(MaxPooling1D(pool_size=2))
-model.add(Dropout(0.2))
+model.add(Conv1D(filters=256, kernel_size=2, padding='same', activation='relu', input_shape=(10,1))) 
+model.add(Conv1D(filters=128, kernel_size=2, padding='same', activation='relu'))
+model.add(Conv1D(filters=64, kernel_size=2, padding='same', activation='relu'))  
 model.add(Flatten())
-model.add(Dense(80))
-model.add(Dense(50))
-model.add(Dense(50))
-model.add(Dense(30))
-model.add(Dense(30))
-model.add(Dense(30))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(32, activation='relu'))
+model.add(Dense(16, activation='relu'))
 model.add(Dense(1))
 
 #컴파일, 훈련 (Earlystopping 적용)
 model.compile(loss='mse', optimizer='adam', metrics=['mae'])
 
-from tensorflow.keras.callbacks import EarlyStopping
-early_stopping = EarlyStopping(monitor='loss', patience=16, mode='min')
-model.fit(x_train, y_train, epochs=1000, batch_size=60, validation_data=(x_val, y_val), verbose=1, callbacks=[early_stopping])
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
+lr = ReduceLROnPlateau(monitor='val_loss', patience=10, mode='auto')
+early_stopping = EarlyStopping(monitor='val_loss', patience=20, mode='min')
+model.fit(x_train, y_train, epochs=1000, batch_size=32, validation_data=(x_val, y_val), verbose=1, callbacks=[early_stopping])
 
 #평가, 예측
-loss, mae = model.evaluate(x_test, y_test, batch_size=60)
+loss, mae = model.evaluate(x_test, y_test)
 print('loss, mae: ', loss, mae)
 
 y_predict = model.predict(x_test)
@@ -84,3 +77,8 @@ print('R2: ', R2)
 # loss, mae:  3618.500732421875 48.810367584228516
 # RMSE:  60.15397561071122
 # R2:  0.44245327311594174
+
+'''
+RMSE:  44.9913009554782
+R2:  0.6541214055043305
+'''

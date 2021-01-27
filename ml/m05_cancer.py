@@ -81,6 +81,10 @@ print('acc_score : ',acc)
 
 
 '''
+Deep learning (Tensorflow)
+ [loss, accuracy, mae] :  [0.12791219353675842, 0.9649122953414917, 0.09085875749588013]
+
+
 Machine Learning (train_test_split)
 
 1. LinearSVC

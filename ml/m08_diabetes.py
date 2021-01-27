@@ -42,75 +42,34 @@ x_test = scaler.transform(x_test)
 
 #2. modeling
 
-from tensorflow.keras.models import Sequential,Model
-from tensorflow.keras.layers import Dense, Input
 
-# model = Sequential()
-# model.add(Dense(10, input_shape=(4,)))
-# model.add(Dense(5))
-# model.add(Dense(3, activation= 'softmax'))  #다중분류에서는 가지고싶은 결과 수 만큼 입력한다.
-
-
-# model = LinearSVC()
-# model = SVC()
-# model = KNeighborsClassifier()
-model = RandomForestClassifier()
-# model = DecisionTreeClassifier()
-
-#3. compile fit
-
-# from tensorflow.keras.callbacks import EarlyStopping
-# early_stopping = EarlyStopping(monitor='loss', patience= 5, mode = 'auto')
-
-# model.compile(loss = 'categorical_crossentropy', optimizer='adam', metrics=['acc'])
-model.fit(x_train,y_train)
-# model.fit(x,y)
-
-#4. evaluate , predict
-
-result = model.score(x_test,y_test)
-# result = model.score(x,y)
-print("result : ",result)
-
-
-y_predict = model.predict(x_test)
-r2 = r2_score(y_test,y_predict)
-print('r2_score : ',r2)
+models =[DecisionTreeRegressor(), RandomForestRegressor(), KNeighborsRegressor()]
+for i in models:
+    model = i
+    model.fit(x_train, y_train)
+    y_pred = model.predict(x_test)
+    result = model.score(x_test, y_test)
+    print(f'\n{i}')
+    print("model.score :",result)
+    acc = r2_score(y_test, y_pred)
+    print("r2_score :",acc)
 
 #결과치 나오게 코딩할것 argmax
 
 '''
 Machine Learning (train_test_split)
 
-1. LinearSVC
-result :  0.0
-r2_score :  0.3223264687090769
-(2) MinMaxscaler
-result :  0.0
-r2_score :  0.07451461595772846
+DecisionTreeRegressor()
+model.score : 0.20330666496853378
+r2_score : 0.20330666496853378
 
-2. SVC
-result :  0.0
-r2_score :  0.21212216289188535
-(2) MinMaxscaler
-result :  0.0
-r2_score :  0.19058546709805102
+RandomForestRegressor()
+model.score : 0.5680139342130576
+r2_score : 0.5680139342130576
 
-3. KNeighborsClassifier
-result :  0.0
-r2_score :  -0.3583804903867607
-(2) MinMaxscaler
-result :  0.0
-r2_score :  -0.6228377982448228
-
-4. RandomForestClassifier
-result :  0.0
-r2_score :  0.33533949001395646
-
-
-5. DecisionTreeClassifier
-result :  0.011235955056179775
-r2_score :  -0.32903687610175325
+KNeighborsRegressor()
+model.score : 0.47102341020188654
+r2_score : 0.47102341020188654
 
 
 

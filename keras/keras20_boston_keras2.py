@@ -40,11 +40,12 @@ model = Model(input1, output1)
 # compile, fit
 model.compile(loss = 'mse', optimizer= 'adam', metrics= ['mae'])
 
-from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 early_stopping = EarlyStopping(monitor='loss', patience = 15, mode ='auto')
+lr = ReduceLROnPlateau(monitor='val_loss',patience=10, mode='auto')
 
 model.fit(x_train, y_train, epochs = 2000, batch_size= 10, validation_data= (x_val,y_val),
-                                        callbacks=[early_stopping])
+                                        callbacks=[early_stopping,lr])
 
 # evaluate, predict
 loss = model.evaluate(x_test, y_test, batch_size=1, verbose =1)
@@ -62,3 +63,9 @@ print("RMSE : ", RMSE(y_test,y_predict))
 
 r2 = r2_score(y_test, y_predict)
 print("R2 : ",r2)
+
+'''
+loss :  [15.688149452209473, 2.331120014190674]
+RMSE :  3.960826760907333
+R2 :  0.8115398445785679
+'''

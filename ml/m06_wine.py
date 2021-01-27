@@ -69,12 +69,16 @@ for i in models:
     result = model.score(x_test,y_test)
     print('model_score : ', result)
     y_pred = model.predict(x_test)
-    accuracy = accuracy_score(y_pred,y_test)
+    accuracy = accuracy_score(y_test,y_pred)
     print('accuracy_score : ', accuracy)
 
 
 
 '''
+Deep learning (Tensorflow)
+[loss, accuracy, mae] :  [0.010274448432028294, 1.0, 0.00630617793649435]
+
+
 Machine Learning (train_test_split)
 
 1. LinearSVC
