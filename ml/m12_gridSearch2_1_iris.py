@@ -44,11 +44,15 @@ shuffle = True, train_size = 0.8 )
 kfold = KFold(n_splits=5, shuffle=True)
 
 parameters = [
-    {"n_estimators" : [100,200,300,400,500] },
-    {'max_depth' : [-1,2,4,6,8,10]},
-    {'min_samples_leaf' : [-1,3,5,7,10,12,14]},
-    {'min_samples_split' : [-1,2,3,5,10,12,14]},
-    {'n_jobs' : [0,1,-1]}
+    {"n_estimators" : [100,200,300,400],
+    'max_depth' : [-1,2,4,6,8,10],
+    'min_samples_leaf' : [-1,3,5,7,10,12,14],
+    'min_samples_split' : [-1,2,3,5,10,12,14],
+    'n_jobs' :[-1,2,4]},
+    # {'max_depth' : [-1,2,4,6,8,10]},
+    # {'min_samples_leaf' : [-1,3,5,7,10,12,14]},
+    # {'min_samples_split' : [-1,2,3,5,10,12,14]},
+    # {'n_jobs' : [-1,2,4]}
 ]
 
 #2. modeling
