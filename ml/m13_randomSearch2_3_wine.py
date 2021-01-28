@@ -24,10 +24,9 @@ warnings.filterwarnings('ignore')
 dataset = load_wine()
 
 
-x = dataset.iloc[:,:-1]
-y = dataset.iloc[:,-1]
+x = dataset.data
+y = dataset.target
 
-dataset = dataset.to_numpy()
 
 
 print(x.shape)      # (150,4)
@@ -85,8 +84,13 @@ print("걸린시간 : ",(date_now2-date_now1))
 
 
 '''
-Deep learning
-loss :  [0.01415738184005022, 1.0]
-best parameter :  SVC(C=100, gamma=0.001)
-best score :  1.0
+griSearch time
+best score :  0.9444444444444444
+걸린시간 :  0:00:22.362363
+
+start time:  01월28일_16시58분49초
+best parameter :  RandomForestClassifier(max_depth=6)
+best score :  0.9444444444444444
+End time:  01월28일_16시58분56초
+걸린시간 :  0:00:06.794937
 '''

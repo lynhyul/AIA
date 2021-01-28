@@ -85,8 +85,14 @@ print("걸린시간 : ",(date_now2-date_now1))
 
 
 '''
-Deep learning
-loss :  [0.01415738184005022, 1.0]
-best parameter :  SVC(C=100, gamma=0.001)
-best score :  1.0
+griSearch time
+best score :  0.9666666666666667
+걸린시간 :  0:00:18.401929
+
+start time:  01월28일_16시56분15초
+best parameter :  RandomForestClassifier(min_samples_leaf=10)
+best score :  0.9333333333333333
+End time:  01월28일_16시56분26초
+걸린시간 :  0:00:10.931870
+
 '''

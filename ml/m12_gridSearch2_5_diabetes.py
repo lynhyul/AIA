@@ -81,9 +81,10 @@ print("걸린시간 : ",(date_now2-date_now1))
 
 '''
 Deep learning
-loss :  [0.01415738184005022, 1.0]
-
-best parameter :  RandomForestClassifier()
-best score :  0.9666666666666667
+start time:  01월28일_16시50분42초
+best parameter :  RandomForestRegressor(min_samples_leaf=10)
+best score :  0.5947285014491024
+End time:  01월28일_16시51분02초
+걸린시간 :  0:00:19.369636
 
  '''

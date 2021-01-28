@@ -82,8 +82,8 @@ print("End time: ",date_time)
 
 
 '''
-Deep learning
-loss :  [0.01415738184005022, 1.0]
-best parameter :  SVC(C=100, gamma=0.001)
+start time:  01월28일_16시55분56초
+best parameter :  SVC(C=1, kernel='linear')
 best score :  1.0
+End time:  01월28일_16시55분56초
 '''

@@ -24,10 +24,10 @@ warnings.filterwarnings('ignore')
 dataset = load_breast_cancer()
 
 
-x = dataset.iloc[:,:-1]
-y = dataset.iloc[:,-1]
+x = dataset.data
+y = dataset.target
 
-dataset = dataset.to_numpy()
+
 
 
 print(x.shape)      # (150,4)
@@ -85,8 +85,13 @@ print("걸린시간 : ",(date_now2-date_now1))
 
 
 '''
-Deep learning
-loss :  [0.01415738184005022, 1.0]
-best parameter :  SVC(C=100, gamma=0.001)
-best score :  1.0
+griSearch time
+best score :  0.9649122807017544
+걸린시간 :  0:00:27.613850
+
+start time:  01월28일_16시58분19초
+best parameter :  RandomForestClassifier(min_samples_split=3)
+best score :  0.9736842105263158
+End time:  01월28일_16시58분29초
+걸린시간 :  0:00:09.995430
 '''

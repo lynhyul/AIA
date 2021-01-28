@@ -88,10 +88,10 @@ print("걸린시간 : ",(date_now2-date_now1))
 
 
 '''
-Deep learning
-loss :  [0.01415738184005022, 1.0]
-
-best parameter :  RandomForestClassifier()
+start time:  01월28일_16시52분53초
+best parameter :  RandomForestClassifier(max_depth=4)
 best score :  0.9666666666666667
+End time:  01월28일_16시53분11초
+걸린시간 :  0:00:18.401929
 
  '''

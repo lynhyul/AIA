@@ -79,10 +79,10 @@ print("End time: ",date_time)
 print("걸린시간 : ",(date_now2-date_now1))
 
 '''
-Deep learning
-loss :  [0.01415738184005022, 1.0]
-
-best parameter :  RandomForestClassifier()
-best score :  0.9666666666666667
+start time:  01월28일_16시55분07초
+best parameter :  RandomForestRegressor(n_estimators=200)
+best score :  0.8560010723424178
+End time:  01월28일_16시55분28초
+걸린시간 :  0:00:20.740642
 
  '''
