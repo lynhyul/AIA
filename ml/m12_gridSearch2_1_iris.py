@@ -48,7 +48,7 @@ parameters = [
     'max_depth' : [-1,2,4,6,8,10],
     'min_samples_leaf' : [-1,3,5,7,10,12,14],
     'min_samples_split' : [-1,2,3,5,10,12,14],
-    'n_jobs' :[-1,2,4]},
+    'n_jobs' :[-1,2,4]}
     # {'max_depth' : [-1,2,4,6,8,10]},
     # {'min_samples_leaf' : [-1,3,5,7,10,12,14]},
     # {'min_samples_split' : [-1,2,3,5,10,12,14]},
