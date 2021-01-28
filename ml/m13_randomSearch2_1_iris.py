@@ -89,10 +89,10 @@ griSearch time
 best score :  0.9666666666666667
 걸린시간 :  0:00:18.401929
 
-start time:  01월28일_16시56분15초
-best parameter :  RandomForestClassifier(min_samples_leaf=10)
-best score :  0.9333333333333333
-End time:  01월28일_16시56분26초
-걸린시간 :  0:00:10.931870
+start time:  01월28일_17시06분42초
+best parameter :  RandomForestClassifier(min_samples_split=10)
+best score :  0.9666666666666667
+End time:  01월28일_17시06분54초
+걸린시간 :  0:00:11.658986
 
 '''

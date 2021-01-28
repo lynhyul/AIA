@@ -1,5 +1,4 @@
-#다중분류
-# MinMax scaler
+
 
 import numpy as np
 from sklearn.datasets import load_diabetes
