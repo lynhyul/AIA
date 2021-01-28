@@ -41,6 +41,12 @@ print(y.shape)  # (150,3)
 x_train, x_test, y_train, y_test = train_test_split(x,y,random_state=110,
 shuffle = True, train_size = 0.8 )
 
+import datetime
+
+date_now1 = datetime.datetime.now()
+date_time = date_now1.strftime("%m월%d일_%H시%M분%S초")
+print("start time: ",date_time)
+
 kfold = KFold(n_splits=5, shuffle=True)
 
 parameters = [
@@ -67,7 +73,10 @@ print("best parameter : ", model.best_estimator_)
 y_pred = model.predict(x_test) # grid serach
 print("best score : ",r2_score(y_test, y_pred))
 
-
+date_now2 = datetime.datetime.now()
+date_time = date_now2.strftime("%m월%d일_%H시%M분%S초")
+print("End time: ",date_time)
+print("걸린시간 : ",(date_now2-date_now1))
 
 '''
 Deep learning

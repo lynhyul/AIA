@@ -43,6 +43,13 @@ shuffle = True, train_size = 0.8 )
 
 kfold = KFold(n_splits=5, shuffle=True)
 
+import datetime
+
+date_now1 = datetime.datetime.now()
+date_time = date_now1.strftime("%m월%d일_%H시%M분%S초")
+print("start time: ",date_time)
+
+
 parameters = [
     {"n_estimators" : [100,200,300,400,500,600,700] },
     {'max_depth' : [0,2,4,6,8,10]},
@@ -67,6 +74,10 @@ print("best parameter : ", model.best_estimator_)
 y_pred = model.predict(x_test) # grid serach
 print("best score : ",accuracy_score(y_test, y_pred))
 
+date_now2 = datetime.datetime.now()
+date_time = date_now2.strftime("%m월%d일_%H시%M분%S초")
+print("End time: ",date_time)
+print("걸린시간 : ",(date_now2-date_now1))
 
 
 '''
