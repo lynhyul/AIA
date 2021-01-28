@@ -31,7 +31,6 @@ x_test = scaler.transform(x_test)
 for(name, algorithm) in allAlgorithms :
     try:    
         model = algorithm()
-
         model.fit(x_train, y_train)
         y_pred = model.predict(x_test)
         print(name, '의 정답률 : ', r2_score(y_test, y_pred))
