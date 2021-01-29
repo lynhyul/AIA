@@ -34,8 +34,8 @@ print(y)
 print(x.shape)  # (150,4)
 print(y.shape)  # (150,3)
 
-x_train, x_test, y_train, y_test = train_test_split(x,y,random_state=110,
-shuffle = True, train_size = 0.8 )
+# x_train, x_test, y_train, y_test = train_test_split(x,y,random_state=110,
+# shuffle = True, train_size = 0.8 )
 
 kfold = KFold(n_splits=5, shuffle=True)
 
@@ -50,15 +50,8 @@ parameters = [
 # model = SVC()
 model = GridSearchCV(SVC(), parameters, cv=kfold)
 
-#3. fit
-model.fit(x_train, y_train)
+score = cross_val_score(model, x, y, cv=kfold)
 
-#4. evoluate, predict
-print("best parameter : ", model.best_estimator_)
-# best parameter :  SVC(C=1, kernel='linear')
+print("교차검증결과 : ",score)
 
 
-y_pred = model.predict(x_test) # grid serach
-print("best score : ",accuracy_score(y_test, y_pred))
-
-# 1.0
