@@ -58,23 +58,26 @@ for i in scalers:
         model.fit(x_train,y_train)
         date_now2 = datetime.datetime.now()
         results = model.score(x_test,y_test)
-        print(f'{j.__name__}')
+        print("\n",f'{j.__name__}')
         print(f'{i} : ',results)
         print("걸린시간 : ",(date_now2-date_now1))
 
 
 
 '''
-GridSearchCV
-MinMaxScaler() :  0.8597728786730212
-걸린시간 :  0:00:15.639844
-RandomizedSearchCV
-MinMaxScaler() :  0.8608377608340742
-걸린시간 :  0:00:08.579092
-GridSearchCV
-StandardScaler() :  0.8598393984239868
-걸린시간 :  0:00:13.236088
-RandomizedSearchCV
-StandardScaler() :  0.8623496276635605
-걸린시간 :  0:00:07.191752
+ GridSearchCV
+MinMaxScaler() :  0.8572145994577856
+걸린시간 :  0:00:15.815237
+
+ RandomizedSearchCV
+MinMaxScaler() :  0.8567020513656733
+걸린시간 :  0:00:07.348193
+
+ GridSearchCV
+StandardScaler() :  0.8560341682849005
+걸린시간 :  0:00:13.044228
+
+ RandomizedSearchCV
+StandardScaler() :  0.8505354791033841
+걸린시간 :  0:00:09.234971
 '''
