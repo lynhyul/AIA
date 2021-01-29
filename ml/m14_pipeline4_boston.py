@@ -42,29 +42,22 @@ for i in models:
     model = i
     print(f'\n{i}')
     for j in scalers:
-        scaler = j
-        print(f'{j}')
+        scaler = j       
         model = make_pipeline(j, i)
         model.fit(x_train,y_train)
         results = model.score(x_test,y_test)
-        print(results)
+        print(f'{j} : ',results)
 
 '''
 KNeighborsRegressor()
-MinMaxScaler()
-0.7380311256592333
-StandardScaler()
-0.7545891164317223
+MinMaxScaler() :  0.7380311256592333
+StandardScaler() :  0.7545891164317223
 
 RandomForestRegressor()
-MinMaxScaler()
-0.8666060883947169
-StandardScaler()
-0.8509719857840535
+MinMaxScaler() :  0.8549459072741515
+StandardScaler() :  0.8518589414491722
 
 DecisionTreeRegressor()
-MinMaxScaler()
-0.8057574975982594
-StandardScaler()
-0.8120319131887621
+MinMaxScaler() :  0.8032534568083837
+StandardScaler() :  0.7066685452118009
 '''

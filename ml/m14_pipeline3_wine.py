@@ -39,29 +39,22 @@ for i in models:
     model = i
     print(f'\n{i}')
     for j in scalers:
-        scaler = j
-        print(f'{j}')
+        scaler = j       
         model = make_pipeline(j, i)
         model.fit(x_train,y_train)
         results = model.score(x_test,y_test)
-        print(results)
+        print(f'{j} : ',results)
 
 '''
 LinearSVC()
-MinMaxScaler()
-0.9722222222222222
-StandardScaler()
-0.9722222222222222
+MinMaxScaler() :  0.9722222222222222
+StandardScaler() :  0.9722222222222222
 
 SVC()
-MinMaxScaler()
-0.9722222222222222
-StandardScaler()
-0.9722222222222222
+MinMaxScaler() :  0.9722222222222222
+StandardScaler() :  0.9722222222222222
 
 RandomForestClassifier()
-MinMaxScaler()
-0.9444444444444444
-StandardScaler()
-0.9444444444444444
+MinMaxScaler() :  0.9444444444444444
+StandardScaler() :  0.9444444444444444
 '''
