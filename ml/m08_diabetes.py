@@ -64,8 +64,8 @@ model.score : 0.20330666496853378
 r2_score : 0.20330666496853378
 
 RandomForestRegressor()
-model.score : 0.5680139342130576
-r2_score : 0.5680139342130576
+model.score : 0.6073039417066726
+r2_score : 0.6073039417066726
 
 KNeighborsRegressor()
 model.score : 0.47102341020188654

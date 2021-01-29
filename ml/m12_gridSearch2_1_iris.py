@@ -56,11 +56,11 @@ parameters = [
     # 'min_samples_leaf' : [-1,2,14],
     # 'min_samples_split' : [-1,2,14],
     # 'n_jobs' :[-1]}
-    {"n_estimators" : [100,200,300]},
-    {'max_depth' : [-1,2,4,6,8,10]},
+    {"n_estimators" : [100,200,300]},  
+    {'max_depth' : [-1,2,4,6,8,10]},    # 깊이
     {'min_samples_leaf' : [3,5,7,10,12,14]},
     {'min_samples_split' : [2,3,5,10,12,14]},
-    {'n_jobs' : [-1,2,4]}
+    {'n_jobs' : [-1,2,4]}   # cpu를 몇 개 쓸것인지
 ]
 
 #2. modeling

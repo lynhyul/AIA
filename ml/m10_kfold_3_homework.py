@@ -1,57 +1,72 @@
-# 트레인 테스트를 나눈다음에 트레인만 발리데이션 하지말고,
-# kfold 한 후에 나온 값을 트레인 테스트 스플릿을 사용하여
-# 한 번 더 잘라보자 (즉, 순서를 바꿔서 해봐라)
+# train, test 나눈 다음에 train만 발리데이션 하지 말고,
+# kfold한 후에 train_Test_split 사용
 
 import numpy as np
 from sklearn.datasets import load_iris
-import tensorflow as tf
-
-from sklearn.svm import LinearSVC,SVC
+from sklearn.preprocessing import StandardScaler, StandardScaler
+from sklearn.model_selection import train_test_split, KFold, cross_val_score
 from sklearn.metrics import accuracy_score
+
+from sklearn.svm import LinearSVC, SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
+import warnings
 
-from sklearn.model_selection import train_test_split, KFold, cross_val_score
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-
-#x, y = load_iris(return_X_y=True)
-
+warnings.filterwarnings('ignore')
+# 1. 데이터
 dataset = load_iris()
 x = dataset.data
 y = dataset.target
 
-# print(x.shape)      # (150,4)
-# print(y.shape)      # (150,)
-
-# print(x[:5])
-# print(y)
-
-
-# print(y)
-# print(x.shape)  # (150,4)
-# print(y.shape)  # (150,3)
-
 kfold = KFold(n_splits=5, shuffle=True)
+# 2. 모델 구성
 
-print(x.shape,"\n",y.shape) # x = 150,4 / y= 150,
+model = [LinearSVC(), SVC(), KNeighborsClassifier(),RandomForestClassifier(),DecisionTreeClassifier()]
+i = 1
+for train_index, test_index in kfold.split(x):
+    print(str(i)+'번째 kfold split')
+    x_train, x_test = x[train_index], x[test_index]
+    y_train, y_test = y[train_index], y[test_index]
 
-x_train, x_test, y_train, y_test = train_test_split(x,y,random_state=110,
-shuffle = True, train_size = 0.8 )
+    x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, train_size=0.8, shuffle=True, random_state=32)
+    for j in model:
+        score = cross_val_score(j, x_train, y_train, cv=kfold)
+        print('score :',score, f' ({j})')
+    i += 1
 
-print(x_train.shape)    # 120,4
+# 1번째 kfold split
+# score : [0.95       0.84210526 0.94736842 0.94736842 1.        ]  (LinearSVC())
+# score : [0.95       0.94736842 0.89473684 0.89473684 1.        ]  (SVC())
+# score : [1.         0.94736842 0.94736842 0.89473684 0.94736842]  (KNeighborsClassifier())
+# score : [0.95       0.89473684 0.94736842 0.94736842 0.94736842]  (RandomForestClassifier())
+# score : [0.95       1.         0.84210526 0.94736842 0.89473684]  (DecisionTreeClassifier())
 
-#2. modeling
+# 2번째 kfold split
+# score : [1.         1.         0.94736842 0.89473684 1.        ]  (LinearSVC())
+# score : [1.         1.         0.94736842 0.84210526 1.        ]  (SVC())
+# score : [1.         0.94736842 0.89473684 1.         1.        ]  (KNeighborsClassifier())
+# score : [0.95       1.         0.94736842 1.         1.        ]  (RandomForestClassifier())
+# score : [1.         0.94736842 0.94736842 0.78947368 1.        ]  (DecisionTreeClassifier())
 
-model = DecisionTreeClassifier()
+# 3번째 kfold split
+# score : [1.         0.89473684 1.         0.94736842 0.94736842]  (LinearSVC())
+# score : [0.95       0.94736842 1.         1.         0.89473684]  (SVC())
+# score : [0.95       0.94736842 1.         0.94736842 0.89473684]  (KNeighborsClassifier())
+# score : [0.9        0.94736842 1.         0.89473684 1.        ]  (RandomForestClassifier())
+# score : [0.9        0.94736842 1.         0.89473684 1.        ]  (DecisionTreeClassifier())
 
-# train,test split(x)
-# scores = cross_val_score(model, x_train,y, cv = kfold)
-# print('scores : ', scores)
-# scores :  [0.9        0.93333333 0.93333333 0.93333333 1.        ]
+# 4번째 kfold split
+# score : [0.8        0.94736842 1.         0.94736842 1.        ]  (LinearSVC())
+# score : [0.95       1.         0.94736842 0.89473684 0.84210526]  (SVC())
+# score : [0.95       0.94736842 0.89473684 1.         0.94736842]  (KNeighborsClassifier())
+# score : [1.         0.84210526 1.         0.94736842 0.84210526]  (RandomForestClassifier())
+# score : [0.95       0.84210526 0.94736842 0.94736842 1.        ]  (DecisionTreeClassifier())
 
-# train,test split(o)
-scores = cross_val_score(model, x_train,y_train, cv = kfold)
-print('scores : ', scores)
-# scores :  [0.875      0.95833333 0.79166667 0.875      1.        ]
-# scores :  [1.         0.91666667 1.         0.91666667 0.95833333]
+# 5번째 kfold split
+# score : [1.         0.78947368 0.94736842 0.89473684 1.        ]  (LinearSVC())
+# score : [0.95       0.89473684 0.94736842 0.89473684 0.89473684]  (SVC())
+# score : [0.95       0.94736842 0.94736842 1.         0.89473684]  (KNeighborsClassifier())
+# score : [0.95       0.89473684 1.         0.89473684 0.94736842]  (RandomForestClassifier())
+# score : [0.95       0.94736842 0.94736842 0.94736842 0.94736842]  (DecisionTreeClassifier())

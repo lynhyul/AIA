@@ -60,6 +60,7 @@ print("best parameter : ", model.best_estimator_)
 
 y_pred = model.predict(x_test) # grid serach
 print("best score : ",accuracy_score(y_test, y_pred))
+
 # 1.0
 
 

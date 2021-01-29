@@ -36,11 +36,20 @@ kfold = KFold(n_splits=5, shuffle=True)
 
 #2. modeling
 
-model = DecisionTreeClassifier()
+models = [LinearSVC(), SVC(), KNeighborsClassifier(), DecisionTreeClassifier(), RandomForestClassifier()]
+for i in models:
+    model = i
 
+    #3. compile fit
+    model.fit(x,y)
 
-scores = cross_val_score(model, x,y, cv = kfold)
-print('scores : ', scores)
+    #4. evaluation, prediction
+    print(f'\n{i}')
+    y_pred = model.predict(x)
+    # accuracy = accuracy_score(y,y_pred)
+    # print('accuracy_score : ', accuracy)
+    scores = cross_val_score(model, x,y, cv = kfold)
+    print('scores : ', scores)
 # scores :  [0.9        0.93333333 0.93333333 0.93333333 1.        ]
 
 '''
@@ -50,26 +59,20 @@ loss :  [0.01415738184005022, 1.0]
 
 Machine Learning
 
-1. LinearSVC
-result :  0.9
-y_predcit:  [0 0 0 0 0 0]
-y_MaxPredict:  0
-[0 0 0 0 0 0]
+SVC()
+model_score :  0.9733333333333334
+scores :  [0.96666667 1.         1.         0.9        0.96666667]
 
-2. SVC
-result :  1.0
-accuracy_score :  0.3333333333333333
+KNeighborsClassifier()
+model_score :  0.9666666666666667
+scores :  [1.         0.96666667 1.         0.96666667 0.93333333]
 
-3. KNeighborsClassifier
-result :  0.9666666666666667
-accuracy_score :  0.3333333333333333
+DecisionTreeClassifier()
+model_score :  1.0
+scores :  [0.93333333 0.93333333 1.         0.93333333 0.9       ]
 
-4. RandomForestClassifier
-result :  0.9666666666666667
-accuracy_score :  0.56
-
-5. DecisionTreeClassifier
-result :  0.9666666666666667
-accuracy_score :  0.56
+RandomForestClassifier()
+model_score :  1.0
+scores :  [1.         0.96666667 0.93333333 1.         0.86666667]
 
  '''
