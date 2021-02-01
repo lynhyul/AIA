@@ -85,16 +85,16 @@ print("End time: ",date_time)
 print("걸린시간 : ",(date_now2-date_now1))
 
 '''
-best parameter :  XGBClassifier(base_score=0.5, booster='gbtree', colsample_bylevel=0.7,
-              colsample_bynode=1, colsample_bytree=0.9, gamma=0, gpu_id=-1,
-              importance_type='gain', interaction_constraints='',
-              learning_rate=0.1, max_delta_step=0, max_depth=5,
-              min_child_weight=1, missing=nan, monotone_constraints='()',
-              n_estimators=300, n_jobs=2, num_parallel_tree=1,
-              objective='multi:softprob', random_state=0, reg_alpha=0,
-              reg_lambda=1, scale_pos_weight=None, subsample=1,
-              tree_method='exact', validate_parameters=1, verbosity=None)
-best score :  0.9666666666666667
-End time:  02월01일_11시29분58초
-걸린시간 :  0:00:03.211383
+start time:  02월01일_11시45분35초
+best parameter :  XGBRegressor(base_score=0.5, booster='gbtree', colsample_bylevel=0.6,
+             colsample_bynode=1, colsample_bytree=1, gamma=0, gpu_id=-1,
+             importance_type='gain', interaction_constraints='',
+             learning_rate=0.3, max_delta_step=0, max_depth=5,
+             min_child_weight=1, missing=nan, monotone_constraints='()',
+             n_estimators=200, n_jobs=2, num_parallel_tree=1, random_state=0,
+             reg_alpha=0, reg_lambda=1, scale_pos_weight=1, subsample=1,
+             tree_method='exact', validate_parameters=1, verbosity=None)
+best score :  0.8667315909055684
+End time:  02월01일_11시45분39초
+걸린시간 :  0:00:03.868639
 '''
