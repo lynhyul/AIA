@@ -1,3 +1,5 @@
+# DecisionTreeRegressor
+
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.datasets import load_wine
 from sklearn.model_selection import train_test_split
@@ -23,8 +25,11 @@ print(model.feature_importances_)   # [0.01710498 0.         0.57164695 0.411248
 print("acc : ", acc)                # acc :  0.9666666666666667
 
 '''
-[0.01681732 0.01681732 0.04675543 0.91960993]
-acc :  0.9666666666666667
+['alcohol', 'malic_acid', 'ash', 'alcalinity_of_ash', 'magnesium', 'total_phenols', 'flavanoids', 'nonflavanoid_phenols', 'proanthocyanins', 'color_intensity', 'hue', 'od280/od315_of_diluted_wines', 'proline']
+[0.04159793 0.         0.         0.         0.         0.
+ 0.4431152  0.         0.02871152 0.         0.         0.05749341
+ 0.42908194]
+acc :  0.8333333333333334
 '''
 
 import matplotlib.pyplot as plt

@@ -1,3 +1,6 @@
+# DecisionTreeRegressor
+
+
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
@@ -24,8 +27,12 @@ print(model.feature_importances_)   # [0.01710498 0.         0.57164695 0.411248
 print("acc : ", acc)                # acc :  0.9666666666666667
 
 '''
-[0.01681732 0.01681732 0.04675543 0.91960993]
-acc :  0.9666666666666667
+[0.         0.01904446 0.         0.         0.         0.
+ 0.         0.01734406 0.         0.         0.01872567 0.
+ 0.         0.01716857 0.         0.         0.         0.
+ 0.         0.0018662  0.72642684 0.03971415 0.00714167 0.01404112
+ 0.00888742 0.         0.03508585 0.09455398 0.         0.        ]
+acc :  0.9473684210526315
 '''
 
 import matplotlib.pyplot as plt
@@ -43,11 +50,3 @@ def plot_feature_importances_dataset(model) :
 plot_feature_importances_dataset(model)
 plt.show()
 
-'''
-[0.         0.01904446 0.         0.         0.         0.
- 0.         0.01734406 0.         0.         0.01872567 0.
- 0.         0.01716857 0.         0.         0.         0.
- 0.         0.0018662  0.72642684 0.03971415 0.00714167 0.01404112
- 0.00888742 0.         0.03508585 0.09455398 0.         0.        ]
-acc :  0.9473684210526315
-'''

@@ -1,3 +1,5 @@
+# DecisionTreeRegressor
+
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.datasets import load_diabetes
 from sklearn.model_selection import train_test_split
@@ -23,8 +25,10 @@ print(model.feature_importances_)   # [0.01710498 0.         0.57164695 0.411248
 print("acc : ", acc)                # acc :  0.9666666666666667
 
 '''
-[0.01681732 0.01681732 0.04675543 0.91960993]
-acc :  0.9666666666666667
+['age', 'sex', 'bmi', 'bp', 's1', 's2', 's3', 's4', 's5', 's6']
+[0.0395393  0.         0.28335845 0.02180811 0.04823951 0.06151074
+ 0.01678141 0.00386083 0.51529444 0.00960722]
+acc :  0.5147810074351071
 '''
 
 import matplotlib.pyplot as plt
