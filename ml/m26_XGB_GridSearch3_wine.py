@@ -65,7 +65,7 @@ parameters = [
 #2. modeling
 
 # model = SVC()
-model = GridSearchCV(XGBClassifier(n_jobs = 2), parameters, cv=kfold)
+model = GridSearchCV(XGBClassifier(n_jobs=2,eval_metric='mlogloss') , parameters, cv=kfold)
 
 #3. fit
 model.fit(x_train, y_train)

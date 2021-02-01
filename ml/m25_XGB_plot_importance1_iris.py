@@ -44,7 +44,7 @@ new_data1 = new_data.to_numpy()
 
 x2_train, x2_test, y2_train, y2_test = train_test_split(new_data1, dataset.target, train_size=0.8, random_state=32)
 # model2 = GradientBoostingClassifier(max_depth=4)
-model2 = XGBClassifier(n_jobs=-1)   
+model2 = XGBClassifier(n_jobs=2 ,eval_metric='mlogloss')   
 model2.fit(x2_train,y2_train)
 acc2 = model2.score(x2_test, y2_test)
 print("개선 이후의 acc :", acc2)
@@ -70,13 +70,9 @@ plt.show()
 # plt.show()
 
 '''
-개선 이전의 acc : 1.0
+걸린시간 :  0:00:00.069784
+[0.22486254]
+개선 이전의 acc : 0.9666666666666667
 개선 이후의 acc : 1.0
-
-걸린시간 :  0:00:00.079758 = -1
-걸린시간 :  0:00:00.073801 = 1
-걸린시간 :  0:00:00.070811 = 2
-걸린시간 :  0:00:00.075827 = 4
-걸린시간 :  0:00:00.074800 = 8
 
 '''
