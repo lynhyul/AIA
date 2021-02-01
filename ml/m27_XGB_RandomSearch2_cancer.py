@@ -64,11 +64,10 @@ parameters = [
 
 #2. modeling
 
-# model = SVC()
-model = RandomizedSearchCV(XGBClassifier(n_jobs=2,eval_metric='mlogloss') , parameters, cv=kfold)
+model = RandomizedSearchCV(XGBClassifier(n_jobs=2,use_label_encoder=False) , parameters, cv=kfold)
 
 #3. fit
-model.fit(x_train, y_train)
+model.fit(x_train, y_train,eval_metric='mlogloss')
 
 #4. evoluate, predict
 print("best parameter : ", model.best_estimator_)

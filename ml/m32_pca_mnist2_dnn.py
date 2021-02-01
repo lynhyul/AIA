@@ -1,3 +1,10 @@
+# m31로 만든 1.0 이상의 n_component= 1를 사용하여
+# dnn모델을 만들어보자
+
+# mnist dnn보다 성능을 좋게 만들어봐라
+# cnn과 비교!!
+
+
 # 주말과제
 # dense 모델로 구성 input_shape = (28*28, )
 
@@ -5,6 +12,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 
 from tensorflow.keras.datasets import mnist
 
@@ -34,12 +42,18 @@ y_test = one.transform(y_test).toarray()
 print(y_train.shape)            # (60000,10)
 print(y_test.shape)            # (10000,10)
 
+pca = PCA(n_components=1)
+x_train = pca.fit_transform(x_train)  # merge fit,transform
+x_test = pca.transform(x_test)
+
+print(x_train.shape)
+
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout
 
 model = Sequential()
 
-model.add(Dense(512, activation='relu', input_shape=(28*28,)))
+model.add(Dense(512, activation='relu', input_shape=(1,)))
 model.add(Dense(256, activation= 'relu'))
 model.add(Dense(128, activation= 'relu'))
 model.add(Dense(64, activation= 'relu'))
@@ -65,22 +79,7 @@ print("y_test : ",y_test[:10])
 print("y_test : ",y_test[:10])
 
 
-#완성하시오.
-#지표는 acc /// 0.985 이상
-
-
-
-
-#응용
-# y_test 10개와 y_test 10개를 출력하시오
-# y_test[:10] = (?,?,?,?,?,?,?,?,?,?)
-# y_test[:10] = (?,?,?,?,?,?,?,?,?,?)
-
-
-
-
-
-
-# plt.imshow(x_train[0], 'gray')
-# plt.show()
-
+'''
+기존의 DNN : loss :  [0.9793000221252441]
+PCA적용 후의 DNN :  loss :  [0.9789000153541565]
+'''

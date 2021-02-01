@@ -39,8 +39,8 @@ new_data1 = new_data.to_numpy()
 
 x2_train, x2_test, y2_train, y2_test = train_test_split(new_data1, dataset.target, train_size=0.8, random_state=32)
 # model2 = GradientBoostingRegressor(max_depth=4)   
-model2 = XGBRegressor(n_jobs=-1)   
-model2.fit(x2_train,y2_train)
+model2 = XGBRegressor(n_jobs=-1,use_label_encoder=False)   
+model2.fit(x2_train,y2_train,eval_metric='logloss')
 acc2 = model2.score(x2_test, y2_test)
 print("개선 이후의 acc :", acc2)
 
