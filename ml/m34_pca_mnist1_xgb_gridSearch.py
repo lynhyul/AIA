@@ -46,13 +46,14 @@ x_train = pca.fit_transform(x_train)  # merge fit,transform
 x_test = pca.transform(x_test)
 
 parameters = [
-    {"n_estimators":[1000], "learning_rate":[0.017]
-    ,"max_depth":[-1,4],"colsample_bytree":[1],
-     "colsample_bylevel":[0.6,0.9] }
+    {"n_estimators":[300], "learning_rate":[0.017]
+    ,"max_depth":[4,8],"colsample_bytree":[1],
+     "colsample_bylevel":[0.9] }
 ]
 
 #2. modeling
 
+#n_estimators=10000, bagging_fraction=0.7, learning_rate=0.017, subsample=0.7
 
 models = [GridSearchCV,RandomizedSearchCV]
 for i in models:
@@ -65,7 +66,7 @@ for i in models:
     end = datetime.datetime.now()
     print("걸린시간 : ",(start-end))            
     results = model.score(x_test,y_test)
-    print("best parameter : ", model.best_estimator_)
+    # print("best parameter : ", model.best_estimator_)
     print(f'{i.__name__}.acc : ',results)
 
 

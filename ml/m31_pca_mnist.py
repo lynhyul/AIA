@@ -17,17 +17,18 @@ print(x_test.shape)   # 10000, 28,28
 
 x_train = x_train.reshape(x_train.shape[0],28*28)
 x_test = x_test.reshape(x_test.shape[0],28*28)
+x = x.reshape(x.shape[0],28*28)
 
 pca = PCA()
-pca.fit(x_train)
+pca.fit(x)
 cumsum = np.cumsum(pca.explained_variance_ratio_)
 # print(cumsum)   
 '''
 d : 154
 '''
 
-d = np.argmax(cumsum >= 1.0)+1
-print("cumsum >= 0.95", cumsum>=1.0)
+d = np.argmax(cumsum >= 1)+1
+print("cumsum >= 0.95", cumsum>=1.)
 print("d :", d)
 
 # pca = PCA(n_components=154)

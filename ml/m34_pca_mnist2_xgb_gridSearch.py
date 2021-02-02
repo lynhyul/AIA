@@ -29,19 +29,19 @@ x_train = x_train.reshape(x_train.shape[0],28*28)/255
 x_test = x_test.reshape(x_test.shape[0],28*28)/255
 
 
-pca = PCA()
-pca.fit(x_train)
-cumsum = np.cumsum(pca.explained_variance_ratio_)
-# print(cumsum)   
-'''
-d : 154
-'''
+# pca = PCA()
+# pca.fit(x_train)
+# cumsum = np.cumsum(pca.explained_variance_ratio_)
+# # print(cumsum)   
+# '''
+# d : 154
+# '''
 
-d = np.argmax(cumsum >= 1.0)+1
-print("cumsum >= 0.95", cumsum>= 1.0)
-print("d :", d)
+# d = np.argmax(cumsum >= 1.0)+1
+# print("cumsum >= 0.95", cumsum>= 1.0)
+# print("d :", d)
 
-pca = PCA(n_components=1)
+pca = PCA(n_components=714)
 x_train = pca.fit_transform(x_train)  # merge fit,transform
 x_test = pca.transform(x_test)
 

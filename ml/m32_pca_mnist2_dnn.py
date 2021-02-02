@@ -42,7 +42,7 @@ y_test = one.transform(y_test).toarray()
 print(y_train.shape)            # (60000,10)
 print(y_test.shape)            # (10000,10)
 
-pca = PCA(n_components=1)
+pca = PCA(n_components=714)
 x_train = pca.fit_transform(x_train)  # merge fit,transform
 x_test = pca.transform(x_test)
 

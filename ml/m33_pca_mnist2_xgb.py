@@ -38,19 +38,19 @@ scaler.fit(x_train)
 x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 
-pca = PCA()
-pca.fit(x_train)
-cumsum = np.cumsum(pca.explained_variance_ratio_)
-# print(cumsum)   
-'''
-d : 154
-'''
+# pca = PCA()
+# pca.fit(x)
+# cumsum = np.cumsum(pca.explained_variance_ratio_)
+# # print(cumsum)   
+# '''
+# d : 154
+# '''
 
-d = np.argmax(cumsum >= 1.0)+1
-print("cumsum >= 0.95", cumsum>=1.0)
-print("d :", d)
+# d = np.argmax(cumsum >= 1.0)+1
+# print("cumsum >= 0.95", cumsum>=1.0)
+# print("d :", d)
 
-pca = PCA(n_components=1)
+pca = PCA(n_components=714)
 x_train = pca.fit_transform(x_train)  # merge fit,transform
 x_test = pca.transform(x_test)
 
