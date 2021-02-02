@@ -18,16 +18,21 @@ test = pd.read_csv('../data/csv/practice/test.csv')
 
 from sklearn.model_selection import train_test_split
 
+
 x_train = train.drop(['id', 'digit', 'letter'], axis=1).values
 x_train = x_train.reshape(-1, 28, 28, 1)
 
-x_train = x_train/255
+x_train = x_train
 x_train = x_train.astype('float32')
 
-
-x_train = x_train.reshape(-1, 28*28)
 y_train = train['digit']
 
+
+x_train1, x_test1, y_train1, y_test1 = train_test_split(x_train,y_train, test_size=0.2, shuffle = True,
+                                            random_state = 110) 
+
+x_train1 = x_train1.reshape(-1,28*28)/255
+x_test1 = x_test1.reshape(-1,28*28)/255
 
 x_test = test.drop(['id', 'letter'], axis=1).values
 x_test = x_test.reshape(-1, 28*28)
@@ -38,57 +43,58 @@ x_test = x_test/255
 # cumsum = np.cumsum(pca.explained_variance_ratio_)
 
 
-# # print(cumsum)   
-# '''
-# d : 277
-# '''
+# print(cumsum)   
+'''
+d : 277
+'''
 
-# d = np.argmax(cumsum >= 0.99)+1
-# print("cumsum >= 0.95", cumsum>=0.99)
+# d = np.argmax(cumsum >= 0.99999)+1
+# print("cumsum >= 0.95", cumsum>=0.99999)
 # print("d :", d)
 
-pca = PCA(n_components=277)
-x_train = pca.fit_transform(x_train)
-x_test = pca.transform(x_test)  # merge fit,transform
+pca = PCA(n_components=752)
+x_train1 = pca.fit_transform(x_train1)
+x_test1 = pca.transform(x_test1)  # merge fit,transform
 
 
 
-print(y_train.shape)
-print(x_train.shape)
+# print(y_train.shape)
+# print(x_train.shape)
+# print(x_test.shape)
 
 model = XGBClassifier(n_estimators=100, learning_rate=0.017,n_jobs=8)
-# model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-model.fit(x_train, y_train, verbose=1, eval_metric='mlogloss')
+# # model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.fit(x_train1, y_train1, verbose=1, eval_metric='mlogloss')
 
-acc =model.score(x_train,y_train)
+acc =model.score(x_test1,y_test1)
 print(acc)
 
-predict = model.predict(x_test)
-print(predict)
+# predict = model.predict(x_test)
+# print(predict)
 
-# #(1) Save
-# import pickle
-# # pickle.dump(model, open('../data/xgb_save/m39.pikle.data','wb'))
-# # print('save complete')
-# import joblib
-# # joblib.dump(model,'../data/xgb_save/m40.joblib.data')
-# model.save_model("../data/xgb_save/dacon.xgb.model")
-
-
+# # #(1) Save
+# # import pickle
+# # # pickle.dump(model, open('../data/xgb_save/m39.pikle.data','wb'))
+# # # print('save complete')
+# # import joblib
+# # # joblib.dump(model,'../data/xgb_save/m40.joblib.data')
+# # model.save_model("../data/xgb_save/dacon.xgb.model")
 
 
-# #2. modeling
+
+
+# # #2. modeling
 
 
 # submission = pd.read_csv('../data/csv/practice/submission.csv')
 # submission['digit'] = model.predict(x_test)
 # submission.head()
 
-# submission.to_csv('../data/csv/practice/baseline2.csv', index=False)
+# submission.to_csv('../data/csv/practice/baseline.csv', index=False)
 
 
 
-# idx = 318
+# idx = 300
 # img = train.loc[idx, '0':].values.reshape(28, 28).astype(int)
 # digit = train.loc[idx, 'digit']
 # letter = train.loc[idx, 'letter']
