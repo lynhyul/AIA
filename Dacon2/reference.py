@@ -30,19 +30,19 @@ test2 = test2.reshape(-1,28,28,1)
 train2 = train2/255.0
 test2 = test2/255.0
 
-# show augmented image data
-sample_data = train2[100].copy()
-sample = expand_dims(sample_data,0)
-sample_datagen = ImageDataGenerator(height_shift_range=(-1,1), width_shift_range=(-1,1))
-sample_generator = sample_datagen.flow(sample, batch_size=1)
+# # show augmented image data
+# sample_data = train2[100].copy()
+# sample = expand_dims(sample_data,0)
+# sample_datagen = ImageDataGenerator(height_shift_range=(-1,1), width_shift_range=(-1,1))
+# sample_generator = sample_datagen.flow(sample, batch_size=1)
 
-plt.figure(figsize=(16,10))
+# plt.figure(figsize=(16,10))
 
-for i in range(9) : 
-    plt.subplot(3,3,i+1)
-    sample_batch = sample_generator.next()
-    sample_image=sample_batch[0]
-    plt.imshow(sample_image.reshape(28,28))
+# for i in range(9) : 
+#     plt.subplot(3,3,i+1)
+#     sample_batch = sample_generator.next()
+#     sample_image=sample_batch[0]
+#     plt.imshow(sample_image.reshape(28,28))
 
 
 # from sklearn.model_selection import train_test_split
@@ -134,5 +134,4 @@ for train_index, valid_index in skf.split(train2,train['digit']) :
     print(nth, '번째 학습을 완료했습니다.')
 
 sub['digit'] = result.argmax(1)
-sub
-sub.to_csv('../data/csv/practice/Dacon1.csv',index=False)
+sub.to_csv('../data/csv/practice/Dacon3.csv',index=False)
