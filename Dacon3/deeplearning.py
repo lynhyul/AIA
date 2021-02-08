@@ -50,12 +50,12 @@ y = pd.read_csv('../data/csv/Dacon3/dirty_mnist_2nd_answer.csv')
 
 sub = pd.read_csv('../data/csv/Dacon3/sample_submission.csv')
 
-y = y.iloc[:20000,1:]
+y = y.iloc[:10000,1:]
 # # y = y['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 
 # #       'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'] 
 
 y = y.to_numpy()
-x = x[:20000,:,:]
+x = x[:10000,:,:]
 
 #전처리
 x = x.reshape(-1,256,256,1)/255.
@@ -95,7 +95,7 @@ idg2 = ImageDataGenerator()
 - fill_mode 이미지를 회전, 이동하거나 축소할 때 생기는 공간을 채우는 방식
 '''
 
-train_generator = idg.flow(x_train,y_train,batch_size=16, seed = 2048)
+train_generator = idg.flow(x_train,y_train,batch_size=16, seed = 20000)
 # seed => random_state
 valid_generator = idg2.flow(x_test,y_test)
 test_generator = idg2.flow(x_pred,shuffle=False)
@@ -136,9 +136,9 @@ model.compile(loss="binary_crossentropy", optimizer=Adam(lr=0.002,epsilon=None),
 learning_history = model.fit_generator(train_generator,epochs=400, 
     validation_data=valid_generator, callbacks=[early_stopping,lr])
 
-
-
-
+result = model.predict_generator(test_generator,verbose=True)
+sub.iloc[:,1:] = result
+sub.to_csv('../data/csv/Dacon3/Dacon1.csv',index=False)
 # skf = StratifiedKFold(n_splits=5, random_state=42, shuffle=True)
 
 # val_loss_min = []
