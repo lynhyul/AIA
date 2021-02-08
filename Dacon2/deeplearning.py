@@ -8,6 +8,7 @@ from keras import Sequential
 from keras.layers import *
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.optimizers import Adam,SGD
+from sklearn.model_selection import train_test_split
 
 
 
@@ -20,31 +21,42 @@ sub = pd.read_csv('../data/csv/practice/submission.csv')
 temp = pd.DataFrame(train)
 test_df = pd.DataFrame(test)
 
-x = temp.iloc[:,3:]/255.
-x_test = test_df.iloc[:,2:]/255.
-y = train['digit']
+
+#데이터 지정 및 전처리
+x = train.drop(['id','digit','letter'],1)
+x_test = test.drop(['id','letter'],1)
+y = train['digit']  # target data
+
 # y1 = np.zeros((len(y), len(y.unique())))
 # for i, digit in enumerate(y):
 #     y1[i, digit] = 1
 
-x = x.to_numpy()
-x_pred = x_test.to_numpy()
 
+x = x.values
+x_test = x_test.values
+
+x = x.reshape(-1,28,28,1)
+x_test = x_test.reshape(-1,28,28,1)
+
+x = np.array(x)
+x_pred = np.array(x_test)
+
+x = x/255.0
+x_pred = x_pred/255.0
 
 print(x.shape)
 print(y.shape)
 
 
-x = x.reshape(-1,28,28,1)
-x_pred = x_pred.reshape(-1,28,28,1)
 
 idg = ImageDataGenerator(
-    height_shift_range=(-1,1),
-    width_shift_range=(-1,1))
-    # rotation_range=40,
-    # shear_range=0.2,
-    # zoom_range=0.2,
-    # horizontal_flip=True,)
+    # rotation_range=10, acc 하락
+    width_shift_range=(-1,1),   # 0.1 => acc 하락
+    height_shift_range=(-1,1),  # 0.1 => acc 하락
+    # rotation_range=40, acc 하락 
+    shear_range=0.2)    # 현상유지
+    # zoom_range=0.2, acc 하락
+    # horizontal_flip=True)
 
 idg2 = ImageDataGenerator()
 
@@ -65,7 +77,7 @@ idg2 = ImageDataGenerator()
 
 
 
-skf = StratifiedKFold(n_splits=20, random_state=42, shuffle=True)
+skf = StratifiedKFold(n_splits=120, random_state=42, shuffle=True)
 
 val_loss_min = []
 result = 0
@@ -73,36 +85,35 @@ nth = 0
 
 for train_index, valid_index in skf.split(x,y) :
     
-    mc = ModelCheckpoint('../data/modelcheckpoint/Dacon3.h5',save_best_only=True, verbose=1)
+    mc = ModelCheckpoint('../data/modelcheckpoint/Dacon8.h5',save_best_only=True, verbose=1)
     
     x_train = x[train_index]
     x_valid = x[valid_index]    
     y_train = y[train_index]
     y_valid = y[valid_index]
+    
 
-
-    train_generator = idg.flow(x_train,y_train,batch_size=8)
+    train_generator = idg.flow(x_train,y_train,batch_size=16, seed = 2048)
+    # seed => random_state
     valid_generator = idg2.flow(x_valid,y_valid)
     test_generator = idg2.flow(x_pred,shuffle=False)
     model = Sequential()
 
-    model.add(Conv2D(filters = 128, kernel_size =(4,4), activation='relu', padding = 'same', strides = 1, 
+    model.add(Conv2D(filters = 16, kernel_size =(3,3), activation='relu', padding = 'same', 
                                             input_shape=(28,28,1)))
     model.add(BatchNormalization())                                  
-    model.add(Conv2D(filters = 64, kernel_size =(3,3), padding = 'same', activation='relu'))
-    model.add(BatchNormalization())
-    model.add(Conv2D(filters = 64, kernel_size =(3,3), padding = 'same', activation='relu'))
-    model.add(BatchNormalization())
     model.add(Conv2D(filters = 32, kernel_size =(3,3), padding = 'same', activation='relu'))
+    model.add(BatchNormalization())
+    model.add(Conv2D(filters = 32, kernel_size =(5,5), padding = 'same', activation='relu'))
+    model.add(BatchNormalization())
+    model.add(Conv2D(filters = 32, kernel_size =(5,5), padding = 'same', activation='relu'))
     model.add(BatchNormalization())
     model.add(MaxPooling2D(2,2))
 
                                
-    model.add(Conv2D(filters = 16, kernel_size =(2,2), padding = 'same', activation='relu'))
+    model.add(Conv2D(filters = 64, kernel_size =(3,3), padding = 'same', activation='relu'))
     model.add(BatchNormalization())
-    model.add(Conv2D(filters = 16, kernel_size =(2,2), padding = 'same', activation='relu'))
-    model.add(BatchNormalization())
-    model.add(Conv2D(filters = 8, kernel_size =(2,2), padding = 'same', activation='relu'))
+    model.add(Conv2D(filters = 64, kernel_size =(5,5), padding = 'same', activation='relu'))
     model.add(BatchNormalization())
     model.add(MaxPooling2D(2,2))
 
@@ -115,17 +126,17 @@ for train_index, valid_index in skf.split(x,y) :
     model.add(Dense(10, activation='softmax'))
 
     from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
-    early_stopping = EarlyStopping(monitor='loss', patience= 120, mode = 'auto')
-    lr = ReduceLROnPlateau(patience= 60, mode = 'auto', factor=0.5)
+    early_stopping = EarlyStopping(patience= 160)
+    lr = ReduceLROnPlateau(patience= 90, factor=0.5)
 
     model.compile(loss='sparse_categorical_crossentropy', optimizer=Adam(lr=0.002,epsilon=None),
                     metrics=['acc'])
-    learning_history = model.fit_generator(train_generator,epochs=1000, 
+    learning_history = model.fit_generator(train_generator,epochs=2000, 
         validation_data=valid_generator, callbacks=[early_stopping,lr,mc])
     
     # predict
-    model.load_weights('../data/modelcheckpoint/Dacon3.h5')
-    result += model.predict_generator(test_generator,verbose=True)/20
+    model.load_weights('../data/modelcheckpoint/Dacon8.h5')
+    result += model.predict_generator(test_generator,verbose=True)/120
     
     # save val_loss
     hist = pd.DataFrame(learning_history.history)
@@ -135,7 +146,7 @@ for train_index, valid_index in skf.split(x,y) :
     print(nth, '번째 학습을 완료했습니다.')
 
 sub['digit'] = result.argmax(1)
-sub.to_csv('../data/csv/practice/Dacon4.csv',index=False)
+sub.to_csv('../data/csv/practice/Dacon8.csv',index=False)
 
 
 
