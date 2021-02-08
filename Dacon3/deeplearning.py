@@ -57,16 +57,18 @@ y = y.iloc[:20000,1:]
 y = y.to_numpy()
 x = x[:20000,:,:]
 
+#전처리
 x = x.reshape(-1,256,256,1)/255.
 x_pred = x_pred.reshape(-1,256,256,1)/255.
 
+#노이즈 제거?
 threshold = 1
 x[x < threshold] = 0
 x_pred[x_pred <threshold] = 0
 x_train, x_test, y_train, y_test = train_test_split(x,y,train_size=0.8)
 
 
-
+# 이미지 증폭
 idg = ImageDataGenerator(
     # rotation_range=10, acc 하락
     width_shift_range=(-1,1),   # 0.1 => acc 하락
