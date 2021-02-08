@@ -53,8 +53,9 @@ def create_hyperparmeters() :
     # batches = [10, 20, 30, 40, 50]
     activation = ['prelu','relu']
     node = [1,2,4]
-    lr = [0.001,0.017,0.002]
-    return {"activation" : activation, "node" : node, "lr" : lr}   
+    validation_split = [0.1,0.2]
+    lr = [0.001,0.002]
+    return {"activation" : activation, "node" : node, "lr" : lr, 'validation_split' : validation_split}   
             # "batch_size" : batches,  
 
 
@@ -64,7 +65,7 @@ hyperparmeters = create_hyperparmeters()
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
-es = EarlyStopping(patience=10)
+es = EarlyStopping(monitor = 'val_loss',patience=10)
 # lr = ReduceLROnPlateau(patience=5, factor=0.5)
 model2 = KerasClassifier(build_fn=build_model, verbose = 1)
 
@@ -72,7 +73,7 @@ from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
 search = RandomizedSearchCV(model2,hyperparmeters,cv =3)
 
-search.fit(x_train, y_train,verbose = 1, batch_size=128, callbacks = [es])
+search.fit(x_train, y_train,verbose = 1, batch_size=128, callbacks = [es], epochs = 100)
 
 print(search.best_params_)  # 선택한 파라미터중에서 가장 좋은거
 

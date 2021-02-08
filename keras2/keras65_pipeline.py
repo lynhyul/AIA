@@ -1,7 +1,14 @@
+# 61번을 파이프라인으로 구현
+
+
 import numpy as np
 from tensorflow.keras.models import Sequential,Model
 from tensorflow.keras.layers import Dense, Dropout, Input
 from tensorflow.keras.datasets import mnist
+
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+from sklearn.pipeline import Pipeline, make_pipeline
 
 (x_train, y_train), (x_test,y_test) = mnist.load_data()
 
@@ -30,33 +37,55 @@ def build_model(drop=0.5, optimizer = 'adam') :
     return model
 
 def create_hyperparmeters() :
-    batches = [10, 20, 30, 40, 50]
-    opitmizer = ['rmsprop', 'adam', 'adadelta']
-    dropout = [0.1,0.2,0.3]
-    return {"batch_size" : batches, "optimizer" : opitmizer,
-            "drop": dropout}    
+    # batches = [10, 20, 30, 40, 50]
+    opitmizer = ['rmsprop', 'adam']
+    dropout = [0.2]
+    validation_split = [0.1,0.2,0.3]
+    return {"optimizer" : opitmizer,
+            "drop": dropout, "validation_split" : validation_split}    
 
 
 hyperparmeters = create_hyperparmeters()
 # model2 = build_model()    타입오류
 
+
+
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
-model2 = KerasClassifier(build_fn=build_model, verbose = 1)
+model2 = KerasClassifier(build_fn=build_model, verbose = 1, epochs=100)
 
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
-search = RandomizedSearchCV(model2,hyperparmeters,cv =3)
+mc = ModelCheckpoint('../data/modelcheckpoint/hyper1.h5',save_best_only=True, verbose=1)
+es = EarlyStopping(monitor = 'val_loss',patience=5)
+lr = ReduceLROnPlateau(monitor = 'val_loss', patience=3, factor=0.5)
 
-search.fit(x_train, y_train,verbose = 1)
+pipe = make_pipeline(MinMaxScaler(), model2()) 
+# Pipeline(steps=[('minmaxscaler', MinMaxScaler()), ('svc', SVC())])
+
+  
+search = GridSearchCV(pipe, hyperparmeters, cv=5)
+
+search.fit(x_train,y_train,callbacks = [es,lr,mc])
+
+results = search.score(x_test,y_test)
+print(results)
+
+# pipe = make_pipeline(MinMaxScaler(), RandomForestClassifier()) 
 
 print(search.best_params_)  # 선택한 파라미터중에서 가장 좋은거
-# {'optimizer': 'adam', 'drop': 0.2, 'batch_size': 50}
-print(search.best_estimator_)   # 전체 파라미터 중에서 가장 좋은거
+
+# print(search.best_estimator_)   # 전체 파라미터 중에서 가장 좋은거
 # <tensorflow.python.keras.wrappers.scikit_learn.KerasClassifier object at 0x000001CA15E32C40>
+
 print(search.best_score_)   # 밑에 있는 .score랑은 결과가 다르게 나온다.
-# 0.9548166592915853
 
-acc = search.score(x_test,y_test)
-print("최종 스코어 : ",acc)
 
-# 최종 스코어 :  0.9603999853134155
+
+
+'''
+{'validation_split': 0.2, 'optimizer': 'adam', 'drop': 0.2}
+0.979450007279714
+313/313 [==============================] - 0s 1ms/step - loss: 0.0769 - acc: 0.9826
+최종 스코어 :  0.9825999736785889
+'''

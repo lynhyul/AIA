@@ -40,7 +40,8 @@ def create_hyperparmeters() :
     activation = ['relu','tanh','linear']
     node = [1,2,4]
     lr = [0.001,0.017,0.002]
-    return {"activation" : activation, "node" : node, "lr" : lr}   
+    validation_split = [0.1,0.2,0.3]
+    return {"activation" : activation, "node" : node, "lr" : lr, 'validation_split' : validation_split}   
             # "batch_size" : batches,  
 
 
@@ -52,7 +53,7 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 es = EarlyStopping(patience=10)
 # lr = ReduceLROnPlateau(patience=5, factor=0.5)
-model2 = KerasClassifier(build_fn=build_model, verbose = 1)
+model2 = KerasClassifier(build_fn=build_model, verbose = 1, epochs = 100)
 
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
@@ -61,13 +62,17 @@ search = RandomizedSearchCV(model2,hyperparmeters,cv =3)
 search.fit(x_train, y_train,verbose = 1, batch_size=128, callbacks = [es])
 
 print(search.best_params_)  # 선택한 파라미터중에서 가장 좋은거
-# {'optimizer': 'adam', 'drop': 0.2, 'batch_size': 50}
+
 # print(search.best_estimator_)   # 전체 파라미터 중에서 가장 좋은거
 # <tensorflow.python.keras.wrappers.scikit_learn.KerasClassifier object at 0x000001CA15E32C40>
+
 print(search.best_score_)   # 밑에 있는 .score랑은 결과가 다르게 나온다.
-# 0.9548166592915853
 
 acc = search.score(x_test,y_test)
 print("최종 스코어 : ",acc)
 
-# 최종 스코어 :  0.9603999853134155
+'''
+0.8978666663169861
+313/313 [==============================] - 1s 3ms/step - loss: 0.2065 - acc: 0.9522
+최종 스코어 :  0.9521999955177307
+'''
