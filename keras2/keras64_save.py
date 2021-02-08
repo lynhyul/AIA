@@ -11,9 +11,10 @@
 
 
 import numpy as np
-from tensorflow.keras.models import Sequential,Model
+from tensorflow.keras.models import Sequential,Model, load_model
 from tensorflow.keras.layers import Dense, Dropout, Input
 from tensorflow.keras.datasets import mnist
+from sklearn.metrics import accuracy_score
 
 (x_train, y_train), (x_test,y_test) = mnist.load_data()
 
@@ -69,7 +70,9 @@ search = RandomizedSearchCV(model2,hyperparmeters,cv =3)
 
 search.fit(x_train, y_train,verbose = 1, callbacks = [es,lr,mc])
 
-model2.save('../data/h5/keras64_save.h5')
+search.best_estimator_.model.save('../data/xgb_save/keras64.h5')
+
+# model2.save('../data/h5/keras64_save.h5')
 
 print(search.best_params_)  # 선택한 파라미터중에서 가장 좋은거
 
@@ -82,9 +85,16 @@ print(search.best_score_)   # 밑에 있는 .score랑은 결과가 다르게 나
 acc = search.score(x_test,y_test)
 print("최종 스코어 : ",acc)
 
-import pickle
-pickle.dump(search, open('../data/xgb_save/keras64.pikle.data','wb'))
-print('save complete')
+
+model3 = load_model('../data/xgb_save/keras64.h5')
+pred = np.argmax(model3.predict(x_test),axis=1)
+y_test = np.argmax(y_test, axis=1)
+acc2 = accuracy_score(y_test,pred)
+print("load 스코어 : ",acc2)
+
+# import pickle
+# pickle.dump(search, open('../data/xgb_save/keras64.pikle.data','wb'))
+# print('save complete')
 
 # print("=========================pickle.Load======================")
 #(2) Load
@@ -93,8 +103,6 @@ print('save complete')
 # print('r2_2 : ',r2_2)
 
 '''
-{'validation_split': 0.2, 'optimizer': 'adam', 'drop': 0.2}
-0.979450007279714
-313/313 [==============================] - 0s 1ms/step - loss: 0.0769 - acc: 0.9826
-최종 스코어 :  0.9825999736785889
+최종 스코어 :  0.9860000014305115
+load 스코어 :  0.986
 '''

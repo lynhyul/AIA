@@ -41,8 +41,8 @@ def create_hyperparmeters() :
     opitmizer = ['rmsprop', 'adam']
     dropout = [0.2]
     validation_split = [0.1,0.2,0.3]
-    return {"optimizer" : opitmizer,
-            "drop": dropout, "validation_split" : validation_split}    
+    return {"clf__optimizer" : opitmizer,
+            "clf__drop": dropout, "clf__validation_split" : validation_split}    
 
 
 hyperparmeters = create_hyperparmeters()
@@ -51,22 +51,22 @@ hyperparmeters = create_hyperparmeters()
 
 
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
-model2 = KerasClassifier(build_fn=build_model, verbose = 1, epochs=100)
+model2 = KerasClassifier(build_fn=build_model, verbose = 1)
 
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
-mc = ModelCheckpoint('../data/modelcheckpoint/hyper1.h5',save_best_only=True, verbose=1)
-es = EarlyStopping(monitor = 'val_loss',patience=5)
-lr = ReduceLROnPlateau(monitor = 'val_loss', patience=3, factor=0.5)
+# mc = ModelCheckpoint('../data/modelcheckpoint/hyper1.h5',save_best_only=True, verbose=1)
+# es = EarlyStopping(monitor = 'val_loss',patience=10)
+# lr = ReduceLROnPlateau(monitor = 'val_loss', patience=5, factor=0.5)
 
-pipe = make_pipeline(MinMaxScaler(), model2()) 
+# pipe = make_pipeline(MinMaxScaler(), model2()) 
 # Pipeline(steps=[('minmaxscaler', MinMaxScaler()), ('svc', SVC())])
-
+pipe = Pipeline([('scaler', MinMaxScaler()),('clf', model2)])
   
-search = GridSearchCV(pipe, hyperparmeters, cv=5)
+search = GridSearchCV(pipe, hyperparmeters, cv=3)
 
-search.fit(x_train,y_train,callbacks = [es,lr,mc])
+search.fit(x_train,y_train)
 
 results = search.score(x_test,y_test)
 print(results)
@@ -84,8 +84,7 @@ print(search.best_score_)   # 밑에 있는 .score랑은 결과가 다르게 나
 
 
 '''
-{'validation_split': 0.2, 'optimizer': 'adam', 'drop': 0.2}
-0.979450007279714
-313/313 [==============================] - 0s 1ms/step - loss: 0.0769 - acc: 0.9826
-최종 스코어 :  0.9825999736785889
+0.9660999774932861
+{'clf__drop': 0.2, 'clf__optimizer': 'rmsprop', 'clf__validation_split': 0.1}
+0.9570833245913187
 '''
