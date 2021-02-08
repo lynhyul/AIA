@@ -131,7 +131,7 @@ early_stopping = EarlyStopping(patience= 40)
 lr = ReduceLROnPlateau(patience= 20, factor=0.5)
 model.compile(loss="binary_crossentropy", optimizer=Adam(lr=0.002,epsilon=None),
                     metrics=['acc'])
-learning_history = model.fit_generator(train_generator,epochs=400, batch_size = 64, 
+learning_history = model.fit_generator(train_generator,epochs=400, 
     validation_data=valid_generator, callbacks=[early_stopping,lr])
 
 
