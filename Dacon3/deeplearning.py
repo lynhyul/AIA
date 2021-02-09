@@ -50,21 +50,27 @@ y = pd.read_csv('../data/csv/Dacon3/dirty_mnist_2nd_answer.csv')
 
 sub = pd.read_csv('../data/csv/Dacon3/sample_submission.csv')
 
-y = y.iloc[:10000,1:]
+y = y.iloc[:20000,1:]
 # # y = y['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 
 # #       'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'] 
 
 y = y.to_numpy()
-x = x[:10000,:,:]
+x = x[:20000,:,:]
+
+#노이즈 제거
+threshold = 255
+x[x < threshold] = 0
+x[x > threshold] = 255
+x_pred[x_pred < threshold] = 0
+x_pred[x_pred > threshold] = 255
 
 #전처리
 x = x.reshape(-1,256,256,1)/255.
 x_pred = x_pred.reshape(-1,256,256,1)/255.
 
-#노이즈 제거?
-threshold = 1
-x[x < threshold] = 0
-x_pred[x_pred <threshold] = 0
+
+
+
 x_train, x_test, y_train, y_test = train_test_split(x,y,train_size=0.8)
 
 
@@ -73,9 +79,9 @@ idg = ImageDataGenerator(
     # rotation_range=10, acc 하락
     width_shift_range=(-1,1),   # 0.1 => acc 하락
     height_shift_range=(-1,1),  # 0.1 => acc 하락
-    # rotation_range=40, acc 하락 
-    shear_range=0.2)    # 현상유지
-    # zoom_range=0.2, acc 하락
+    rotation_range=40, 
+    shear_range=0.2,    # 현상유지
+    zoom_range=0.2) 
     # horizontal_flip=True)
 
 idg2 = ImageDataGenerator()
@@ -95,7 +101,7 @@ idg2 = ImageDataGenerator()
 - fill_mode 이미지를 회전, 이동하거나 축소할 때 생기는 공간을 채우는 방식
 '''
 
-train_generator = idg.flow(x_train,y_train,batch_size=16, seed = 20000)
+train_generator = idg.flow(x_train,y_train,batch_size=32, seed = 2000)
 # seed => random_state
 valid_generator = idg2.flow(x_test,y_test)
 test_generator = idg2.flow(x_pred,shuffle=False)
@@ -129,16 +135,18 @@ model.add(Dense(64, activation= 'relu'))
 model.add(BatchNormalization())
 model.add(Dense(26, activation='sigmoid'))
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
-early_stopping = EarlyStopping(patience= 40)
-lr = ReduceLROnPlateau(patience= 20, factor=0.5)
+early_stopping = EarlyStopping(patience= 100)
+lr = ReduceLROnPlateau(patience= 50, factor=0.5)
 model.compile(loss="binary_crossentropy", optimizer=Adam(lr=0.002,epsilon=None),
                     metrics=['acc'])
-learning_history = model.fit_generator(train_generator,epochs=400, 
+learning_history = model.fit_generator(train_generator,epochs=200, 
     validation_data=valid_generator, callbacks=[early_stopping,lr])
 
 result = model.predict_generator(test_generator,verbose=True)
+result[result < 0.5] =0
+result[result > 0.5] =1
 sub.iloc[:,1:] = result
-sub.to_csv('../data/csv/Dacon3/Dacon1.csv',index=False)
+sub.to_csv('../data/csv/Dacon3/Dacon4.csv',index=False)
 # skf = StratifiedKFold(n_splits=5, random_state=42, shuffle=True)
 
 # val_loss_min = []
