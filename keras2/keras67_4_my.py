@@ -106,12 +106,12 @@ model.add(Dense(1, activation= 'sigmoid'))
 
 
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau,ModelCheckpoint
-cp = ModelCheckpoint('../data/modelcheckpoint/myproject.hdf5') 
+cp = ModelCheckpoint('../data/modelcheckpoint/myproject.hdf5',save_best_only=True) 
 es = EarlyStopping(monitor= 'val_loss', patience=50)
 lr = ReduceLROnPlateau(monitor='val_loss', patience=25, factor=0.5)
 model.compile(loss = 'binary_crossentropy', optimizer= 'adam', metrics=['acc'])
 history = model.fit_generator(xy_train, steps_per_epoch=93, epochs=500, validation_data=xy_test, validation_steps=31,
-callbacks=[es,lr])
+callbacks=[es,lr,cp])
 model2 = load_model('../data/modelcheckpoint/myproject.hdf5', compile=False)
 
 acc = history.history['acc']

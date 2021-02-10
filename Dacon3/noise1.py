@@ -1,45 +1,29 @@
-#실패....
 
 
-import numpy as np
-import PIL
-from numpy import asarray
-from PIL import Image
 
-import matplotlib.pyplot as plt
 import cv2
+import numpy as np
+from matplotlib import pyplot as plt
 
-image_bgr = cv2.imread(f'../data/csv/Dacon3/dirty_mnist_2nd/00000.png')
-image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
+image_path = 'C:/data/computer_vision2/dirty_mnist_2nd/00000.png'
 
+plt.figure(figsize=(12,6))
+image = cv2.imread(image_path) # cv2.IMREAD_GRAYSCALE
+img = cv2.imshow('original', image)
+#cv2.waitKey(0)
 
+#254보다 작고 0이아니면 0으로 만들어주기
+image2 = np.where((image <= 254) & (image != 0), 0, image)
+cv2.imshow('filterd', image2)
 
-# 사각형 좌표: 시작점의 x,y  ,height, weight
-rectangle = (126, 126, 255, 255)
+image3 = cv2.dilate(image2, kernel=np.ones((2, 2), np.uint8), iterations=1)
+cv2.imshow('dilate', image3)
+#dilate -> 이미지 팽창
+image4 = cv2.medianBlur(src=image3, ksize= 5)  #점처럼 놓여있는  noise들을 제거할수있음
+cv2.imshow('median', image4)
+#medianBlur->커널 내의 필터중 밝기를 줄세워서 중간에 있는 값으로 현재 픽셀 값을 대체
 
-# 초기 마스크 생성
-mask = np.zeros(image_rgb.shape[:2], np.uint8)
+image5 = image4 - image2
+cv2.imshow('sub', image5)
 
-# grabCut에 사용할 임시 배열 생성
-bgdModel = np.zeros((1, 65), np.float64)
-fgdModel = np.zeros((1, 65), np.float64)
-
-# grabCut 실행
-cv2.grabCut(image_rgb, # 원본 이미지
-        mask,       # 마스크
-        rectangle,  # 사각형
-        bgdModel,   # 배경을 위한 임시 배열
-        fgdModel,   # 전경을 위한 임시 배열 
-        1,          # 반복 횟수
-        cv2.GC_INIT_WITH_RECT) # 사각형을 위한 초기화
-
-
-# 배경인 곳은 0, 그 외에는 1로 설정한 마스크 생성
-mask_2 = np.where((mask==2) | (mask==0), 0, 1).astype('uint8')
-
-# 이미지에 새로운 마스크를 곱행 배경을 제외
-image_rgb_nobg = image_rgb * mask_2[:, :, np.newaxis]
-# cv2.imwrite(f'../data/image/sex/sex1/male/image{i}.jpg',image_rgb_nobg)
-
-plt.imshow(image_rgb)
-plt.show()
+cv2.waitKey(0) #cv2 실행

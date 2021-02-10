@@ -41,8 +41,8 @@ import string
 # alphabets = list(alphabets)
 
 
-x = np.load('../data/csv/Dacon3/train.npy')
-x_pred = np.load('../data/csv/Dacon3/test.npy') 
+x = np.load('../data/csv/Dacon3/train2.npy')
+x_pred = np.load('../data/csv/Dacon3/test2.npy') 
 
 # print(x_pred.shape) # 5000,256,256
 # print(x_pred.shape) # 50000,256,256
@@ -55,23 +55,17 @@ y = y.iloc[:20000,1:]
 # #       'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'] 
 
 y = y.to_numpy()
-x = x[:20000,:,:]
 
-#노이즈 제거
-threshold = 100
-x[x < threshold] = 0
-x[x > threshold] = 255
-x_pred[x_pred < threshold] = 0
-x_pred[x_pred > threshold] = 255
 
 #전처리
-x = x.reshape(-1,256,256,1)/255.
-x_pred = x_pred.reshape(-1,256,256,1)/255.
+x = x.reshape(-1,128,128,1)/255.
+x_pred = x_pred.reshape(-1,128,128,1)/255.
 
 
 
 
-x_train, x_test, y_train, y_test = train_test_split(x,y,train_size=0.9)
+x_train, x_test, y_train, y_test = train_test_split(x,y,train_size=0.8)
+
 
 
 # 이미지 증폭
@@ -102,7 +96,7 @@ idg2 = ImageDataGenerator()
 - fill_mode 이미지를 회전, 이동하거나 축소할 때 생기는 공간을 채우는 방식
 '''
 
-train_generator = idg.flow(x_train,y_train,batch_size=16, seed = 2000)
+train_generator = idg.flow(x_train,y_train,batch_size=32, seed = 2000)
 # seed => random_state
 valid_generator = idg2.flow(x_test,y_test)
 test_generator = idg2.flow(x_pred,shuffle=False)
@@ -111,7 +105,7 @@ model = Sequential()
 model = Sequential()
 
 model.add(Conv2D(filters = 16, kernel_size =(3,3), activation='sigmoid', padding = 'same', 
-                                            input_shape=(256,256,1)))
+                                            input_shape=(128,128,1)))
 model.add(BatchNormalization())                                  
 model.add(Conv2D(filters = 32, kernel_size =(3,3), padding = 'same', activation='relu'))
 model.add(BatchNormalization())
@@ -135,7 +129,8 @@ model.add(BatchNormalization())
 model.add(Dense(64, activation= 'relu'))
 model.add(BatchNormalization())
 model.add(Dense(26, activation='sigmoid'))
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau,ModelCheckpoint
+mc = ModelCheckpoint('../data/modelcheckpoint/Daconproject1.h5',save_best_only=True, verbose=1)
 early_stopping = EarlyStopping(patience= 160)
 lr = ReduceLROnPlateau(patience= 80, factor=0.5)
 model.compile(loss="binary_crossentropy", optimizer=Adam(lr=0.002,epsilon=None),
@@ -148,91 +143,3 @@ result[result < 0.5] =0
 result[result > 0.5] =1
 sub.iloc[:,1:] = result
 sub.to_csv('../data/csv/Dacon3/Dacon8.csv',index=False)
-# skf = StratifiedKFold(n_splits=5, random_state=42, shuffle=True)
-
-# val_loss_min = []
-# result = 0
-# nth = 0
-
-
-# for train_index, valid_index in skf.split(x,y) :
-    
-#     mc = ModelCheckpoint('../data/modelcheckpoint/Dacon8.h5',save_best_only=True, verbose=1)
-    
-#     x_train = x[train_index]
-#     x_valid = x[valid_index]    
-#     y_train = y[train_index]
-#     y_valid = y[valid_index]
-    
-#     # from tensorflow.keras.utils import to_categorical
-#     # y_train = to_categorical(y_train)
-#     # y_valid = to_categorical(y_valid)
-
-#     # train_generator = idg.flow(x_train,y_train,batch_size=16, seed = 2000)
-#     # # seed => random_state
-#     # valid_generator = idg2.flow(x_valid,y_valid)
-#     # test_generator = idg2.flow(x_pred,shuffle=False)
-#     model = Sequential()
-
-#     model.add(Conv2D(filters = 16, kernel_size =(3,3), activation='relu', padding = 'same', 
-#                                             input_shape=(28,28,1)))
-#     model.add(BatchNormalization())                                  
-#     model.add(Conv2D(filters = 32, kernel_size =(3,3), padding = 'same', activation='relu'))
-#     model.add(BatchNormalization())
-#     model.add(Conv2D(filters = 32, kernel_size =(5,5), padding = 'same', activation='relu'))
-#     model.add(BatchNormalization())
-#     model.add(Conv2D(filters = 32, kernel_size =(5,5), padding = 'same', activation='relu'))
-#     model.add(BatchNormalization())
-#     model.add(MaxPooling2D(2,2))
-
-                               
-#     model.add(Conv2D(filters = 64, kernel_size =(3,3), padding = 'same', activation='relu'))
-#     model.add(BatchNormalization())
-#     model.add(Conv2D(filters = 64, kernel_size =(5,5), padding = 'same', activation='relu'))
-#     model.add(BatchNormalization())
-#     model.add(MaxPooling2D(2,2))
-
-#     model.add(Flatten())
-    
-#     model.add(Dense(128, activation= 'relu'))
-#     model.add(BatchNormalization())
-#     model.add(Dense(64, activation= 'relu'))
-#     model.add(BatchNormalization())
-#     model.add(Dense(26, activation='sigmoid'))
-
-#     model.compile(loss="sparse_categorical_crossentropy", optimizer=Adam(lr=0.002,epsilon=None),
-#                      metrics=['acc'])
-#     model.fit(x_train,y_train,epochs=100)
-
-#     from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
-#     early_stopping = EarlyStopping(patience= 160)
-#     lr = ReduceLROnPlateau(patience= 90, factor=0.5)
-
-#     model.compile(loss='sparse_binary_crossentropy', optimizer=Adam(lr=0.002,epsilon=None),
-#                     metrics=['acc'])
-#     learning_history = model.fit_generator(train_generator,epochs=2000, 
-#         validation_data=valid_generator, callbacks=[early_stopping,lr,mc])
-    
-#     # predict
-#     model.load_weights('../data/modelcheckpoint/Dacon8.h5')
-#     result += model.predict_generator(test_generator,verbose=True)/5
-    
-#     # save val_loss
-#     hist = pd.DataFrame(learning_history.history)
-#     val_loss_min.append(hist['val_loss'].min())
-    
-#     nth += 1
-#     print(nth, '번째 학습을 완료했습니다.')
-
-# sub.iloc[:,1:] = result.argmax(1)
-# sub.to_csv('../data/csv/Dacon3/Dacon1.csv',index=False)
-
-
-
-
-# print(y.shape)  # 50000,26
-
-
-# # # print(alphabets)
-# # y_train.drop(alphabets,1)
-

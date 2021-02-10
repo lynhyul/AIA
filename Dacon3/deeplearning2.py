@@ -15,7 +15,7 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.optimizers import Adam,SGD
 from sklearn.model_selection import train_test_split
 import string
-
+import scipy.signal as signal
 
 
 # dirty 데이터는 train 데이터 훈련시키자!
@@ -28,45 +28,46 @@ import string
 # y값을 찾는것이 목표
 
 
+#트레인 데이터를 무조건 5만장을 해야하나?...
+
 # img=[]
-# for i in range(50000,55000):
-#     filepath='../data/csv/Dacon3/test_dirty_mnist_2nd/%d.png'%i
+# for i in range(20000):
+#     filepath='../data/csv/Dacon3/train/%05d.png'%i
 #     image=Image.open(filepath)
+#     image = image.resize((128,128))
 #     image_data=asarray(image)
+#     image_data = signal.medfilt2d(np.array(image_data), kernel_size=3)
 #     img.append(image_data)
+img2 =[]
+for i in range(50000, 55000):
+    filepath='../data/csv/Dacon3/test_dirty_mnist_2nd/%05d.png'%i
+    image2=Image.open(filepath)
+    image2 = image2.resize((128,128))
+    image_data2=asarray(image2)
+    image_data2 = signal.medfilt2d(np.array(image_data2), kernel_size=3)
+    img2.append(image_data2)
 
 
-# np.save('../data/csv/Dacon3/test.npy', arr=img)
-# alphabets = string.ascii_lowercase
-# alphabets = list(alphabets)
+# np.save('../data/csv/Dacon3/train2.npy', arr=img)
+np.save('../data/csv/Dacon3/test2.npy', arr=img2)
+# # alphabets = string.ascii_lowercase
+# # alphabets = list(alphabets)
 
 
-x = np.load('../data/csv/Dacon3/train.npy')
-x_pred = np.load('../data/csv/Dacon3/test.npy') 
+x = np.load('../data/csv/Dacon3/train2.npy')
+x_pred = np.load('../data/csv/Dacon3/test2.npy') 
 
 # print(x_pred.shape) # 5000,256,256
 # print(x_pred.shape) # 50000,256,256
-y = pd.read_csv('../data/csv/Dacon3/dirty_mnist_2nd_answer.csv')
+y1 = pd.read_csv('../data/csv/Dacon3/dirty_mnist_2nd_answer.csv')
+
+y_data = y1.iloc[:20000,:]
 
 sub = pd.read_csv('../data/csv/Dacon3/sample_submission.csv')
 
-y_data = y.iloc[:10000,:]
-# # y = y['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 
-# #       'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'] 
-
-# y = y.to_numpy()
-x = x[:10000,:,:]
-
-#노이즈 제거
-threshold = 100
-x[x < threshold] = 0
-x[x > threshold] = 255
-x_pred[x_pred < threshold] = 0
-x_pred[x_pred > threshold] = 255
-
 #전처리
-x = x.reshape(-1,256,256,1)/255.
-x_pred = x_pred.reshape(-1,256,256,1)/255.
+x = x.reshape(-1,128,128,1)/255.
+x_pred = x_pred.reshape(-1,128,128,1)/255.
 
 
 
@@ -102,7 +103,7 @@ def convmodel() :
     model = Sequential()
 
     model.add(Conv2D(filters = 16, kernel_size =(3,3), activation='relu', padding = 'same', 
-                                                input_shape=(256,256,1)))
+                                                input_shape=(128,128,1)))
     model.add(BatchNormalization())                                  
     model.add(Conv2D(filters = 32, kernel_size =(3,3), padding = 'same', activation='relu'))
     model.add(BatchNormalization())
@@ -142,20 +143,21 @@ for i in alphabet:
     print(y.shape)
     x_train, x_test, y_train, y_test = train_test_split(x,y,train_size=0.9)
     train_generator = idg.flow(x_train,y_train,batch_size=16, seed = 2000)
-    # seed => random_state
+    # # seed => random_state
     valid_generator = idg2.flow(x_test,y_test)
     test_generator = idg2.flow(x_pred,shuffle=False)
-    model = convmodel()
-    cp = ModelCheckpoint(f'../data/modelcheckpoint/checkpoint-{i}.hdf5', 
-    monitor='val_loss', save_best_only=True, verbose=1)
-    lr = ReduceLROnPlateau(patience=20,verbose=1,factor=0.5) #learning rate scheduler
-    es = EarlyStopping(patience=10, verbose=1)
-    model.fit_generator(train_generator,epochs=100, 
-    validation_data= valid_generator, callbacks=[es,lr,cp])
-    model2 = load_model(f'../data/modelcheckpoint/checkpoint-{i}.hdf5', compile=False)
-    result = model.predict_generator(test_generator,verbose=True)
-    print(result)
+    # model = convmodel()
+    # cp = ModelCheckpoint(f'../data/modelcheckpoint/checkpoint1-{i}.hdf5', 
+    # monitor='val_loss', save_best_only=True, verbose=1)
+    # lr = ReduceLROnPlateau(patience=50,verbose=1,factor=0.5) #learning rate scheduler
+    # es = EarlyStopping(patience=25, verbose=1)
+    # model.fit_generator(train_generator,epochs=100, 
+    # validation_data= valid_generator, callbacks=[es,lr,cp])
+    model2 = load_model(f'../data/modelcheckpoint/checkpoint1-{i}.hdf5', compile=False)
+    result = model2.predict_generator(test_generator,verbose=True)
+    # print(result)
     y_recovery = np.where(result<0.5, 0, 1)
-    print(y_recovery)
+    # print(y_recovery)
     sub[i] = y_recovery
+    print(f'{i}까지 학습 완료')
 sub.to_csv('../data/csv/Dacon3/Dacon7.csv',index=False)
