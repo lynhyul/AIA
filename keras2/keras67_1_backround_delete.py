@@ -6,8 +6,9 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import cv2
 for i in range(1,1000) :
-
-    image_rgb = cv2.imread(f'../data/image/sex/male/male ({i}).jpg')
+    
+    image_rgb = cv2.imread(f'../data/image/sex/female/female ({i}).jpg')
+    # image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
 
 
     # 사각형 좌표: 시작점의 x,y  ,height, weight
@@ -26,7 +27,7 @@ for i in range(1,1000) :
             rectangle,  # 사각형
             bgdModel,   # 배경을 위한 임시 배열
             fgdModel,   # 전경을 위한 임시 배열 
-            2,          # 반복 횟수
+            5,          # 반복 횟수
             cv2.GC_INIT_WITH_RECT) # 사각형을 위한 초기화
 
 
@@ -35,7 +36,7 @@ for i in range(1,1000) :
 
     # 이미지에 새로운 마스크를 곱행 배경을 제외
     image_rgb_nobg = image_rgb * mask_2[:, :, np.newaxis]
-    cv2.imwrite(f'../data/image/sex/sex1/male/image{i}.jpg',image_rgb_nobg)
+    cv2.imwrite(f'../data/image/sex/sex_generator/image{i}.jpg',image_rgb_nobg)
     
     # plt.imshow(image_rgb_nobg)
     # plt.show()

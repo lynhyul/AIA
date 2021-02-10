@@ -1,10 +1,15 @@
+# 나를 찍어서 내가 남자인지 여자인지 맞춰보자 ㅋㅋㅋ
 #배경을 제거한 사진을 트레인데이터로 적용시켜봤다.
 
 
 import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.models import Model, Sequential
+from tensorflow.keras.models import Model, Sequential, load_model
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
+import PIL
+from numpy import asarray
+from PIL import Image
+
 
 
 train_datagen = ImageDataGenerator(
@@ -40,7 +45,7 @@ test_datagen = ImageDataGenerator(rescale=1./255)   #test data는 따로 튜닝�
 
 
 xy_train = train_datagen.flow_from_directory(
-    '../data/image/sex/sex1/',        
+    '../data/image/sex2/sex1/',        
     target_size = (150,150),
     batch_size= 14,  
     class_mode='binary', 
@@ -49,17 +54,31 @@ xy_train = train_datagen.flow_from_directory(
 )
 
 xy_test = train_datagen.flow_from_directory(
-    '../data/image/sex/sex1/',       
+    '../data/image/sex2/sex1/',       
     target_size = (150,150),
     batch_size= 14,
     class_mode='binary', 
     subset = 'validation'
 )
 
+x_pred = train_datagen.flow_from_directory(
+    '../data/image/my/',
+    target_size = (150,150),
+    batch_size= 14,
+    class_mode='binary', 
+)
+
+# x_pred=[]
+# for i in range(0,5):
+#     filepath= f'../data/image/my/me/{i}.jpg'
+#     image=Image.open(filepath)
+#     image_data=asarray(image)
+#     x_pred.append(image_data)
+
+
 
 print(xy_train[0][0].shape) # (14, 150, 150, 3)
 
-print(xy_train[0][1].shape) # (14,)
 
 # print(xy_train)
 # # <tensorflow.python.keras.preprocessing.image.DirectoryIterator object at 0x000002080FFD75E0>
@@ -86,14 +105,14 @@ model.add(Dense(64, activation= 'relu'))
 model.add(Dense(1, activation= 'sigmoid'))
 
 
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
-
-es = EarlyStopping(monitor= 'val_loss', patience=30)
-lr = ReduceLROnPlateau(monitor='val_loss', patience=15, factor=0.5)
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau,ModelCheckpoint
+cp = ModelCheckpoint('../data/modelcheckpoint/myproject.hdf5') 
+es = EarlyStopping(monitor= 'val_loss', patience=50)
+lr = ReduceLROnPlateau(monitor='val_loss', patience=25, factor=0.5)
 model.compile(loss = 'binary_crossentropy', optimizer= 'adam', metrics=['acc'])
 history = model.fit_generator(xy_train, steps_per_epoch=93, epochs=500, validation_data=xy_test, validation_steps=31,
 callbacks=[es,lr])
-
+model2 = load_model('../data/modelcheckpoint/myproject.hdf5', compile=False)
 
 acc = history.history['acc']
 val_acc = history.history['val_acc']
@@ -102,17 +121,12 @@ val_loss = history.history['val_loss']
 
 
 print('acc : ', acc[-1])
-print('val_acc : ', val_acc[:-1])
+print('val_acc : ', val_acc[-1])
 # print('loss : ', loss[:-1])
 # print('val_acc : ', val_loss[:-1])
 
-'''
-val_acc :  [0.7703016400337219, 0.9651972055435181, 0.9211136698722839, 0.895591676235199, 
-0.9257540702819824, 0.8770301342010498, 0.9211136698722839, 0.8677493929862976, 
-0.860788881778717, 0.860788881778717, 0.8700696229934692, 0.8259860873222351, 0.9095127582550049, 
-0.8909512758255005, 0.8677493929862976, 0.8654292225837708, 0.895591676235199, 
-0.8932714462280273, 0.8375869989395142, 0.8839907050132751, 0.8631090521812439, 
-0.886310875415802, 0.8932714462280273, 0.8979118466377258, 0.886310875415802, 0.9002320170402527, 
-0.886310875415802, 0.8770301342010498, 0.895591676235199, 0.895591676235199, 0.886310875415802, 
-0.8839907050132751, 0.886310875415802, 0.8839907050132751]
-'''
+result = model2.predict_generator(x_pred,verbose=True)
+# result[result < 0.5] =0
+# result[result > 0.5] =1
+# np.where(result < 0.5, '남자', '여자')
+print("남자일 확률은",result*100,"%입니다.")

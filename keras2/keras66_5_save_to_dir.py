@@ -1,58 +1,62 @@
+# 이미지데이터를 불러와서 증폭을 해보자! > 저엉말로 증폭을 해서 저장해보자
+# 37번째 줄이 주요 키워드!
+
 import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+# -----------------------------------------------------------------------------------------------------
+# 이미지 제너레이터 선언
 train_datagen = ImageDataGenerator(
-    rescale=1./255,
-    horizontal_flip = True,
-    vertical_flip= True,
-    width_shift_range=0.1,
-    height_shift_range=0.1,
-    # rotation_range= 5,
-    # zoom_range= 1.2,
-    # shear_range= 0.7,
-    # fill_mode = 'nearest'   #최근접기법, 패딩
+    rescale=1./255,             # 전처리/ 스케일링. 흑백이니까 1./255
+    horizontal_flip=True,       # 수평 뒤집기
+    vertical_flip=True,         # 수직 뒤집기
+    width_shift_range=0.1,      # 수평 이동
+    height_shift_range=0.1,     # 수직 이동
+    rotation_range=5,           # 회전
+    zoom_range=1.2,             # 확대
+    shear_range=0.7,            # 왜곡
+    fill_mode='nearest'         # 빈자리는 근처에 있는 것으로(padding='same'과 비슷)
 )
 
-'''
-- rotation_range: 이미지 회전 범위 (degrees)
-- width_shift, height_shift: 그림을 수평 또는 수직으로 랜덤하게 평행 이동시키는 범위 
-                                (원본 가로, 세로 길이에 대한 비율 값)
-- rescale: 원본 영상은 0-255의 RGB 계수로 구성되는데, 이 같은 입력값은 
-            모델을 효과적으로 학습시키기에 너무 높습니다 (통상적인 learning rate를 사용할 경우). 
-            그래서 이를 1/255로 스케일링하여 0-1 범위로 변환시켜줍니다. 
-            이는 다른 전처리 과정에 앞서 가장 먼저 적용됩니다.
-- shear_range: 임의 전단 변환 (shearing transformation) 범위
-- zoom_range: 임의 확대/축소 범위
-- horizontal_flip`: True로 설정할 경우, 50% 확률로 이미지를 수평으로 뒤집습니다. 
-    원본 이미지에 수평 비대칭성이 없을 때 효과적입니다. 즉, 뒤집어도 자연스러울 때 사용하면 좋습니다.
-- fill_mode 이미지를 회전, 이동하거나 축소할 때 생기는 공간을 채우는 방식
-'''
-test_datagen = ImageDataGenerator(rescale=1./255)   #test data는 따로 튜닝하지 않고 전처리만 해준다.
+# 설명 참고
+# https://keras.io/ko/preprocessing/image/
 
-# flow or flow_from_directory
+test_datagen = ImageDataGenerator(rescale=1./255)
+# 트레인만 이미지 증폭을 하고 테스트를 할 때는 증폭할 필요가 없다. rescale은 전처리니까 같이 해주는 것 뿐
+# 여기까지는 정의한 했고 이제 적용시켜보자 > flow 또는 flow_from_directory(옛날에는 폴더라는 이름이 없어서 디렉토리라고 썼다)
 
-
+# -----------------------------------------------------------------------------------------------------
+# 폴더(디렉토리)에서 불러와서 적용하기! fit과 같다. 이 줄을 지나면 x와 y가 생성이 된다.
+# train_generator
 xy_train = train_datagen.flow_from_directory(
-    '../data/image/brain/train',        # 사진 160장 (80장 + 80장)
-    target_size = (150,150),
-    batch_size= 200,  # 사진을 5장씩 자르겠다.(0~31 / 32번) 
-    class_mode='binary' # 앞에 놈이 0, 뒤에 놈이 1
-    , save_to_dir= '../data/image/brain/brain_generator/train'
-)
+    '../data/image/brain/train',  
+    target_size=(150,150),    
+    batch_size=5,                       # batch_size(5) * 아래 변수 건드린 횟수(나는 5) = 생성되는 이미지 개수(25개) > 이렇게 증폭이 가능
+                                        # batch_size의 최대수는 160인데, 200처럼 더 큰 수를 지정해도 알아서 160(최대) * 변수건드린횟수 로 만들어 진다.
+    class_mode='binary'         
+    , save_to_dir='../data/image/brain_generator/train'     # ※caution※ 아래 찍어보자 부분처럼 변수를 한 번 건드려주어야 잘 저장이 된다!
+)    
+# 로그 > Found 160 images belonging to 2 classes.
 
+# test_generator
 xy_test = test_datagen.flow_from_directory(
-    '../data/image/brain/test',
-    target_size = (150,150),
-    batch_size=5,
-    class_mode='binary' # 앞에 놈이 0, 뒤에 놈이 1
-    ,save_to_dir= '../data/image/brain/brain_generator/test'
-)
+    '../data/image/brain/test',    
+    target_size=(150,150),     
+    batch_size=5,              
+    class_mode='binary'         
+) 
+# 로그 > Found 120 images belonging to 2 classes.
 
+
+# 잘 생성이 됐는지 찍어보자 ------------------------------------------------------------------------
 print(xy_train)
-# <tensorflow.python.keras.preprocessing.image.DirectoryIterator object at 0x000002080FFD75E0>
+# <tensorflow.python.keras.preprocessing.image.DirectoryIterator object at 0x000001E5D9A88550>
 
 print(xy_train[0])
-print(xy_test[0])
-# print(xy_train[0][0].shape) # (10, 150, 150, 3) = x
-# print(xy_train[15][1].shape) # (10,) = y
-# print(xy_train[15][1]) # [1. 1. 0. 1. 1. 1. 1. 1. 0. 0.]
+# x와 y를 모두 가지고 있다. 그런데 왜 5개지? batch_size를 5로 해서!, [0][0]은 x [0][1]은 y
+
+print(xy_train[0][0]) # x만 나온다!
+print(xy_train[0][0].shape)                        #(5, 150, 150, 3)
+
+print(xy_train[0][1]) # y만 나온다!    
+print(xy_train[0][1].shape)  #[1. 1. 0. 0. 1.]    #(5,)

@@ -58,7 +58,7 @@ y = y.to_numpy()
 x = x[:20000,:,:]
 
 #노이즈 제거
-threshold = 255
+threshold = 100
 x[x < threshold] = 0
 x[x > threshold] = 255
 x_pred[x_pred < threshold] = 0
@@ -71,7 +71,7 @@ x_pred = x_pred.reshape(-1,256,256,1)/255.
 
 
 
-x_train, x_test, y_train, y_test = train_test_split(x,y,train_size=0.8)
+x_train, x_test, y_train, y_test = train_test_split(x,y,train_size=0.9)
 
 
 # 이미지 증폭
@@ -79,9 +79,10 @@ idg = ImageDataGenerator(
     # rotation_range=10, acc 하락
     width_shift_range=(-1,1),   # 0.1 => acc 하락
     height_shift_range=(-1,1),  # 0.1 => acc 하락
-    rotation_range=40, 
-    shear_range=0.2,    # 현상유지
-    zoom_range=0.2) 
+    fill_mode = 'nearest')
+    # rotation_range=40, 
+    # shear_range=0.2,    # 현상유지
+    # zoom_range=0.2) 
     # horizontal_flip=True)
 
 idg2 = ImageDataGenerator()
@@ -101,7 +102,7 @@ idg2 = ImageDataGenerator()
 - fill_mode 이미지를 회전, 이동하거나 축소할 때 생기는 공간을 채우는 방식
 '''
 
-train_generator = idg.flow(x_train,y_train,batch_size=32, seed = 2000)
+train_generator = idg.flow(x_train,y_train,batch_size=16, seed = 2000)
 # seed => random_state
 valid_generator = idg2.flow(x_test,y_test)
 test_generator = idg2.flow(x_pred,shuffle=False)
@@ -109,7 +110,7 @@ model = Sequential()
 
 model = Sequential()
 
-model.add(Conv2D(filters = 16, kernel_size =(3,3), activation='relu', padding = 'same', 
+model.add(Conv2D(filters = 16, kernel_size =(3,3), activation='sigmoid', padding = 'same', 
                                             input_shape=(256,256,1)))
 model.add(BatchNormalization())                                  
 model.add(Conv2D(filters = 32, kernel_size =(3,3), padding = 'same', activation='relu'))
@@ -135,18 +136,18 @@ model.add(Dense(64, activation= 'relu'))
 model.add(BatchNormalization())
 model.add(Dense(26, activation='sigmoid'))
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
-early_stopping = EarlyStopping(patience= 100)
-lr = ReduceLROnPlateau(patience= 50, factor=0.5)
+early_stopping = EarlyStopping(patience= 160)
+lr = ReduceLROnPlateau(patience= 80, factor=0.5)
 model.compile(loss="binary_crossentropy", optimizer=Adam(lr=0.002,epsilon=None),
                     metrics=['acc'])
-learning_history = model.fit_generator(train_generator,epochs=200, 
+learning_history = model.fit_generator(train_generator,epochs=1000, 
     validation_data=valid_generator, callbacks=[early_stopping,lr])
 
 result = model.predict_generator(test_generator,verbose=True)
 result[result < 0.5] =0
 result[result > 0.5] =1
 sub.iloc[:,1:] = result
-sub.to_csv('../data/csv/Dacon3/Dacon4.csv',index=False)
+sub.to_csv('../data/csv/Dacon3/Dacon8.csv',index=False)
 # skf = StratifiedKFold(n_splits=5, random_state=42, shuffle=True)
 
 # val_loss_min = []
