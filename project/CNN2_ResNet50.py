@@ -66,10 +66,6 @@ from tensorflow.keras.applications import InceptionV3
 # print(X_train.shape[0])   # 2442
 
 
-config = tf.compat.v1.ConfigProto() 
-config.gpu_options.allow_growth = True
-session = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True))
-
 X_train, X_test, y_train, y_test = np.load("../data/npy/P_project.npy",allow_pickle=True)
 print(X_train.shape)
 print(X_train.shape[0])

@@ -9,9 +9,10 @@ import tensorflow as tf
 from tensorflow.python.framework import ops as tf_ops
 
 
-config = tf.compat.v1.ConfigProto() 
-config.gpu_options.allow_growth = True
-session = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True))
+# config = tf.compat.v1.ConfigProto() 
+# config.gpu_options.allow_growth = True
+# session = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True))
+
 
 train_datagen = ImageDataGenerator(
     rescale=1./255,
