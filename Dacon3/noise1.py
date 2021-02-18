@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-image_path = 'C:/data/computer_vision2/dirty_mnist_2nd/00000.png'
+image_path = '../data/csv/Dacon3/dirty_mnist_2nd/00000.png'
 
 plt.figure(figsize=(12,6))
 image = cv2.imread(image_path) # cv2.IMREAD_GRAYSCALE

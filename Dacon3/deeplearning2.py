@@ -9,14 +9,15 @@ import matplotlib.pyplot as plt
 from keras.preprocessing.image import ImageDataGenerator
 from numpy import expand_dims
 from sklearn.model_selection import StratifiedKFold, KFold
-from keras import Sequential
+from keras import Sequential, Model
 from keras.layers import *
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.optimizers import Adam,SGD
 from sklearn.model_selection import train_test_split
 import string
 import scipy.signal as signal
-
+from keras.applications.resnet50 import ResNet50
+from tensorflow.keras.applications import EfficientNetB7
 
 # dirty 데이터는 train 데이터 훈련시키자!
 # 50000개 
@@ -38,36 +39,37 @@ import scipy.signal as signal
 #     image_data=asarray(image)
 #     image_data = signal.medfilt2d(np.array(image_data), kernel_size=3)
 #     img.append(image_data)
-img2 =[]
-for i in range(50000, 55000):
-    filepath='../data/csv/Dacon3/test_dirty_mnist_2nd/%05d.png'%i
-    image2=Image.open(filepath)
-    image2 = image2.resize((128,128))
-    image_data2=asarray(image2)
-    image_data2 = signal.medfilt2d(np.array(image_data2), kernel_size=3)
-    img2.append(image_data2)
+# img2 =[]
+# for i in range(50000, 55000):
+#     filepath='../data/csv/Dacon3/test_dirty_mnist_2nd/%05d.png'%i
+#     image2=Image.open(filepath)
+#     image2 = image2.resize((128,128))
+#     image_data2=asarray(image2)
+#     image_data2 = signal.medfilt2d(np.array(image_data2), kernel_size=3)
+#     img2.append(image_data2)
 
 
-# np.save('../data/csv/Dacon3/train2.npy', arr=img)
-np.save('../data/csv/Dacon3/test2.npy', arr=img2)
+# # np.save('../data/csv/Dacon3/train2.npy', arr=img)
+# np.save('../data/csv/Dacon3/test2.npy', arr=img2)
 # # alphabets = string.ascii_lowercase
 # # alphabets = list(alphabets)
 
 
-x = np.load('../data/csv/Dacon3/train2.npy')
-x_pred = np.load('../data/csv/Dacon3/test2.npy') 
+x = np.load('../data/csv/Dacon3/train4.npy')
+x_pred = np.load('../data/csv/Dacon3/test4.npy') 
 
 # print(x_pred.shape) # 5000,256,256
 # print(x_pred.shape) # 50000,256,256
 y1 = pd.read_csv('../data/csv/Dacon3/dirty_mnist_2nd_answer.csv')
 
-y_data = y1.iloc[:20000,:]
+y_data = y1.iloc[:15000,:]
+x = x[:15000,:,:]
 
 sub = pd.read_csv('../data/csv/Dacon3/sample_submission.csv')
 
 #전처리
-x = x.reshape(-1,128,128,1)/255.
-x_pred = x_pred.reshape(-1,128,128,1)/255.
+x = x.reshape(-1,128,128,3)/255.
+x_pred = x_pred.reshape(-1,128,128,3)/255.
 
 
 
@@ -98,66 +100,82 @@ idg2 = ImageDataGenerator()
     원본 이미지에 수평 비대칭성이 없을 때 효과적입니다. 즉, 뒤집어도 자연스러울 때 사용하면 좋습니다.
 - fill_mode 이미지를 회전, 이동하거나 축소할 때 생기는 공간을 채우는 방식
 '''
-
 def convmodel() :
-    model = Sequential()
+    resent = EfficientNetB7(include_top=False,weights='imagenet',input_shape=(128,128,3))
+    x = resent.output
+    x = MaxPooling2D(pool_size=(2,2)) (x)
+    x = Dropout(0.5) (x)
+    x = Flatten() (x)
 
-    model.add(Conv2D(filters = 16, kernel_size =(3,3), activation='relu', padding = 'same', 
-                                                input_shape=(128,128,1)))
-    model.add(BatchNormalization())                                  
-    model.add(Conv2D(filters = 32, kernel_size =(3,3), padding = 'same', activation='relu'))
-    model.add(BatchNormalization())
-    model.add(Conv2D(filters = 32, kernel_size =(5,5), padding = 'same', activation='relu'))
-    model.add(BatchNormalization())
-    model.add(Conv2D(filters = 32, kernel_size =(5,5), padding = 'same', activation='relu'))
-    model.add(BatchNormalization())
-    model.add(MaxPooling2D(2,2))
+    x = Dense(128, activation= 'relu') (x)
+    x = BatchNormalization() (x)
+    x = Dense(64, activation= 'relu') (x)
+    x = BatchNormalization() (x)
+    x = Dropout(0.2) (x)
+    x = Dense(1, activation= 'sigmoid') (x)
+
+    model = Model(inputs = resent.input, outputs = x)
+    model.compile(loss='binary_crossentropy', optimizer=Adam(1e-5), metrics=['acc'])
+    return model
+    
+# def convmodel() :
+#     model = Sequential()
+
+#     model.add(Conv2D(filters = 16, kernel_size =(3,3), activation='relu', padding = 'same', 
+#                                                 input_shape=(128,128,1)))
+#     model.add(BatchNormalization())                                  
+#     model.add(Conv2D(filters = 32, kernel_size =(3,3), padding = 'same', activation='relu'))
+#     model.add(BatchNormalization())
+#     model.add(Conv2D(filters = 32, kernel_size =(5,5), padding = 'same', activation='relu'))
+#     model.add(BatchNormalization())
+#     model.add(Conv2D(filters = 32, kernel_size =(5,5), padding = 'same', activation='relu'))
+#     model.add(BatchNormalization())
+#     model.add(MaxPooling2D(2,2))
 
                                 
-    model.add(Conv2D(filters = 64, kernel_size =(3,3), padding = 'same', activation='relu'))
-    model.add(BatchNormalization())
-    model.add(Conv2D(filters = 64, kernel_size =(5,5), padding = 'same', activation='relu'))
-    model.add(BatchNormalization())
-    model.add(MaxPooling2D(2,2))
+#     model.add(Conv2D(filters = 64, kernel_size =(3,3), padding = 'same', activation='relu'))
+#     model.add(BatchNormalization())
+#     model.add(Conv2D(filters = 64, kernel_size =(5,5), padding = 'same', activation='relu'))
+#     model.add(BatchNormalization())
+#     model.add(MaxPooling2D(2,2))
 
-    model.add(Flatten())
+#     model.add(Flatten())
 
-    model.add(Dense(128, activation= 'relu'))
-    model.add(BatchNormalization())
-    model.add(Dense(64, activation= 'relu'))
-    model.add(BatchNormalization())
-    model.add(Dense(1, activation='sigmoid'))
+#     model.add(Dense(128, activation= 'relu'))
+#     model.add(BatchNormalization())
+#     model.add(Dense(64, activation= 'relu'))
+#     model.add(BatchNormalization())
+#     model.add(Dense(1, activation='sigmoid'))
 
-    model.compile(loss="binary_crossentropy", optimizer=Adam(lr=0.002,epsilon=None),
-                    metrics=['acc'])
-    return model
+#     model.compile(loss="binary_crossentropy", optimizer=Adam(lr=0.002,epsilon=None),
+#                     metrics=['acc'])
+#     return model
 
 
 
 
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.models import load_model
-alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+alphabet = ['k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
 for i in alphabet:
     y = y_data.loc[:,i]
     print(y.shape)
     x_train, x_test, y_train, y_test = train_test_split(x,y,train_size=0.9)
-    train_generator = idg.flow(x_train,y_train,batch_size=16, seed = 2000)
+    train_generator = idg.flow(x_train,y_train,batch_size=16)
     # # seed => random_state
     valid_generator = idg2.flow(x_test,y_test)
     test_generator = idg2.flow(x_pred,shuffle=False)
-    # model = convmodel()
-    # cp = ModelCheckpoint(f'../data/modelcheckpoint/checkpoint1-{i}.hdf5', 
-    # monitor='val_loss', save_best_only=True, verbose=1)
-    # lr = ReduceLROnPlateau(patience=50,verbose=1,factor=0.5) #learning rate scheduler
-    # es = EarlyStopping(patience=25, verbose=1)
-    # model.fit_generator(train_generator,epochs=100, 
-    # validation_data= valid_generator, callbacks=[es,lr,cp])
-    model2 = load_model(f'../data/modelcheckpoint/checkpoint1-{i}.hdf5', compile=False)
-    result = model2.predict_generator(test_generator,verbose=True)
+    model = convmodel()
+    cp = ModelCheckpoint(f'../data/modelcheckpoint/DaconModel-{i}.hdf5', 
+    monitor='val_loss', save_best_only=True, verbose=1)
+    es = EarlyStopping(patience=15, verbose=1)
+    model.fit_generator(train_generator,epochs=35, 
+    validation_data= valid_generator, callbacks=[es,cp])
+    # model2 = load_model(f'../data/modelcheckpoint/checkpoint1-{i}.hdf5', compile=False)
+    result = model.predict_generator(test_generator,verbose=True)
     # print(result)
     y_recovery = np.where(result<0.5, 0, 1)
     # print(y_recovery)
     sub[i] = y_recovery
     print(f'{i}까지 학습 완료')
-sub.to_csv('../data/csv/Dacon3/Dacon7.csv',index=False)
+sub.to_csv('../data/csv/Dacon3/Dacon13.csv',index=False)
