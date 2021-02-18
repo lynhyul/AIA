@@ -12,7 +12,7 @@ from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropou
 import tensorflow_hub as hub
 import tensorflow as tf
 import scipy.signal as signal
-from tensorflow.keras.applications import EfficientNetB7
+from tensorflow.keras.applications import EfficientNetB2
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
@@ -31,7 +31,7 @@ x_train = x_train.astype(float) / 255
 x_test = x_test.astype(float) / 255
 
 
-resent = EfficientNetB7(include_top=False,weights='imagenet',input_shape=x_train.shape[1:])
+resent = EfficientNetB2(include_top=False,weights='imagenet',input_shape=x_train.shape[1:])
 x = resent.output
 x = MaxPooling2D(pool_size=(2,2)) (x)
 x = Dropout(0.5) (x)

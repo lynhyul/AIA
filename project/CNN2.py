@@ -84,7 +84,7 @@ nb_classes = len(categories)
 X_train = X_train.astype(float) / 255
 X_test = X_test.astype(float) / 255 
 
-train_generator = idg.flow(X_train,y_train,batch_size=32)
+train_generator = idg.flow(X_train,y_train,batch_size=2442)
 valid_generator = idg.flow(X_test,y_test)
 
 model = Sequential()
@@ -125,9 +125,8 @@ for i in range (3) :
 
 
 # model.add(BatchNormalization())
-# model.add(GlobalAveragePooling2D())
-model.add(Activation('softmax'))
-model.add(MaxPooling2D(2,2))
+model.add(GlobalAveragePooling2D())
+model.add(BatchNormalization())
 
 model.add(Flatten())
 
