@@ -89,7 +89,7 @@ idg = ImageDataGenerator(
     ) 
 
 train_generator = idg.flow(X_train,y_train,batch_size=32,seed=2020)
-valid_generator = idg.flow(X_test,y_test)
+valid_generator = (X_test,y_test)
  
 input_tensor = Input(shape=(255, 255, 3), dtype='float32', name='input')
  
@@ -128,7 +128,7 @@ with tf_ops.device('/device:GPU:0'):
     
                 x = Add()([x, shortcut])
                 x = Activation('relu')(x)
-                
+                # 안녕~~
                 shortcut = x
     
             else:
@@ -291,17 +291,17 @@ with tf_ops.device('/device:GPU:0'):
     x = conv5_layer(x)
     
     
-    # x = GlobalAveragePooling2D()(x)
+    x = GlobalAveragePooling2D()(x)
     # x = Activation('softmax')(x)
-    x = MaxPooling2D(pool_size=(2,2)) (x)
-    x = Dropout(0.5) (x)
-    x = Flatten() (x)
+    # x = MaxPooling2D(pool_size=(2,2)) (x)
+    # x = Dropout(0.5) (x)
+    # x = Flatten() (x)
 
-    x = Dense(128, activation= 'relu') (x)
-    x = BatchNormalization() (x)
-    x = Dense(64, activation= 'relu') (x)
-    x = BatchNormalization() (x)
-    x = Dropout(0.2) (x)
+    # x = Dense(128, activation= 'relu') (x)
+    # x = BatchNormalization() (x)
+    # x = Dense(64, activation= 'relu') (x)
+    # x = BatchNormalization() (x)
+    # x = Dropout(0.2) (x)
 
     output_tensor = Dense(10, activation='softmax')(x)
     
@@ -312,8 +312,8 @@ with tf_ops.device('/device:GPU:0'):
     model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=1e-5,epsilon=None), metrics=['acc'])
     model_path = '../data/modelcheckpoint/Pproject0.hdf5'
     checkpoint = ModelCheckpoint(filepath=model_path , monitor='val_loss', verbose=1, save_best_only=True)
-    early_stopping = EarlyStopping(monitor='val_loss', patience=40)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=150)
     # lr = ReduceLROnPlateau(patience=30, factor=0.5,verbose=1)
 
-    learning_history = model.fit_generator(train_generator,epochs=200, 
+    learning_history = model.fit_generator(train_generator,epochs=1000, steps_per_epoch=77,
     validation_data=valid_generator, callbacks=[early_stopping,checkpoint])  

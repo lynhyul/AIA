@@ -52,47 +52,47 @@ xy_test = train_datagen.flow_from_directory(
     class_mode='categorical', 
     subset = 'validation'
 )
-
+print(xy_train[0][1].shape)
 # data_flow = generator.flow(data.x_train, data.y_train, batch_size=batch_size)
 # 로 이미지를 생성해서 반환하는 일종의 Iterator(반복자)를 만듭니다.
 # 이 반복자는 x, y를 가지고 한번에 batch_size만큼의 랜덤하게 변형된 학습 데이터를 만들어줍니다.
 
 
-with tf_ops.device('/device:GPU:0'):
+# with tf_ops.device('/device:GPU:0'):
 
-    model = Sequential()
+#     model = Sequential()
 
-    model.add(Conv2D(filters = 32, kernel_size=(3,3), input_shape =(255,255,3), activation= 'relu'))
-    model.add(MaxPooling2D(pool_size=(2,2)))
-    model.add(Dropout(0.25))
+#     model.add(Conv2D(filters = 32, kernel_size=(3,3), input_shape =(255,255,3), activation= 'relu'))
+#     model.add(MaxPooling2D(pool_size=(2,2)))
+#     model.add(Dropout(0.25))
     
-    model.add(Conv2D(64, (3,3), padding="same", activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2,2)))
-    model.add(Dropout(0.25))
+#     model.add(Conv2D(64, (3,3), padding="same", activation='relu'))
+#     model.add(MaxPooling2D(pool_size=(2,2)))
+#     model.add(Dropout(0.25))
     
-    model.add(Flatten())
-    model.add(Dense(256, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(10, activation='softmax'))
-    model.compile(loss = 'categorical_crossentropy', optimizer= 'adam', metrics=['acc'])
+#     model.add(Flatten())
+#     model.add(Dense(256, activation='relu'))
+#     model.add(Dropout(0.5))
+#     model.add(Dense(10, activation='softmax'))
+#     model.compile(loss = 'categorical_crossentropy', optimizer= 'adam', metrics=['acc'])
 
-    from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
+#     from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
-    es = EarlyStopping(monitor= 'val_loss', patience=30)
-    lr = ReduceLROnPlateau(monitor='val_loss', patience=15, factor=0.5)
+#     es = EarlyStopping(monitor= 'val_loss', patience=30)
+#     lr = ReduceLROnPlateau(monitor='val_loss', patience=15, factor=0.5)
 
-    history = model.fit_generator(xy_train, epochs=500, validation_data=xy_test,
-    callbacks=[es,lr])
-# steps_per_epoch=32 => 32개에 대한 데이터를 1에포에 대해서 32번만 학습?
+#     history = model.fit_generator(xy_train, epochs=500, validation_data=xy_test,
+#     callbacks=[es,lr])
+# # steps_per_epoch=32 => 32개에 대한 데이터를 1에포에 대해서 32번만 학습?
 
-acc = history.history['acc']
-val_acc = history.history['val_acc']
-loss = history.history['loss'] 
-val_loss = history.history['val_loss']
+# acc = history.history['acc']
+# val_acc = history.history['val_acc']
+# loss = history.history['loss'] 
+# val_loss = history.history['val_loss']
 
 
-print('acc : ', acc[-1])
-# print('loss : ', loss[:-1])
-# print('val_acc : ', val_loss[:-1])
+# print('acc : ', acc[-1])
+# # print('loss : ', loss[:-1])
+# # print('val_acc : ', val_loss[:-1])
 
 
