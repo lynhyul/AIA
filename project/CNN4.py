@@ -3,7 +3,7 @@ import os, glob, numpy as np
 from sklearn.model_selection import train_test_split
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential, Model,load_model,save_model
-from keras.layers import Input
+from keras.layers import Input, Activation
 from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout, BatchNormalization,Activation,ZeroPadding2D,Add
 from keras.layers import GlobalAveragePooling2D
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
@@ -100,7 +100,7 @@ categories = ["Beaggle", "Bichon Frise", "Border Collie","Bulldog", "Corgi","Poo
                 "Schnauzer","Shih Tzu",]
 nb_classes = len(categories)
 
-# x_train, x_valid, y_train, y_valid = train_test_split(x,y,test_size= 0.2)
+x_train, x_valid, y_train, y_valid = train_test_split(x,y,test_size= 0.2)
 
 # from sklearn.model_selection import StratifiedKFold, KFold
 # skf = StratifiedKFold(n_splits=8, random_state=42, shuffle=True)
@@ -118,60 +118,95 @@ train_generator = idg.flow(x_train,y_train,batch_size=8)
 valid_generator = idg.flow(x_valid,y_valid)
 
 model = Sequential()
-model.add(Conv2D(filters = 32, kernel_size =(3,3), padding = 'valid', strides=(1,1), activation='relu',
+model.add(Conv2D(filters = 32, kernel_size =(3,3), padding = 'valid', strides=(1,1),
 input_shape = (255,255,3)))
-model.add(BatchNormalization())                        
-model.add(Conv2D(filters = 32, kernel_size =(3,3), padding = 'valid',strides=(1,1), activation='relu'))
 model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(Dropout(0.2))                   
+model.add(Conv2D(filters = 32, kernel_size =(3,3), padding = 'valid',strides=(1,1)))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(Dropout(0.2)) 
 model.add(MaxPooling2D(pool_size=(2,2),strides=(2,2)))
 
-model.add(Conv2D(filters = 64, kernel_size =(3,3), padding = 'valid',strides=(1,1), activation='relu'))
-model.add(BatchNormalization())                            
-model.add(Conv2D(filters = 64, kernel_size =(3,3), padding = 'valid',strides=(1,1), activation='relu'))
+model.add(Conv2D(filters = 64, kernel_size =(3,3), padding = 'valid',strides=(1,1)))
+model.add(BatchNormalization())    
+model.add(Activation('relu'))
+model.add(Dropout(0.2))                         
+model.add(Conv2D(filters = 64, kernel_size =(3,3), padding = 'valid',strides=(1,1)))
 model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(Dropout(0.2)) 
 model.add(MaxPooling2D(pool_size=(2,2),strides=(2,2)))
 
-model.add(Conv2D(filters = 128, kernel_size =(3,3), padding = 'valid', strides=(1,1), activation='relu'))
-model.add(BatchNormalization())                            
-model.add(Conv2D(filters = 128, kernel_size =(3,3), padding = 'valid', strides=(1,1), activation='relu'))
+model.add(Conv2D(filters = 128, kernel_size =(3,3), padding = 'valid', strides=(1,1)))
+model.add(BatchNormalization())     
+model.add(Activation('relu'))
+model.add(Dropout(0.2))                        
+model.add(Conv2D(filters = 128, kernel_size =(3,3), padding = 'valid', strides=(1,1)))
 model.add(BatchNormalization())
-model.add(Conv2D(filters = 128, kernel_size =(3,3), padding = 'valid', strides=(1,1), activation='relu'))
+model.add(Activation('relu'))
+model.add(Dropout(0.2)) 
+model.add(Conv2D(filters = 128, kernel_size =(3,3), padding = 'valid', strides=(1,1)))
 model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(Dropout(0.2)) 
 model.add(MaxPooling2D(pool_size=(2,2),strides=(2,2)))
 
 for i in range (2) :
-    model.add(Conv2D(filters = 256, kernel_size =(3,3), padding = 'valid', strides=(1,1), activation='relu'))
-    model.add(BatchNormalization())                            
-    model.add(Conv2D(filters = 256, kernel_size =(3,3), padding = 'valid' ,strides=(1,1), activation='relu'))
+    model.add(Conv2D(filters = 256, kernel_size =(3,3), padding = 'valid', strides=(1,1)))
+    model.add(BatchNormalization())     
+    model.add(Activation('relu'))
+    model.add(Dropout(0.2))                        
+    model.add(Conv2D(filters = 256, kernel_size =(3,3), padding = 'valid' ,strides=(1,1)))
     model.add(BatchNormalization())
-    model.add(Conv2D(filters = 256, kernel_size =(3,3), padding = 'valid' ,strides=(1,1), activation='relu'))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.2)) 
+    model.add(Conv2D(filters = 256, kernel_size =(3,3), padding = 'valid' ,strides=(1,1)))
     model.add(BatchNormalization()) 
+    model.add(Activation('relu'))
+    model.add(Dropout(0.2)) 
     model.add(MaxPooling2D(pool_size=(2,2),strides=(2,2)))
     
 model.add(GlobalAveragePooling2D())
 model.add(Flatten())
-model.add(Dense(128, activation= 'relu'))
+model.add(Dense(128))
 model.add(BatchNormalization())
-model.add(Dense(64, activation= 'relu'))
+model.add(Activation('relu'))
+model.add(Dropout(0.2))
+model.add(Dense(64))
 model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(Dropout(0.2))
 model.add(Dense(nb_classes, activation='softmax'))
 # model2 = load_model('../data/modelcheckpoint/myPproject_5.hdf5')
 model.compile(loss='sparse_categorical_crossentropy', optimizer=Adam(lr=0.001,epsilon=None), metrics=['acc'])
 
 model.summary()
-model_path = '../data/modelcheckpoint/my_projectdrop.hdf5'
-checkpoint = ModelCheckpoint(filepath=model_path , monitor='val_loss', verbose=1, save_best_only=True)
-early_stopping = EarlyStopping(monitor='val_loss', patience=50)
+model_path = '../data/modelcheckpoint/my_project_act2.hdf5'
+checkpoint = ModelCheckpoint(filepath=model_path , monitor='val_acc', verbose=1, save_best_only=True)
+early_stopping = EarlyStopping(monitor='val_acc', patience=50)
 lr = ReduceLROnPlateau(patience=25, factor=0.5,verbose=1)
 
-history = model.fit_generator(train_generator,epochs=100, steps_per_epoch= len(x_train) / 8,
+history = model.fit_generator(train_generator,epochs=200, steps_per_epoch= len(x_train) / 8,
 validation_data=valid_generator, callbacks=[early_stopping,lr,checkpoint])
 
 print(model.evaluate(valid_generator)[1])
-nth = nth +1
-print(nth,"번째 완료")
-print(model.evaluate(valid_generator)[1])
-model2 = load_model('../data/modelcheckpoint/my_projectdrop.hdf5')
+# nth = nth +1
+# print(nth,"번째 완료")
+
+
+import matplotlib.pyplot as plt
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.plot(history.history['acc'])      
+plt.plot(history.history['val_acc'])
+plt.title('loss & acc')
+plt.ylabel('loss & acc')
+plt.xlabel('epoch')
+plt.legend(['tran loss', 'val loss', 'train acc','val acc'])    #주석
+plt.show()  
+model2 = load_model('../data/modelcheckpoint/my_project_act2.hdf5')
 # model2.compile(loss='sparse_categorical_crossentropy', optimizer=Adam(lr=0.001,epsilon=None), metrics=['acc'])
 
 result = model2.predict_generator(x_test,verbose=True)
@@ -180,34 +215,24 @@ print(np.argmax(result,1))
 categories = ["Beaggle", "Bichon Frise", "Border Collie","Bulldog", "Corgi","Poodle","Retriever","Samoyed",
             "Schnauzer","Shih Tzu",]
 for i in np.argmax(result,1) :
-if i ==0 :
-    print("이 사진은",categories[0],"입니다")
-if i ==1 :
-    print("이 사진은",categories[1],"입니다")
-if i ==2 :
-    print("이 사진은",categories[2],"입니다")
-if i ==3 :
-    print("이 사진은",categories[3],"입니다")
-if i ==4 :
-    print("이 사진은",categories[4],"입니다")
-if i ==5 :
-    print("이 사진은",categories[5],"입니다")
-if i ==6 :
-    print("이 사진은",categories[6],"입니다")
-if i ==7 :
-    print("이 사진은",categories[7],"입니다")
-if i ==8 :
-    print("이 사진은",categories[8],"입니다")   
-if i ==9 :
-    print("이 사진은",categories[9],"입니다")
+    if i ==0 :
+        print("이 사진은",categories[0],"입니다")
+    if i ==1 :
+        print("이 사진은",categories[1],"입니다")
+    if i ==2 :
+        print("이 사진은",categories[2],"입니다")
+    if i ==3 :
+        print("이 사진은",categories[3],"입니다")
+    if i ==4 :
+        print("이 사진은",categories[4],"입니다")
+    if i ==5 :
+        print("이 사진은",categories[5],"입니다")
+    if i ==6 :
+        print("이 사진은",categories[6],"입니다")
+    if i ==7 :
+        print("이 사진은",categories[7],"입니다")
+    if i ==8 :
+        print("이 사진은",categories[8],"입니다")   
+    if i ==9 :
+        print("이 사진은",categories[9],"입니다")
 
-# import matplotlib.pyplot as plt
-# plt.plot(history.history['loss'])
-# plt.plot(history.history['val_loss'])
-# plt.plot(history.history['acc'])      
-# plt.plot(history.history['val_acc'])
-# plt.title('loss & acc')
-# plt.ylabel('loss & acc')
-# plt.xlabel('epoch')
-# plt.legend(['tran loss', 'val loss', 'train acc','val acc'])    #주석
-# plt.show()  

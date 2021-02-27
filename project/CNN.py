@@ -82,7 +82,7 @@ print(xy_train[0][1].shape)
 #     es = EarlyStopping(monitor= 'val_loss', patience=30)
 #     lr = ReduceLROnPlateau(monitor='val_loss', patience=15, factor=0.5)
 
-#     history = model.fit_generator(xy_train, epochs=500, validation_data=xy_test,
+    history = model.fit_generator(xy_train, epochs=500, validation_data=xy_test)
 #     callbacks=[es,lr])
 # # steps_per_epoch=32 => 32개에 대한 데이터를 1에포에 대해서 32번만 학습?
 

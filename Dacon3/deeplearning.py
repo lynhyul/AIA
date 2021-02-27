@@ -9,14 +9,15 @@ import matplotlib.pyplot as plt
 from keras.preprocessing.image import ImageDataGenerator
 from numpy import expand_dims
 from sklearn.model_selection import StratifiedKFold, KFold
-from keras import Sequential, Model
+from keras.models import Sequential, Model, load_model
 from keras.layers import *
+from keras.layers import GlobalAveragePooling2D
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.optimizers import Adam,SGD
 from sklearn.model_selection import train_test_split
 import string
 import scipy.signal as signal
-from keras.applications.resnet50 import ResNet50,preprocess_input,decode_predictions
+from keras.applications.resnet import ResNet101,preprocess_input
 
 
 # dirty 데이터는 train 데이터 훈련시키자!
@@ -64,8 +65,8 @@ y = pd.read_csv('../data/csv/Dacon3/dirty_mnist_2nd_answer.csv')
 
 sub = pd.read_csv('../data/csv/Dacon3/sample_submission.csv')
 
-y = y.iloc[:20000,1:]
-x = x[:20000,:,:]
+y = y.iloc[:,1:]
+# x = x[:50000,:,:]
 # # y = y['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 
 # #       'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'] 
 
@@ -73,11 +74,10 @@ y = y.to_numpy()
 
 
 #전처리
-x = x.reshape(-1,128,128,3)/255.
-x_pred = x_pred.reshape(-1,128,128,3)/255.
-
-
-
+x = x.reshape(-1,128,128,3)
+x_pred = x_pred.reshape(-1,128,128,3)
+x = preprocess_input(x)
+x_pred = preprocess_input(x_pred)
 
 x_train, x_test, y_train, y_test = train_test_split(x,y,train_size=0.9)
 
@@ -87,8 +87,9 @@ x_train, x_test, y_train, y_test = train_test_split(x,y,train_size=0.9)
 idg = ImageDataGenerator(
     # rotation_range=10, acc 하락
     width_shift_range=(-1,1),   # 0.1 => acc 하락
-    height_shift_range=(-1,1)  # 0.1 => acc 하락
-    )
+    height_shift_range=(-1,1),  # 0.1 => acc 하락
+    zoom_range=0.2) 
+
     # rotation_range=40, 
     # shear_range=0.2,    # 현상유지
     # zoom_range=0.2) 
@@ -111,25 +112,28 @@ idg2 = ImageDataGenerator()
 - fill_mode 이미지를 회전, 이동하거나 축소할 때 생기는 공간을 채우는 방식
 '''
 
-train_generator = idg.flow(x_train,y_train,batch_size=32)
+train_generator = idg.flow(x_train,y_train,batch_size=8)
 # seed => random_state
 valid_generator = idg2.flow(x_test,y_test)
 test_generator = idg2.flow(x_pred,shuffle=False)
 
-resent = ResNet50(include_top=False,weights='imagenet',input_shape=(128,128,3))
-x = resent.output
-x = MaxPooling2D(pool_size=(2,2)) (x)
-x = Dropout(0.5) (x)
+resnet = ResNet101(include_top=False,weights='imagenet',input_shape=(128,128,3))
+x = resnet.output
+resnet.trainable = False
+# x = Conv2D(filters =1024,kernel_size=(3,3), strides=1, padding='valid') (x)
+# x = Conv2D(filters =1024,kernel_size=(3,3), strides=1, padding='valid',) (x)
+x = GlobalAveragePooling2D() (x)
+# x = Dropout(0.5) (x)
 x = Flatten() (x)
-
-x = Dense(128, activation= 'relu') (x)
+x = Dense(128) (x)
 x = BatchNormalization() (x)
-x = Dense(64, activation= 'relu') (x)
+x = Activation('relu') (x)
+x = Dense(64) (x)
 x = BatchNormalization() (x)
-x = Dropout(0.2) (x)
+x = Activation('relu') (x)
 x = Dense(26, activation= 'sigmoid') (x)
 
-model = Model(inputs = resent.input, outputs = x)
+model = Model(inputs = resnet.input, outputs = x)
 model.compile(loss='binary_crossentropy', optimizer=Adam(1e-5), metrics=['acc'])
 # model = Sequential()
 
@@ -162,16 +166,17 @@ model.compile(loss='binary_crossentropy', optimizer=Adam(1e-5), metrics=['acc'])
 # model.add(Dropout(0.2))
 # model.add(Dense(26, activation='sigmoid'))
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau,ModelCheckpoint
-mc = ModelCheckpoint('../data/modelcheckpoint/Daconproject5.h5',save_best_only=True, verbose=1)
-early_stopping = EarlyStopping(patience= 30)
-lr = ReduceLROnPlateau(patience= 50, factor=0.5)
+mc = ModelCheckpoint('../data/modelcheckpoint/Daconproject6.h5',save_best_only=True, verbose=1)
+early_stopping = EarlyStopping(patience= 60)
+lr = ReduceLROnPlateau(patience= 30, factor=0.5)
 # model.compile(loss="binary_crossentropy", optimizer=Adam(lr=0.002,epsilon=None),
 #                     metrics=['acc'])
 learning_history = model.fit_generator(train_generator,epochs=100, 
-    validation_data=valid_generator, callbacks=[early_stopping,lr])
+    validation_data=valid_generator, callbacks=[early_stopping,lr,mc])
 
-result = model.predict_generator(test_generator,verbose=True)
+model2 = load_model('../data/modelcheckpoint/Daconproject6.h5')
+result = model2.predict_generator(test_generator,verbose=True)
 result[result < 0.5] =0
 result[result > 0.5] =1
 sub.iloc[:,1:] = result
-sub.to_csv('../data/csv/Dacon3/Dacon12.csv',index=False)
+sub.to_csv('../data/csv/Dacon3/Dacon14z.csv',index=False)

@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
 import urllib.request
+import os
 
 # selenium에서 사용할 웹 드라이버 절대 경로 정보
 chromedriver = 'project/chromedriver.exe'
@@ -10,7 +11,7 @@ driver = webdriver.Chrome(chromedriver)
 # driver로 특정 페이지를 크롤링한다.
 driver.get('https://www.google.co.kr/imghp?hl=ko&ogbl') # google화면 띄우기
 elem = driver.find_element_by_name("q") # 검색창에 대한 elem
-elem.send_keys("Samoyed")  # "q"라는 elem(검색창에)에 '비글'이라는 단어를 입력하게 하겠다.
+elem.send_keys("푸들")  # "q"라는 elem(검색창에)에 '비글'이라는 단어를 입력하게 하겠다.
 elem.send_keys(Keys.RETURN)
 
 SCROLL_PAUSE_TIME = 1
@@ -43,7 +44,7 @@ for image in images :
         image.click()   # 이미지를 클릭하겠다.
         time.sleep(1)
         imgUrl = driver.find_element_by_css_selector(".n3VNCb").get_attribute("src")    
-        urllib.request.urlretrieve(imgUrl, "../data/image/project/Samoyed/"+ str(count)+ ".jpg")
+        urllib.request.urlretrieve(imgUrl, "../data/image/project3/test/"+ str(count)+ ".jpg")
         count = count + 1
     except :
         pass

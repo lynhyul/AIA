@@ -13,6 +13,7 @@ import tensorflow_hub as hub
 import tensorflow as tf
 import scipy.signal as signal
 from tensorflow.keras.applications import VGG16
+from keras.applications.vgg16 import preprocess_input
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
@@ -26,39 +27,45 @@ categories = ["Beaggle", "Bichon Frise", "Border Collie","Bulldog", "Corgi","Poo
                 "Schnauzer","Shih Tzu",]
 nb_classes = len(categories)
 
-
+print(x_train)
 #일반화
-x_train = x_train.astype(float) / 255
-x_test = x_test.astype(float) / 255
+x_train = preprocess_input(x_train)
+x_test = preprocess_input(x_test)
 
+print(x_train)
+# xbsl
+vg16 = VGG16(include_top=True,weights='imagenet',input_shape=(225,225,3))
+vg16.trainable = False
+# x = vg16.output 
 
-resent = VGG16(include_top=False,weights='imagenet',input_shape=x_train.shape[1:])
-x = resent.output
-x = MaxPooling2D(pool_size=(2,2)) (x)
-x = Dropout(0.5) (x)
-x = Flatten() (x)
+# x = vg16.output
+# x = MaxPooling2D(pool_size=(2,2)) (x)
+# x = Flatten() (x)
 
-x = Dense(128, activation= 'relu') (x)
-x = BatchNormalization() (x)
-x = Dense(64, activation= 'relu') (x)
-x = BatchNormalization() (x)
-x = Dropout(0.2) (x)
+# x = Dense(128, activation= 'relu') (x)
+# x = BatchNormalization() (x)
+# x = Dense(64, activation= 'relu') (x)
+# x = BatchNormalization() (x)
+# x = BatchNormalization() (x)
 x = Dense(10, activation= 'softmax') (x)
 
-model = Model(inputs = resent.input, outputs = x)
+model = Model(inputs = vg16.input, outputs = x)
 model.compile(loss='categorical_crossentropy', optimizer=Adam(1e-5), metrics=['acc'])
+# vg16.summary()
+model.summary()
 
+# model_path = '../data/modelcheckpoint/Pproject8.hdf5'
+# checkpoint = ModelCheckpoint(filepath=model_path , monitor='val_loss', verbose=1, save_best_only=True)
+early_stopping = EarlyStopping(monitor='val_loss', patience=30)
+# # lr = ReduceLROnPlateau(patience=30, factor=0.5,verbose=1)
 
-model_path = '../data/modelcheckpoint/Pproject8.hdf5'
-checkpoint = ModelCheckpoint(filepath=model_path , monitor='val_loss', verbose=1, save_best_only=True)
-early_stopping = EarlyStopping(monitor='val_loss', patience=60)
-# lr = ReduceLROnPlateau(patience=30, factor=0.5,verbose=1)
-
-history = model.fit(x_train, y_train, batch_size=32, epochs=100, validation_data=(x_test, y_test),callbacks=[early_stopping,
-checkpoint])
+history = model.fit(x_train, y_train, batch_size=32, epochs=50, validation_data=(x_test, y_test),callbacks=[early_stopping])
+# checkpoint])
 
 print("정확도 : %.4f" % (model.evaluate(x_test, y_test)[1]))
-print(model.evaluate(x_test, y_test))
+# # false = 정확도 : 0.8660
+# # True =
+# print(model.evaluate(x_test, y_test))
 
 import matplotlib.pyplot as plt
 plt.plot(history.history['loss'])
@@ -72,6 +79,3 @@ plt.legend(['tran loss', 'val loss', 'train acc','val acc'])    #주석
 plt.show()
 
 
-
-# 정확도 : 0.8867
-# [0.4285506308078766, 0.8866994976997375]

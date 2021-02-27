@@ -10,4 +10,4 @@ print("p13_do.py의 module 이름은 : ",__name__)
 print("==========================")
 
 p11_car.drive() # => 아무것도 안나옴
-p12.tv.watch()  # => 아무것도 안나옴
+p12_tv.watch()  # => 아무것도 안나옴
