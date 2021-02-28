@@ -116,7 +116,7 @@ def seed_everything(seed: int = 42):
 class EfficientNet_MultiLabel(nn.Module):
     def __init__(self, in_channels):
         super(EfficientNet_MultiLabel, self).__init__()
-        self.network = EfficientNet.from_pretrained('efficientnet-b4', in_channels=in_channels) # b3, b7
+        self.network = EfficientNet.from_pretrained('efficientnet-b5', in_channels=in_channels) # b3, b7
         # self.network = resnet50(pretrained=True)
         self.output_layer = nn.Linear(1000, 26)
 
@@ -151,8 +151,8 @@ for fold in range(1):
         transforms.ToTensor(),
         ])
 
-    epochs=50
-    batch_size=8        # 자신의 VRAM에 맞게 조절해야 OOM을 피할 수 있습니다.
+    epochs=40          # 37~39에포부터 과적합의 징조가 계속보였음
+    batch_size=10        # 자신의 VRAM에 맞게 조절해야 OOM을 피할 수 있습니다.
     
     # Data Loader
     train_dataset = MnistDataset_v2(imgs = imgs[train_idx], labels=labels[train_idx], transform=train_transform)

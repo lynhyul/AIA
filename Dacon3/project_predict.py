@@ -62,7 +62,7 @@ print(model.evaluate(x_test, y_test))
 import matplotlib.pyplot as plt
 plt.plot(history.history['loss'])
 plt.plot(history.history['val_loss'])
-plt.plot(history.history['acc'])       #회귀모델이기때문에 acc측정이 힘들다
+plt.plot(history.history['acc'])      
 plt.plot(history.history['val_acc'])
 plt.title('loss & acc')
 plt.ylabel('loss & acc')
