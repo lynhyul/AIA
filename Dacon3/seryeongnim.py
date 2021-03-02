@@ -116,7 +116,7 @@ def seed_everything(seed: int = 42):
 class EfficientNet_MultiLabel(nn.Module):
     def __init__(self, in_channels):
         super(EfficientNet_MultiLabel, self).__init__()
-        self.network = EfficientNet.from_pretrained('efficientnet-b5', in_channels=in_channels) # b3, b7
+        self.network = EfficientNet.from_pretrained('efficientnet-b0', in_channels=in_channels) # b3, b7
         # self.network = resnet50(pretrained=True)
         self.output_layer = nn.Linear(1000, 26)
 
@@ -151,8 +151,8 @@ for fold in range(1):
         transforms.ToTensor(),
         ])
 
-    epochs=40          # 37~39에포부터 과적합의 징조가 계속보였음
-    batch_size=10        # 자신의 VRAM에 맞게 조절해야 OOM을 피할 수 있습니다.
+    epochs=30          # 37~39에포부터 과적합의 징조가 계속보였음
+    batch_size=32        # 자신의 VRAM에 맞게 조절해야 OOM을 피할 수 있습니다.
     
     # Data Loader
     train_dataset = MnistDataset_v2(imgs = imgs[train_idx], labels=labels[train_idx], transform=train_transform)
@@ -218,7 +218,7 @@ for fold in range(1):
             valid_accuracy.append(np.mean(valid_batch_accuracy))
             
         if np.mean(valid_batch_accuracy)>valid_best_accuracy:
-            torch.save(model.state_dict(), '../data/modelcheckpoint/0227_EfficientNetB7-fold{}.pt'.format(fold))
+            torch.save(model.state_dict(), '../data/modelcheckpoint/0227_EfficientNetB0-fold{}.pt'.format(fold))
             valid_best_accuracy = np.mean(valid_batch_accuracy)
         print('fold : {}\tepoch : {:02d}\ttrain_accuracy / loss : {:.5f} / {:.5f}\tvalid_accuracy / loss : {:.5f} / {:.5f}\ttime : {:.0f}'.format(fold+1, epoch+1,
                                                                                                                                               np.mean(batch_accuracy_list),
@@ -260,4 +260,4 @@ with torch.no_grad():
 
 # ==================== 제출물 생성 ====================
 submission.iloc[:,1:] = np.where(submission.values[:,1:]>=0.5, 1,0)
-submission.to_csv('../data/csv/Dacon3/Dacon3_sample3.csv', index=False)
+submission.to_csv('../data/csv/Dacon3/Dacon3_sample5.csv', index=False)
