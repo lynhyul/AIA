@@ -1,27 +1,17 @@
-from tensorflow.keras.applications import EfficientNetB2
-from tensorflow.keras.layers import Dense, Flatten,BatchNormalization, Activation, GlobalAveragePooling2D
+from tensorflow.keras.applications import Xception, ResNet101, InceptionResNetV2
+from tensorflow.keras.layers import Dense, Flatten,BatchNormalization, Activation, GlobalAveragePooling2D, UpSampling2D
 from tensorflow.keras.models import Sequential
 from keras.datasets import cifar10
-from tensorflow.keras.applications.efficientnet import preprocess_input
+from keras.applications.inception_resnet_v2 import preprocess_input
 from keras.optimizers import Adam
 
 import numpy as np
 
-transfer = EfficientNetB2(weights='imagenet', include_top=False,input_shape=(32,32,3))
+transfer = InceptionResNetV2(weights='imagenet', include_top=False,input_shape=(96,96,3))
 
 transfer.trainable = False
-'''
-Total params: 14,719,879
-Trainable params: 5,191
-Non-trainable params: 14,714,688
-'''
 
-# vgg16.trainable = True
-'''
-Total params: 14,719,879
-Trainable params: 5,191
-Non-trainable params: 14,714,688
-'''
+# loss :  [0.6676037907600403, 0.7749000191688538]
 (x_train, y_train), (x_test,y_test)= cifar10.load_data()
 
 
@@ -43,11 +33,10 @@ y_test = to_categorical(y_test)
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout,LSTM
 model = Sequential()
+model.add(UpSampling2D(size=(3,3)))
 model.add(transfer)
 # model.add(Conv2D(filters=1024,kernel_size=(1,1),padding='valid')) # 미세조정(파인튜닝)
 # model.add(Conv2D(filters=1024,kernel_size=(1,1),padding='valid')) # 미세조정(파인튜닝)
-model.add(BatchNormalization())
-model.add(Activation('relu'))
 model.add(GlobalAveragePooling2D())
 model.add(Flatten())
 model.add(Dense(128))
@@ -57,7 +46,7 @@ model.add(Dense(64))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
 model.add(Dense(10, activation= 'softmax'))
-model.summary()
+# model.summary()
 
 # print("그냥 가중치의 수 : ", len(model.weights))   #32 -> (weight가 있는 layer * (i(input)bias + o(output)bias))
 # print("동결 후 훈련되는 가중치의 수 : ",len(model.trainable_weights))   #6

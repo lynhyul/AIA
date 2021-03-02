@@ -10,18 +10,7 @@ import numpy as np
 transfer = EfficientNetB0(weights='imagenet', include_top=False,input_shape=(32,32,3))
 
 transfer.trainable = False
-'''
-Total params: 14,719,879
-Trainable params: 5,191
-Non-trainable params: 14,714,688
-'''
-
-# vgg16.trainable = True
-'''
-Total params: 14,719,879
-Trainable params: 5,191
-Non-trainable params: 14,714,688
-'''
+# loss :  [1.1802613735198975, 0.5870000123977661]
 (x_train, y_train), (x_test,y_test)= cifar10.load_data()
 
 
@@ -30,7 +19,6 @@ Non-trainable params: 14,714,688
 x_train = preprocess_input(x_train)
 x_test = preprocess_input(x_test)
 
-# x 같은 경우 색상의 값이기 때문에 255가 최고 값
 
 
 # OnHotEncoding (다중 분류 데이터에서 Y값을 해주는 것)

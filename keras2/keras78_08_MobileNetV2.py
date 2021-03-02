@@ -85,7 +85,7 @@ for layer in transfer.layers[:152]: # 151 레이어층까지 가중치를 동결
    layer.trainable = False
 for layer in transfer.layers[152:]: # 152 레이어부터는 가중치를 갱신시키겠다.
    layer.trainable = True
-# 다소 과적합은 있었으나 0.48 -> 0.64까지 올랐다...
+# 다소 과적합은 있었으나 loss :  [1.1311742067337036, 0.6299999952316284]
 
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint,ReduceLROnPlateau
 modelpath = './modelCheckpoint/k46_cifa10_{epoch:02d}-{val_loss:.4f}.hdf5'

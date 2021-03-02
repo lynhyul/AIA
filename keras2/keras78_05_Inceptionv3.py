@@ -10,18 +10,9 @@ import numpy as np
 transfer = InceptionV3(weights='imagenet', include_top=False,input_shape=(96,96,3))
 
 transfer.trainable = False
-'''
-Total params: 14,719,879
-Trainable params: 5,191
-Non-trainable params: 14,714,688
-'''
 
-# vgg16.trainable = True
-'''
-Total params: 14,719,879
-Trainable params: 5,191
-Non-trainable params: 14,714,688
-'''
+# loss :  [0.9196390509605408, 0.6881999969482422]
+
 (x_train, y_train), (x_test,y_test)= cifar10.load_data()
 
 
@@ -56,7 +47,7 @@ model.add(Dense(64))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
 model.add(Dense(10, activation= 'softmax'))
-model.summary()
+# model.summary()
 
 # print("그냥 가중치의 수 : ", len(model.weights))   #32 -> (weight가 있는 layer * (i(input)bias + o(output)bias))
 # print("동결 후 훈련되는 가중치의 수 : ",len(model.trainable_weights))   #6
