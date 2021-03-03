@@ -124,9 +124,9 @@ checkpoint,lr])
 # 결과물 출력
 print("정확도 : %.4f" % (model.evaluate(x_test, y_test)[1]))
 result = model.predict_generator(x_pred,verbose=True)
-result[result < 0.5] =0
-result[result > 0.5] =1
-np.where(result < 0.5, '남자', '여자')
+# result[result < 0.5] =0
+# result[result > 0.5] =1
+# np.where(result < 0.5, '남자', '여자')
 print("남자일 확률은",result*100,"%입니다.")
 
 
