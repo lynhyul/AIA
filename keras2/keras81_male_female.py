@@ -23,7 +23,7 @@ from sklearn.model_selection import train_test_split
 #이미지 불러오기, 원핫인코딩은 덤으로!
 
 img_dir = '../data/image/sex/'
-categories = ['0', '1']
+categories = ['0', '1'] # 남자를 1로 했어염, 이건 파일명으로 해주시면 됩니다.
 np_classes = len(categories)
 
 image_w = 255
