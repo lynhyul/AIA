@@ -20,7 +20,7 @@ from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 
 
-#모델 불러오기, 원핫인코딩은 덤으로!
+#이미지 불러오기, 원핫인코딩은 덤으로!
 
 img_dir = '../data/image/sex/'
 categories = ['0', '1']
@@ -90,16 +90,16 @@ x_train = preprocess_input(x_train)
 x_test = preprocess_input(x_test)
 x_pred = preprocess_input(x_pred)
 
-
+#모델
 vgg16 = VGG16(weights='imagenet',input_shape =(255,255,3),include_top=False)
 vgg16.trainalbe = False
 model = Sequential()
 model.add(vgg16)
-model.add(GlobalAveragePooling2D())
+model.add(GlobalAveragePooling2D()) # hidden레이어 이전에 사용. 공간 데이터에 대한 글로벌 평균 풀링 작업
 model.add(Flatten())
 model.add(Dense(128))
 model.add(BatchNormalization())
-model.add(Activation('relu'))
+model.add(Activation('relu'))   # BatchNormalization이후에 액티베이션 함수 사용
 model.add(Dense(64))
 model.add(BatchNormalization())
 model.add(Activation('relu'))
@@ -109,6 +109,7 @@ model.add(Dense(1, activation= 'sigmoid'))
 
 # model2 = load_model('../data/modelcheckpoint/myproject.hdf5', compile=False)
 
+#컴파일,훈련
 model.compile(loss='binary_crossentropy', optimizer=Adam(1e-5), metrics=['acc'])
 from keras.callbacks import EarlyStopping, ModelCheckpoint,ReduceLROnPlateau
 model_path = '../data/modelcheckpoint/croll.hdf5'
@@ -119,6 +120,8 @@ lr = ReduceLROnPlateau(patience=25, factor=0.5,verbose=1)
 history = model.fit(x_train, y_train, batch_size=16, epochs=100, validation_data=(x_test, y_test),callbacks=[early_stopping,
 checkpoint,lr])
 
+
+# 결과물 출력
 print("정확도 : %.4f" % (model.evaluate(x_test, y_test)[1]))
 result = model.predict_generator(x_pred,verbose=True)
 result[result < 0.5] =0
