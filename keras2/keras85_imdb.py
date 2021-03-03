@@ -122,12 +122,3 @@ history = model.fit(x_train, y_train, batch_size=128, epochs=100, callbacks=[es,
 print("\n 테스트 정확도: %.4f" % (model.evaluate(x_test, y_test)[1]))
 
 #  테스트 정확도: 0.8603
-
-# epochs = range(1, len(history.history['acc']) + 1)
-# plt.plot(epochs, history.history['loss'])
-# plt.plot(epochs, history.history['val_loss'])
-# plt.title('model loss')
-# plt.ylabel('loss')
-# plt.xlabel('epoch')
-# plt.legend(['train', 'test'], loc='upper left')
-# plt.show()
