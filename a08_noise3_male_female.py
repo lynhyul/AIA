@@ -124,6 +124,6 @@ for i, ax in enumerate([ax11, ax12, ax13, ax14, ax15]):
     ax.grid(False)
     ax.set_xticks([])
     ax.set_yticks([])
-
+# 결과 보기
 plt.tight_layout()
 plt.show()
