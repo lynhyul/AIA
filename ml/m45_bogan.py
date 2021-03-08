@@ -1,3 +1,5 @@
+## 시계열 데이터, 회기형 데이터에 결측치 처리 방법!!!
+
 from pandas import DataFrame, Series
 from datetime import datetime
 import numpy as np
