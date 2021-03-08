@@ -14,8 +14,10 @@ model = XGBRegressor()
 
 model.fit(x_train, y_train)
 score = model.score(x_test, y_test)
-print("R2 : ",score)
-# R2 :  0.9221188601856797
+print("R2 : ",score) # R2 :  0.9221188601856797
+# print("weight : ",model.coef_)  # AttributeError: Coefficients are not defined for Booster type None
+# print("bias : " ,model.intercept_)
+
 
 thresholds = np.sort(model.feature_importances_)
 # [0.00134153 0.00363372 0.01203115 0.01220458 0.01447935 0.01479119

@@ -27,6 +27,7 @@ x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size = 0.8, shuffle = True, random_state = 66
 )
 
+#일단 feature_importance를 뽑자 , xg부스터는 gpu사용
 xgb = XGBRegressor(tree_method='gpu_hist', gpu_id=0)
 
 parameters = {
@@ -34,6 +35,7 @@ parameters = {
     'min_child_weight' : [1, 2, 4, -1],
     'eta' : [0.3, 0.1, 0.01, 0.5]
 }
+
 model = RandomizedSearchCV(xgb, param_distributions= parameters, cv = 5, )
 
 model.fit(x_train, y_train)
@@ -41,6 +43,11 @@ score = model.score(x_test, y_test)
 print('R2 : ', score)
 
 thresholds = np.sort(model.best_estimator_.feature_importances_) # 이렇게 하면 fi 값들이 정렬되어 나온다!
+
+print(thresholds)
+# [1.9896124e-04 2.3081598e-03 9.5453663e-03 1.1583471e-02 1.3474984e-02
+#  1.7375207e-02 2.0021910e-02 2.6737049e-02 4.7078669e-02 6.6335171e-02
+#  6.9025055e-02 2.6033255e-01 4.5598343e-01]
 
 tmp = 0
 tmp2 = [0,0]
@@ -50,13 +57,14 @@ for thresh in thresholds:
 
     select_x_train = selection.transform(x_train)
     print(select_x_train.shape)
-
+    # 최적의 Threshold만 찾아본다.
     selection_model = XGBRegressor(n_jobs = 8, tree_method='gpu_hist', gpu_id=0)
     selection_model.fit(select_x_train, y_train)
 
     select_x_test = selection.transform(x_test)
     y_predict = selection_model.predict(select_x_test)
 
+    # 새로운 점수가 기존의 점수보다 높을경우, tmp[], tmp2[,]의 값을 갱신한다.
     score = r2_score(y_test, y_predict)
     if score > tmp :
         tmp = score
