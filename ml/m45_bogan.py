@@ -1,4 +1,6 @@
-## 시계열 데이터, 회기형 데이터에 결측치 처리 방법!!!
+## 시계열 데이터, 회기형 데이터에 결측치 처리 방법!!! => 0으로 채운다, 평균값으로 채운다, 보간법을 사용한다. 등등...
+## 보간법을 사용해보자
+
 
 from pandas import DataFrame, Series
 from datetime import datetime
