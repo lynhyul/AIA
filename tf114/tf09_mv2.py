@@ -41,5 +41,5 @@ for step in range(2001) :
     if step % 100 == 0 :
         print(step, "cost : ", cost_val, "\n",hy_val)
 
-
+        
 
