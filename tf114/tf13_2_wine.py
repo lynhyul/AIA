@@ -44,18 +44,19 @@ print("y_test(argmax) : ",np.argmax(y_test,1))
 w = tf.Variable(tf.zeros([13,3], name='weight'))
 b = tf.Variable(tf.zeros([1,3]), name = 'bias') # y의 출력의 갯수에 맞게 조정한다.(행렬의 덧셈 방법 참고)
 
+
 hypothesis = tf.nn.softmax(tf.matmul(x,w) + b)
 
 # cost = tf.reduce_mean(tf.square(hypothesis -y))
 loss = tf.reduce_mean(-tf.reduce_sum(y* tf.log(hypothesis), axis=1)) # categorical_crossentropy
-train = tf.train.GradientDescentOptimizer(learning_rate=0.000002).minimize(loss)
+train = tf.train.GradientDescentOptimizer(learning_rate=0.00001).minimize(loss)
 
 from sklearn.metrics import accuracy_score
 
 with tf.Session() as sess :
     sess.run(tf.global_variables_initializer()) # 변수 초기화
 
-    for step in range(2001) :
+    for step in range(5001) :
         loss_val, _ = sess.run([loss,train], feed_dict = {x:x_train, y:y_train})
 
         if step % 200 ==0 :
@@ -68,4 +69,4 @@ with tf.Session() as sess :
     print("y_pred : ",y_pred)
     print("y_test : ", y_test)
     print('accuracy_score : ', accuracy_score(y_test, y_pred))
-    # accuracy_score :  0.7222222222222222
+    # accuracy_score :  0.7777777777777778
