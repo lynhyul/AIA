@@ -14,7 +14,7 @@ print(y_data.shape)
 # (569, 30)
 # (569, 1)
 from sklearn.model_selection import train_test_split
-x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.2, shuffle = False)
+x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.22, random_state=46)
 
 x= tf.placeholder(tf.float32, shape=[None,30])
 y= tf.placeholder(tf.float32, shape=[None,1])
@@ -25,7 +25,7 @@ b = tf.Variable(tf.zeros([1]), name='bias')
 hypothesis = tf.sigmoid(tf.matmul(x,w)+b)
 cost = -tf.reduce_mean(y*tf.log(hypothesis)+(1-y)*tf.log(1-hypothesis))  #binary_crossentropy
 
-optimizer = tf.train.AdamOptimizer(learning_rate=0.00000117)
+optimizer = tf.train.AdamOptimizer(learning_rate=0.0000011)
 train = optimizer.minimize(cost)
 
 predicted = tf.cast(hypothesis > 0.5, dtype = tf.float32) 
@@ -51,4 +51,4 @@ with tf.Session() as sess:
     print(f'predict value : {h[0:5]} \n "original value: \n{c[0:5]} \naccuracy: : {a}')
 
 
-# accuracy: : 0.9210526347160339
+# accuracy: : 0.9603174328804016
