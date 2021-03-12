@@ -19,19 +19,22 @@ y = tf.placeholder(tf.float32, shape = (None, 10))
 
 #2. 모델
 # w1 = tf.Variable(tf.random.normal([784, 256], name = 'weight1'))
-w1 = tf.get_variable('weight1', shape = [784, 256], initializer = tf.contrib.layers.xavier_initializer())
+w1 = tf.get_variable('weight1', shape = [784, 256], initializer = tf.initializers.he_normal())  # rleu 친구
 print("w1 : ",w1) # w1 :  <tf.Variable 'weight1:0' shape=(784, 256) dtype=float32_ref>
 b1 = tf.Variable(tf.random.normal([1,256], name = 'bias1'))    
 print("b1 : ",b1) # b1 :  <tf.Variable 'Variable:0' shape=(256,) dtype=float32_ref>
 layer1 = tf.nn.relu(tf.matmul(x, w1) + b1) 
-print("layer1 : ", layer1) # layer1 :  Tensor("Relu:0", shape=(?, 256), dtype=float32)                      
-# # layer1 = tf.nn.dropout(layer1, keep_prob=0.3)
+print("layer1 : ", layer1) # layer1 :  Tensor("Relu:0", shape=(?, 256), dtype=float32)    
 
-w2 = tf.get_variable('weight2', shape = [256, 128], initializer = tf.contrib.layers.xavier_initializer())
+# # layer1 = tf.nn.dropout(layer1, keep_prob=0.3)   # 드랍아웃
+
+# w2 = tf.get_variable('weight2', shape = [256, 128], initializer = tf.contrib.layers.xavier_initializer()) # tanh친구
+w2 = tf.get_variable('weight2', shape = [256, 128], initializer = tf.initializers.he_normal())
 b2 = tf.Variable(tf.random.normal([1,128], name = 'bias2'))    
 layer2 = tf.nn.elu(tf.matmul(layer1, w2) + b2) 
 
-w3 = tf.get_variable('weight3', shape = [128, 64], initializer = tf.contrib.layers.xavier_initializer())
+# w3 = tf.get_variable('weight3', shape = [128, 64], initializer = tf.contrib.layers.xavier_initializer())
+w3 = tf.get_variable('weight3', shape = [128, 64], initializer = tf.initializers.he_normal())
 b3 = tf.Variable(tf.random.normal([1,64], name = 'bias3'))   
 layer3 = tf.nn.selu(tf.matmul(layer2, w3) + b3) 
 
@@ -45,9 +48,9 @@ loss = tf.reduce_mean(-tf.reduce_sum(y * tf.log(hypothesis), axis = 1))
 train = tf.train.AdamOptimizer(learning_rate=0.0023).minimize(loss)
 
 # 배치사이즈와 epoch를 정해준다.
-training_epochs = 9
-batch_size = 100
-total_batch = int(len(x_train)/batch_size)  # 60000/100 = 600개의 loss가 나오는데, 그 loss들을 더해준뒤에 평균값을 낸다.
+training_epochs = 8[]
+batch_size = 128
+total_batch = int(len(x_train)/batch_size)  # 60000th data/100epoch = 600개의 loss가 나오는데, 그 loss들을 더해준뒤에 평균값을 낸다.
 
 
 with tf.compat.v1.Session() as sess:
@@ -66,7 +69,7 @@ with tf.compat.v1.Session() as sess:
             avg_loss += cur_loss/total_batch
 
             
-            print(f'Epoch {epoch} \t===========>\t loss : {avg_loss:.8f}')
+        print(f'Epoch {epoch} \t===========>\t loss : {avg_loss:.8f}')
 
     print('훈련 끝')
 
@@ -75,4 +78,4 @@ with tf.compat.v1.Session() as sess:
     print('Acc : ', sess.run(accuracy, feed_dict = {x:x_test, y:y_test}))
 
 
-    # Acc :  0.9734
+    # Acc :  0.9742
