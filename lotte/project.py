@@ -9,43 +9,21 @@ from keras.layers import *
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.optimizers import Adam,SGD
 from sklearn.model_selection import train_test_split
-
-
-
-# train = pd.read_csv('../data/csv/practice/train.csv')
-# test = pd.read_csv('../data/csv/practice/test.csv')
-sub = pd.read_csv('../data/csv/practice/submission.csv')
-
-
-
-# temp = pd.DataFrame(train)
-# test_df = pd.DataFrame(test)
+from tensorflow.keras.applications import EfficientNetB7
+from tensorflow.keras.applications.efficientnet import preprocess_input
 
 
 #데이터 지정 및 전처리
-# x = train.drop(['id','digit','letter'],1)
-# x_test = test.drop(['id','letter'],1)
-y = train['digit']  # target data
-
+x = np.load("../../data/npy/P_project_x4.npy",allow_pickle=True)
+x_pred = np.load('../../data/npy/test.npy',allow_pickle=True)
+y = np.load("../../data/npy/P_project_y4.npy",allow_pickle=True)
 # y1 = np.zeros((len(y), len(y.unique())))
 # for i, digit in enumerate(y):
 #     y1[i, digit] = 1
 
 
-x = x.values
-x_test = x_test.values
-
-x = x.reshape(-1,28,28,1)
-x_test = x_test.reshape(-1,28,28,1)
-
-x = np.array(x)
-x_pred = np.array(x_test)
-
-x = x/255.0
-x_pred = x_pred/255.0
-
-print(x.shape)
-print(y.shape)
+x = preprocess_input(x) # (48000, 255, 255, 3)
+x_pred = preprocess_input(x_pred)   # 
 
 
 
@@ -75,9 +53,9 @@ idg2 = ImageDataGenerator()
 - fill_mode 이미지를 회전, 이동하거나 축소할 때 생기는 공간을 채우는 방식
 '''
 
+y = np.argmax(y, axis=1)
 
-
-skf = StratifiedKFold(n_splits=120, random_state=42, shuffle=True)
+skf = StratifiedKFold(n_splits=2, random_state=42, shuffle=True)
 
 val_loss_min = []
 result = 0
@@ -85,7 +63,7 @@ nth = 0
 
 for train_index, valid_index in skf.split(x,y) :
     
-    mc = ModelCheckpoint('../data/modelcheckpoint/Dacon8.h5',save_best_only=True, verbose=1)
+    mc = ModelCheckpoint('../../data/modelcheckpoint/lotte_projcet.h5',save_best_only=True, verbose=1)
     
     x_train = x[train_index]
     x_valid = x[valid_index]    
@@ -96,57 +74,49 @@ for train_index, valid_index in skf.split(x,y) :
     train_generator = idg.flow(x_train,y_train,batch_size=16, seed = 2048)
     # seed => random_state
     valid_generator = idg2.flow(x_valid,y_valid)
-    test_generator = idg2.flow(x_pred,shuffle=False)
-    model = Sequential()
+    test_generator = x_pred
 
-    model.add(Conv2D(filters = 16, kernel_size =(3,3), activation='relu', padding = 'same', 
-                                            input_shape=(28,28,1)))
-    model.add(BatchNormalization())                                  
-    model.add(Conv2D(filters = 32, kernel_size =(3,3), padding = 'same', activation='relu'))
-    model.add(BatchNormalization())
-    model.add(Conv2D(filters = 32, kernel_size =(5,5), padding = 'same', activation='relu'))
-    model.add(BatchNormalization())
-    model.add(Conv2D(filters = 32, kernel_size =(5,5), padding = 'same', activation='relu'))
-    model.add(BatchNormalization())
-    model.add(MaxPooling2D(2,2))
 
-                               
-    model.add(Conv2D(filters = 64, kernel_size =(3,3), padding = 'same', activation='relu'))
-    model.add(BatchNormalization())
-    model.add(Conv2D(filters = 64, kernel_size =(5,5), padding = 'same', activation='relu'))
-    model.add(BatchNormalization())
-    model.add(MaxPooling2D(2,2))
+    from tensorflow.keras.models import Model
+    from tensorflow.keras.layers import GlobalAveragePooling2D, Flatten, BatchNormalization, Dense, Activation
+    efficientnetb7 = EfficientNetB7(include_top=False,weights='imagenet',input_shape=x_train.shape[1:])
+    efficientnetb7.trainable = False
+    a = efficientnetb7.output
+    a = GlobalAveragePooling2D() (a)
+    a = Flatten() (a)
+    a = Dense(128) (a)
+    a = BatchNormalization() (a)
+    a = Activation('relu') (a)
+    a = Dense(64) (a)
+    a = BatchNormalization() (a)
+    a = Activation('relu') (a)
+    a = Dense(1000, activation= 'softmax') (a)
 
-    model.add(Flatten())
-    
-    model.add(Dense(128, activation= 'relu'))
-    model.add(BatchNormalization())
-    model.add(Dense(64, activation= 'relu'))
-    model.add(BatchNormalization())
-    model.add(Dense(10, activation='softmax'))
+    model = Model(inputs = efficientnetb7.input, outputs = a)
 
     from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
-    early_stopping = EarlyStopping(patience= 160)
-    lr = ReduceLROnPlateau(patience= 90, factor=0.5)
+    early_stopping = EarlyStopping(patience= 15)
+    lr = ReduceLROnPlateau(patience= 7, factor=0.5)
 
-    model.compile(loss='sparse_categorical_crossentropy', optimizer=Adam(lr=0.002,epsilon=None),
+    model.compile(loss='sparse_categorical_crossentropy', optimizer=Adam(lr=1e-5,epsilon=None),
                     metrics=['acc'])
-    learning_history = model.fit_generator(train_generator,epochs=2000, 
+    learning_history = model.fit_generator(train_generator,epochs=1, 
         validation_data=valid_generator, callbacks=[early_stopping,lr,mc])
     
     # predict
-    model.load_weights('../data/modelcheckpoint/Dacon8.h5')
-    result += model.predict_generator(test_generator,verbose=True)/120
+    model.load_weights('../../data/modelcheckpoint/lotte_projcet.h5')
+    result += model.predict_generator(test_generator,verbose=True)/2
     
     # save val_loss
-    hist = pd.DataFrame(learning_history.history)
-    val_loss_min.append(hist['val_loss'].min())
+    # hist = pd.DataFrame(learning_history.history)
+    # val_loss_min.append(hist['val_loss'].min())
     
     nth += 1
     print(nth, '번째 학습을 완료했습니다.')
-
-sub['digit'] = result.argmax(1)
-sub.to_csv('../data/csv/practice/Dacon8.csv',index=False)
+print(result.shape)
+sub = pd.read_csv('../../data/image/sample.csv')
+sub['prediction'] = result
+sub.to_csv('../../data/image/answer.csv',index=False)
 
 
 

@@ -6,7 +6,6 @@ from numpy import asarray
 from tensorflow.keras.models import Model, Sequential,load_model
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout, BatchNormalization, GlobalAveragePooling2D
 from tensorflow.keras.layers import Activation
-import tensorflow_hub as hub
 import tensorflow as tf
 import scipy.signal as signal
 from keras.applications.resnet50 import ResNet50,preprocess_input,decode_predictions
@@ -14,52 +13,57 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 from keras.callbacks import ReduceLROnPlateau
-##########데이터 로드
+#########데이터 로드
 
-# caltech_dir =  '../data/image/project/'
-# categories = ["0", "1", "2", "3","4","5","6","7",
-#                 "8","9"]
-# nb_classes = len(categories)
+caltech_dir =  '../../data/image/train/'
+categories = []
+for i in range(0,1001) :
+    i = "%d"%i
+    categories.append(i)
 
-# image_w = 255
-# image_h = 255
+nb_classes = len(categories)
 
-# pixels = image_h * image_w * 3
+image_w = 255
+image_h = 255
 
-# X = []
-# y = []
+pixels = image_h * image_w * 3
 
-# for idx, cat in enumerate(categories):
+X = []
+y = []
+
+for idx, cat in enumerate(categories):
     
-#     #one-hot 돌리기.
-#     label = [0 for i in range(nb_classes)]
-#     label[idx] = 1
+    #one-hot 돌리기.
+    label = [0 for i in range(nb_classes)]
+    label[idx] = 1
 
-#     image_dir = caltech_dir + "/" + cat
-#     files = glob.glob(image_dir+"/*.jpg")
-#     print(cat, " 파일 길이 : ", len(files))
-#     for i, f in enumerate(files):
-#         img = Image.open(f)
-#         img = img.convert("RGB")
-#         img = img.resize((image_w, image_h))
-#         data = np.asarray(img)
+    image_dir = caltech_dir + "/" + cat
+    files = glob.glob(image_dir+"/*.jpg")
+    print(cat, " 파일 길이 : ", len(files))
+    for i, f in enumerate(files):
+        img = Image.open(f)
+        img = img.convert("RGB")
+        img = img.resize((image_w, image_h))
+        data = np.asarray(img)
 
-#         X.append(data)
-#         y.append(label)
+        X.append(data)
+        y.append(label)
 
-#         if i % 700 == 0:
-#             print(cat, " : ", f)
+        if i % 700 == 0:
+            print(cat, " : ", f)
 
-# X = np.array(X)
-# y = np.array(y)
+X = np.array(X)
+y = np.array(y)
 
-x_pred = np.load("../data/npy/P_project_test.npy",allow_pickle=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+xy = (X_train, X_test, y_train, y_test)
+np.save("../data/npy/P_project.npy", xy)
+# x_pred = np.load("../data/npy/P_project_test.npy",allow_pickle=True)
 x_train, x_test, y_train, y_test = np.load("../data/npy/P_project.npy",allow_pickle=True)
 
 
-categories = ["Beaggle", "Bichon Frise", "Border Collie","Bulldog", "Corgi","Poodle","Retriever","Samoyed",
-                "Schnauzer","Shih Tzu",]
-nb_classes = len(categories)
+# categories = categories
+# nb_classes = len(categories)
 
 
 #일반화
@@ -86,7 +90,7 @@ x = Activation('relu') (x)
 x = Dense(64) (x)
 x = BatchNormalization() (x)
 x = Activation('relu') (x)
-x = Dense(10, activation= 'softmax') (x)
+x = Dense(1000, activation= 'softmax') (x)
 
 model = Model(inputs = resent.input, outputs = x)
 
@@ -109,7 +113,7 @@ model.summary()
 model.compile(loss='categorical_crossentropy', optimizer=Adam(1e-5), metrics=['acc'])
 
 
-model_path = '../data/modelcheckpoint/Pproject_fine.hdf5'
+model_path = '../../data/modelcheckpoint/lotte.hdf5'
 checkpoint = ModelCheckpoint(filepath=model_path , monitor='val_loss', verbose=1, save_best_only=True)
 early_stopping = EarlyStopping(monitor='val_loss', patience=10)
 lr = ReduceLROnPlateau(patience=5, factor=0.5,verbose=1)
@@ -118,46 +122,37 @@ history = model.fit(x_train, y_train, batch_size=32, epochs=100, validation_data
 callbacks=[early_stopping,checkpoint,lr])
 print("정확도 : %.4f" % (model.evaluate(x_test, y_test)[1]))
 
-import matplotlib.pyplot as plt
-plt.plot(history.history['loss'])
-plt.plot(history.history['val_loss'])
-plt.plot(history.history['acc'])      
-plt.plot(history.history['val_acc'])
-plt.title('loss & acc')
-plt.ylabel('loss & acc')
-plt.xlabel('epoch')
-plt.legend(['tran loss', 'val loss', 'train acc','val acc'])    #주석
-plt.show()
 
 
-model2 = load_model('../data/modelcheckpoint/Pproject_fine.hdf5')
-predict = model2.predict(x_pred)
-# print("정확도 : %.4f" % (model2.evaluate(x_test, y_test)[1]))
-# print(np.argmax(predict,1))
-# false 정확도 : 0.8596
-# True 정확도 : 0.9261
-categories = ["Beaggle", "Bichon Frise", "Border Collie","Bulldog", "Corgi","Poodle","Retriever","Samoyed",
-                "Schnauzer","Shih Tzu",]
-for i in np.argmax(predict,1) :
-    if i ==0 :
-        print("이 사진은",categories[0],"입니다")
-    if i ==1 :
-        print("이 사진은",categories[1],"입니다")
-    if i ==2 :
-        print("이 사진은",categories[2],"입니다")
-    if i ==3 :
-        print("이 사진은",categories[3],"입니다")
-    if i ==4 :
-        print("이 사진은",categories[4],"입니다")
-    if i ==5 :
-        print("이 사진은",categories[5],"입니다")
-    if i ==6 :
-        print("이 사진은",categories[6],"입니다")
-    if i ==7 :
-        print("이 사진은",categories[7],"입니다")
-    if i ==8 :
-        print("이 사진은",categories[8],"입니다")   
-    if i ==9 :
-        print("이 사진은",categories[9],"입니다")
+
+# model2 = load_model('../data/modelcheckpoint/Pproject_fine.hdf5')
+# predict = model2.predict(x_pred)
+# # print("정확도 : %.4f" % (model2.evaluate(x_test, y_test)[1]))
+# # print(np.argmax(predict,1))
+# # false 정확도 : 0.8596
+# # True 정확도 : 0.9261
+# categories = ["Beaggle", "Bichon Frise", "Border Collie","Bulldog", "Corgi","Poodle","Retriever","Samoyed",
+#                 "Schnauzer","Shih Tzu",]
+# for i in np.argmax(predict,1) :
+#     if i ==0 :
+#         print("이 사진은",categories[0],"입니다")
+#     if i ==1 :
+#         print("이 사진은",categories[1],"입니다")
+#     if i ==2 :
+#         print("이 사진은",categories[2],"입니다")
+#     if i ==3 :
+#         print("이 사진은",categories[3],"입니다")
+#     if i ==4 :
+#         print("이 사진은",categories[4],"입니다")
+#     if i ==5 :
+#         print("이 사진은",categories[5],"입니다")
+#     if i ==6 :
+#         print("이 사진은",categories[6],"입니다")
+#     if i ==7 :
+#         print("이 사진은",categories[7],"입니다")
+#     if i ==8 :
+#         print("이 사진은",categories[8],"입니다")   
+#     if i ==9 :
+#         print("이 사진은",categories[9],"입니다")
 
 

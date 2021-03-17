@@ -25,8 +25,8 @@ y_test = to_categorical(y_test)
 x_train = x_train.reshape(50000,32,32,3).astype('float32') /255.
 x_test = x_test.reshape(10000,32,32,3).astype('float32') /255.
 
-learning_rate = 0.0001
-training_epochs = 28
+learning_rate = 0.00008
+training_epochs = 29
 batch_size = 100
 total_batch = int(len(x_train)/batch_size) # 50000/100
 
@@ -112,7 +112,7 @@ L9 = tf.nn.relu(L9)
 print(L6) # Tensor("dropout_1/mul_1:0", shape=(?, 32), dtype=float32)
 
 #L10.
-w10 = tf.compat.v1.get_variable('w10', shape = [32, 10], initializer=tf.initializers.he_normal())
+w10 = tf.compat.v1.get_variable('w10', shape = [32, 10])
 b10 = tf.Variable(tf.compat.v1.random_normal([10]), name='b10')
 hypothesis = tf.nn.softmax(tf.matmul(L9,w10)+b10)
 print(hypothesis) # Tensor("Softmax:0", shape=(?, 10), dtype=float32)
@@ -128,6 +128,8 @@ train = optimizer.minimize(loss)
 sess = tf.compat.v1.Session()
 sess.run(tf.compat.v1.global_variables_initializer())
 
+
+
 for epoch in range(training_epochs):
     avg_cost = 0
 
@@ -139,9 +141,17 @@ for epoch in range(training_epochs):
         feed_dict = {x:batch_x, y:batch_y}
         c, _ = sess.run([loss, train], feed_dict=feed_dict)
         avg_cost += c/total_batch
-    print('Epoch :', '%04d'%(epoch + 1), 'cost = {:.9f}'.format(avg_cost))
+    prediction = tf.equal(tf.argmax(hypothesis, 1), tf.argmax(y, 1))
+    accuracy = tf.reduce_mean(tf.cast(prediction, tf.float32))
+    acc = sess.run(accuracy, feed_dict = {x:x_test, y:y_test})
+    print(f'Epoch {epoch} \t===========>\t loss : {avg_cost:.8f}\t acc : {acc}')
+    if acc > 0.708 :
+        break
+
 print('훈련 끗!!!')
 
 prediction = tf.equal(tf.compat.v1.arg_max(hypothesis,1), tf.compat.v1.arg_max(y,1))
 accuracy = tf.reduce_mean(tf.compat.v1.cast(prediction, dtype=tf.float32))
 print('Acc :', sess.run(accuracy, feed_dict={x:x_test, y:y_test}))
+
+# Acc : 0.7082
