@@ -23,8 +23,8 @@ for i in range(0,1000) :
 
 nb_classes = len(categories)
 
-image_w = 255
-image_h = 255
+image_w = 128
+image_h = 128
 
 pixels = image_h * image_w * 3
 
@@ -55,11 +55,11 @@ for idx, cat in enumerate(categories):
 X = np.array(X)
 y = np.array(y)
 
-np.save("../../data/npy/P_project_x4.npy", arr=X)
-np.save("../../data/npy/P_project_y4.npy", arr=y)
+np.save("../../data/npy/P_project_x5.npy", arr=X)
+np.save("../../data/npy/P_project_y5.npy", arr=y)
 # x_pred = np.load("../data/npy/P_project_test.npy",allow_pickle=True)
-x = np.load("../../data/npy/P_project_x4.npy",allow_pickle=True)
-y = np.load("../../data/npy/P_project_y4.npy",allow_pickle=True)
+x = np.load("../../data/npy/P_project_x5.npy",allow_pickle=True)
+y = np.load("../../data/npy/P_project_y5.npy",allow_pickle=True)
 
 print(x.shape)
 print(y.shape)

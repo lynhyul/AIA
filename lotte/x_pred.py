@@ -25,18 +25,18 @@ for i in range(0,72000):
     filepath='../../data/image/test/%d.jpg'%i
     image2=Image.open(filepath)
     image2 = image2.convert('RGB')
-    image2 = image2.resize((255,255))
+    image2 = image2.resize((128,128))
     image_data2=asarray(image2)
     # image_data2 = signal.medfilt2d(np.array(image_data2), kernel_size=3)
     img1.append(image_data2)    
 
 # np.save('../data/csv/Dacon3/train4.npy', arr=img)
-np.save('../../data/npy/test.npy', arr=img1)
+np.save('../../data/npy/test2.npy', arr=img1)
 # alphabets = string.ascii_lowercase
 # alphabets = list(alphabets)
 
 
 # x = np.load('../data/csv/Dacon3/train4.npy')
-x_pred = np.load('../../data/npy/test.npy',allow_pickle=True)
+x_pred = np.load('../../data/npy/test2.npy',allow_pickle=True)
 
 print(x_pred.shape)
