@@ -15,28 +15,29 @@ from keras.layers import GlobalAveragePooling2D
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.optimizers import Adam,SGD
 from sklearn.model_selection import train_test_split
-import string
-import scipy.signal as signal
-from keras.applications.resnet import ResNet101,preprocess_input
+# import string
+# import scipy.signal as signal
+# from keras.applications.resnet import ResNet101,preprocess_input
 
 
-img1=[]
-for i in range(0,72000):
-    filepath='../../data/image/test/%d.jpg'%i
-    image2=Image.open(filepath)
-    image2 = image2.convert('RGB')
-    image2 = image2.resize((128,128))
-    image_data2=asarray(image2)
-    # image_data2 = signal.medfilt2d(np.array(image_data2), kernel_size=3)
-    img1.append(image_data2)    
+# img1=[]
+# for i in range(0,1000):
+#     for j in range(48,72) :
+#         filepath=f'../../data/image/train/{i}/{j}.jpg'
+#         image2=Image.open(filepath)
+#         image2 = image2.convert('RGB')
+#         image2 = image2.resize((256,256))
+#         image_data2=asarray(image2)
+#         # image_data2 = signal.medfilt2d(np.array(image_data2), kernel_size=3)
+#         img1.append(image_data2)    
 
-# np.save('../data/csv/Dacon3/train4.npy', arr=img)
-np.save('../../data/npy/test2.npy', arr=img1)
-# alphabets = string.ascii_lowercase
-# alphabets = list(alphabets)
+# # np.save('../data/csv/Dacon3/train4.npy', arr=img)
+# np.save('../../data/image/npy/srcnn2.npy', arr=img1)
+# # alphabets = string.ascii_lowercase
+# # alphabets = list(alphabets)
 
 
 # x = np.load('../data/csv/Dacon3/train4.npy')
-x_pred = np.load('../../data/npy/test2.npy',allow_pickle=True)
+x_pred = np.load('../../data/image/npy/srcnn2.npy',allow_pickle=True)
 
 print(x_pred.shape)

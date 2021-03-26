@@ -11,19 +11,19 @@ from keras.optimizers import Adam,SGD
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.applications import EfficientNetB4
 from tensorflow.keras.applications.efficientnet import preprocess_input
-
+from tqdm import tqdm
 
 #데이터 지정 및 전처리
-x = np.load("../../data/npy/P_project_x5.npy",allow_pickle=True)
-x_pred = np.load('../../data/npy/test2.npy',allow_pickle=True)
+x = np.load('../../data/npy/train_data_x9.npy',allow_pickle=True)
+x_pred = np.load('../../data/npy/predict_data9.npy',allow_pickle=True)
 y = np.load("../../data/npy/P_project_y5.npy",allow_pickle=True)
 # y1 = np.zeros((len(y), len(y.unique())))
 # for i, digit in enumerate(y):
 #     y1[i, digit] = 1
 
 
-x = preprocess_input(x) # (48000, 255, 255, 3)
-x_pred = preprocess_input(x_pred)   # 
+x = preprocess_input(x)
+x_pred = preprocess_input(x_pred)
 
 
 
@@ -31,7 +31,7 @@ idg = ImageDataGenerator(
     # rotation_range=10, acc 하락
     width_shift_range=(-1,1),  
     height_shift_range=(-1,1), 
-    rotation_range=40, 
+    rotation_range=45, 
     # shear_range=0.2)    # 현상유지
     zoom_range=0.2,
     horizontal_flip=True,
@@ -57,56 +57,74 @@ idg2 = ImageDataGenerator()
 # y = np.argmax(y, axis=1)
 
 from sklearn.model_selection import train_test_split
-x_train, x_valid, y_train, y_valid = train_test_split(x,y, train_size = 0.9, shuffle = True, random_state=66)
+x_train, x_valid, y_train, y_valid = train_test_split(x,y, train_size = 0.8, shuffle = True, random_state=66)
 
 
 train_generator = idg.flow(x_train,y_train,batch_size=64, seed = 2048)
 # seed => random_state
 valid_generator = idg2.flow(x_valid,y_valid)
-# test_generator = idg2.flow(x_pred)
+test_generator = idg2.flow(x_pred, shuffle=False)
 
-mc = ModelCheckpoint('../../data/modelcheckpoint/lotte_projcet8.h5',save_best_only=True, verbose=1)
+mc = ModelCheckpoint('../../data/modelcheckpoint/lotte_projcet14.h5',save_best_only=True, verbose=1)
 
 
 
 
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import GlobalAveragePooling2D, Flatten, BatchNormalization, Dense, Activation
+from tensorflow.keras.optimizers import RMSprop
+from tensorflow.keras import regularizers
 efficientnet = EfficientNetB4(include_top=False,weights='imagenet',input_shape=x_train.shape[1:])
 efficientnet.trainable = True
 a = efficientnet.output
+a = Conv2D(filters = 1792,kernel_size=(12,12), strides=(1,1),padding='same',kernel_regularizer=regularizers.l2(1e-5)) (a)
+a = BatchNormalization() (a)
+a = Activation('swish') (a)
 a = GlobalAveragePooling2D() (a)
-a = Flatten() (a)
-a = Dense(2048, activation= 'relu') (a)
-a = Dropout(0.2) (a)
-a = Dense(1024, activation= 'relu') (a)
-a = Dropout(0.2) (a)
+# a = Flatten() (a)
+a = Dense(2048, activation= 'swish') (a)
+a = Dropout(0.5) (a)
 a = Dense(1000, activation= 'softmax') (a)
 
 model = Model(inputs = efficientnet.input, outputs = a)
+efficientnet.summary()
+
 
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
-early_stopping = EarlyStopping(patience= 20)
-lr = ReduceLROnPlateau(patience= 10, factor=0.5)
+early_stopping = EarlyStopping(patience= 10)
+lr = ReduceLROnPlateau(patience= 5, factor=0.5)
 
-model.compile(loss='categorical_crossentropy', optimizer='adam',
+model.compile(loss='categorical_crossentropy', optimizer=Adam(1e-4),
                 metrics=['acc'])
-learning_history = model.fit_generator(train_generator,epochs=200, steps_per_epoch= len(x_train) / 64,
-    validation_data=valid_generator, callbacks=[early_stopping,lr,mc])
+# learning_history = model.fit_generator(train_generator,epochs=80, steps_per_epoch= len(x_train) / 64,
+#     validation_data=valid_generator, callbacks=[early_stopping,lr,mc])
 
 # predict
-model.load_weights('../../data/modelcheckpoint/lotte_projcet8.h5')
+model.load_weights('../../data/modelcheckpoint/lotte_projcet14.h5')
 result = model.predict(x_pred,verbose=True)
 
+sub1 = pd.read_csv('../../data/image/sample.csv')
+sub1['prediction'] = np.argmax(result,axis = 1)
+sub1.to_csv('../../data/image/answer14_2.csv',index=False)
 
 
+tta_steps = 15
+predictions = []
 
+for i in tqdm(range(tta_steps)):
+	# generator 초기화
+    test_generator.reset()
+    preds = model.predict_generator(generator = test_generator, verbose = 1)
+    predictions.append(preds)
+
+# 평균을 통한 final prediction
+pred = np.mean(predictions, axis=0)
 
 
 sub = pd.read_csv('../../data/image/sample.csv')
-sub['prediction'] = np.argmax(result,axis = 1)
-sub.to_csv('../../data/image/answer7.csv',index=False)
+sub['prediction'] = np.argmax(pred,axis = 1)
+sub.to_csv('../../data/image/answer14.csv',index=False)
 
 
-
+# 73.72
 

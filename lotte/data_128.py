@@ -15,7 +15,7 @@ from sklearn.model_selection import train_test_split
 from keras.callbacks import ReduceLROnPlateau
 #########데이터 로드
 
-caltech_dir =  '../../data/image/train/'
+caltech_dir =  '../../data/image/train2/'
 categories = []
 for i in range(0,1000) :
     i = "%d"%i
@@ -55,11 +55,11 @@ for idx, cat in enumerate(categories):
 X = np.array(X)
 y = np.array(y)
 
-np.save("../../data/npy/last_x128.npy", arr=X)
-np.save("../../data/npy/last_y128.npy", arr=y)
-# # x_pred = np.load("../data/npy/P_project_test.npy",allow_pickle=True)
-# x = np.load("../../data/npy/P_project_x15.npy",allow_pickle=True)
-# y = np.load("../../data/npy/P_project_y15.npy",allow_pickle=True)
+np.save("../../data/npy/P_project_x128.npy", arr=X)
+np.save("../../data/npy/P_project_y128.npy", arr=y)
+# x_pred = np.load("../data/npy/P_project_test.npy",allow_pickle=True)
+x = np.load("../../data/npy/P_project_x128.npy",allow_pickle=True)
+y = np.load("../../data/npy/P_project_y128.npy",allow_pickle=True)
 
-# print(x.shape)
-# print(y.shape)
+print(x.shape)
+print(y.shape)

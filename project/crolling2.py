@@ -10,7 +10,7 @@ driver = webdriver.Chrome(chromedriver)
 # driver로 특정 페이지를 크롤링한다.
 driver.get('https://www.shutterstock.com/ko/search?pl=PPC_NAV_KR_IG&kw=%EA%B0%95%EC%95%84%EC%A7%80%EC%9D%B4%EB%AF%B8%EC%A7%80') # google화면 띄우기
 elem = driver.find_element_by_name("searchterm") # 검색창에 대한 elem
-elem.send_keys("corgi")  # "q"라는 elem(검색창에)에 '비글'이라는 단어를 입력하게 하겠다.
+elem.send_keys("1024x1024 이미지")  # "q"라는 elem(검색창에)에 '비글'이라는 단어를 입력하게 하겠다.
 elem.send_keys(Keys.RETURN)
 time.sleep(2)
 
@@ -47,7 +47,7 @@ for image in images :
         image.click()   # 이미지를 클릭하겠다.
         time.sleep(1)
         imgUrl = driver.find_element_by_css_selector(".m_l_c4504").get_attribute("src")    
-        urllib.request.urlretrieve(imgUrl, "../data/image/project/corgi/"+ str(count)+ ".jpg")
+        urllib.request.urlretrieve(imgUrl, "../../data/image/super/"+ str(count)+ ".jpg")
         count = count + 1
         driver.back('https://www.shutterstock.com/ko/search/corgi?')
     except :
