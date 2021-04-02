@@ -13,16 +13,12 @@
 # 5	3	12
 
 
-c= 0
-d = 0
+
 
 def solution(a, b):
     answer = 0
-    c = a
-    d= b
     if a > b :
-        a =b
-        b=c
+        a,b = b,a
     for i in range(a,b+1) :
         answer +=i
     return answer
