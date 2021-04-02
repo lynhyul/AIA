@@ -41,4 +41,4 @@ def solution(scoville, K):
         hq.heappush(scoville, first + second*2)
         answer += 1  
 
-    return answers
+    return answer
