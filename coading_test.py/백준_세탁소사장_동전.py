@@ -16,4 +16,4 @@ for _ in range(int(input())):
     for n in d:
         li.append(C//n)
         C = C%n
-    print(*li)
+    print(*li)``

@@ -23,18 +23,18 @@
 
 # 입출력 예제
 # 예제	dartResult	answer	설명
-# 1	1S2D*3T	37	11 * 2 + 22 * 2 + 33
-# 2	1D2S#10S	9	12 + 21 * (-1) + 101
-# 3	1D2S0T	3	12 + 21 + 03
-# 4	1S*2T*3S	23	11 * 2 * 2 + 23 * 2 + 31
-# 5	1D#2S*3S	5	12 * (-1) * 2 + 21 * 2 + 31
-# 6	1T2D3D#	-4	13 + 22 + 32 * (-1)
-# 7	1D2S3T*	59	12 + 21 * 2 + 33 * 2
+# 1	1S2D*3T	37	1^1 * 2 + 2^2 * 2 + 3^3
+# 2	1D2S#10S	9	1^2 + 2^1 * (-1) + 10^1
+# 3	1D2S0T	3	1^2 + 2^1 + 0^3
+# 4	1S*2T*3S	2^3	1^1 * 2 * 2 + 2^3 * 2 + 3^1
+# 5	1D#2S*3S	5	1^2 * (-1) * 2 + 2^1 * 2 + 3^1
+# 6	1T2D3D#	-4	1^3 + 2^2 + 3^2 * (-1)
+# 7	1D2S3T*	5^9	1^2 + 2^1 * 2 + 3^3 * 2
 
 
 import re
 
-dartResult = '1S2D*3T37'
+dartResult = '1S2D*3T'
 
 def solution(dartResult):
     bonus = {'S' : 1, 'D' : 2, 'T' : 3}
@@ -43,6 +43,7 @@ def solution(dartResult):
     p = re.compile('(\d+)([SDT])([*#]?)')
     dart = p.findall(dartResult)            
     print(dart) # [('1', 'S', ''), ('2', 'D', '*'), ('3', 'T', '')]
+    print(len(dart))    # 3
     for i in range(len(dart)):                # 정규표현식으로 갈무리된 문자열들
         if dart[i][2] == '*' and i > 0: # i[1][2] = *
             dart[i-1] *= 2  # 1*2

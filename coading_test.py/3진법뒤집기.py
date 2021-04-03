@@ -31,9 +31,14 @@ def solution(n) :
         else :
             return convert(q,base) + arr[r]
     conv = convert(n, base)
+    print(convert(n,base))  #1200
 
     newNumber = ""
     for digit in conv:
-        newNumber = digit + newNumber      
+        print(digit)    # 1 / 2 / 0 / 0 type이 str이기때문에 계산과정은 일어나지 않는다.
+        newNumber = digit + newNumber
+        print(newNumber)      # 1 / 21 / 021/ 0021
     answer = int(newNumber,3)
     return answer
+
+print(solution(45))
