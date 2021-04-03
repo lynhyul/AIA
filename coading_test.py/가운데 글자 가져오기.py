@@ -7,13 +7,17 @@
 # "abcde"	"c"
 # "qwer"
 
+s = "abcde"
 
 def solution(s):
     answer = ''
-    a = int(len(s)/2)
+    a = int(len(s)//2)
+    print(len(s)//2)
     a = s[a]
     if len(s) %2 ==0 :
         a = int(len(s)/2)
         a = s[a-1:a+1]
     answer = a
     return answer
+
+print(solution(s))

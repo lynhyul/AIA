@@ -23,22 +23,39 @@
 
 # 모든 음식의 스코빌 지수가 7 이상이 되었고 이때 섞은 횟수는 2회입니다.
 
-
+scoville = [2,1,3,9,10,12]
+K = 7
 
 import heapq as hq
+# 가장 작은 숫자가 인덱스 0에 위치하며, 인덱스 1에 위치한 3은 인덱스 3(= 2k + 1)에 위치한 4보다 크므로 힙의 공식을 만족합니다.
+# 여기서 주의사항은 인덱스 0에 가장 작은 원소가 있다고 해서, 인덱스 1에 두번째 작은 원소, 인덱스 2에 세번째 작은 원소가 있다는 보장은 없다는 것입니다.
+# 왜냐하면 힙은 heappop() 함수를 호출하여 원소를 삭제할 때마다 이진 트리의 재배치를 통해 매번 새로운 최소값을 인덱스 0에 위치시키기 때문입니다.
+
+# 따라서 두번째로 작은 원소를 얻으려면 바로 heap[1]으로 접근하면 안되고, 
+# 반드시 heappop()을 통해 가장 작은 원소를 삭제 후에 heap[0]를 통해 새로운 최소값에 접근해야 합니다.
+
+# heapq.heappush(heap, item) : item을 heap에 추가
+# heapq.heappop(heap) : heap에서 가장 작은 원소를 pop & 리턴. 비어 있는 경우 IndexError가 호출됨. 
+# heapq.heapify(x) : 리스트 x를 즉각적으로 heap으로 변환함 (in linear time, O(N) )
+ 
+
 
 def solution(scoville, K):
 
     hq.heapify(scoville)
     answer = 0
     while True:
-        first = hq.heappop(scoville)
+        first = hq.heappop(scoville)    # 기존 리스트를 heap 타입으로 변환한다.
+        print(first)    # 1,3 9
         if first >= K:
             break
         if len(scoville) == 0:
             return -1
         second = hq.heappop(scoville)
+        print(second) # 2,5
         hq.heappush(scoville, first + second*2)
         answer += 1  
 
     return answer
+
+print(solution(scoville,K))
