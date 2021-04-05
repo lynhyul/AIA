@@ -14,12 +14,14 @@ completion = ["eden", "kiki"]
 # print(solution(participant, completion))
 
 # Counter 사용 -> collection.Counter는 {자료 이름 : 갯수} 형태로 나온다 객체들끼리 뺄셈도 가능
+    # print(collections.Counter(participant)) # Counter({'leo': 1, 'kiki': 1, 'eden': 1})
+    # print(collections.Counter(completion))  # Counter({'eden': 1, 'kiki': 1})
 import collections
 
 def solution(participant, completion):
     answer = collections.Counter(participant) - collections.Counter(completion)
     return list(answer.keys())[0]
-
+solution(participant,completion)
 # p = ['mislav', 'stanko', 'mislav', 'ana']
 # c = ['stanko', 'ana', 'mislav']
 

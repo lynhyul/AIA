@@ -12,6 +12,7 @@
 # [1,2,3]	6
 
 from math import gcd
+import math
 
 arr = [2,6,8,14]
 
@@ -42,9 +43,9 @@ from fractions import gcd
 
 
 def nlcm(arr):      
-    answer = arr[0]     # 이게 중요한 역할 같은데 무슨 역할인지를 모르겠음...
+    answer = arr[0]     # 없으면 오류뜨는데 무슨 역할인지는 모름
     for n in arr:
-        answer = n * answer // gcd(n, answer)
+        answer = (n * answer) // math.gcd(n, answer)
 
     return answer
 
