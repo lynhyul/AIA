@@ -10,7 +10,9 @@ def fractional_knapsack(cargo):
     # 단가 계산 역순 정렬
     for c in cargo:
         pack.append([c[0]/c[1],c[0],c[1]]) # 가성비를 추가
+    print(pack)
     pack.sort(reverse=True) # 가성비가 좋은 순서대로 먼저 넣어줌
+
 
     # 단가 순 그리디 계산
     total_value: float = 0

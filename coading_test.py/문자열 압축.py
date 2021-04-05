@@ -48,6 +48,7 @@
 
 def compress(text, tok_len):
     words = [text[i:i+tok_len] for i in range(0, len(text), tok_len)]
+    print(words)
     res = []
     cur_word = words[0]
     cur_cnt = 1
@@ -65,11 +66,11 @@ def solution(text):
 
 a = [
     "aabbaccc",
-    "ababcdcdababcdcd",
-    "abcabcdede",
-    "abcabcabcabcdededededede",
-    "xababcdcdababcdcd",
-    'aaaaaa',
+    # "ababcdcdababcdcd",
+    # "abcabcdede",
+    # "abcabcabcabcdededededede",
+    # "xababcdcdababcdcd",
+    # 'aaaaaa',
 ]
 
 for x in a:
