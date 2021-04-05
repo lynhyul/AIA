@@ -23,7 +23,7 @@ def solution(board, moves):
 
     return answer
 
-print(solution(board, moves))
+# print(solution(board, moves))
 
 
 def solution(board, moves):

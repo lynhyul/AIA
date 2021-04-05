@@ -13,8 +13,6 @@
 # 5	3	12
 
 
-
-
 def solution(a, b):
     answer = 0
     if a > b :

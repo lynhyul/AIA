@@ -34,6 +34,7 @@ def solution(n) :
     print(convert(n,base))  #1200
 
     newNumber = ""
+    conv = 
     for digit in conv:
         print(digit)    # 1 / 2 / 0 / 0 type이 str이기때문에 계산과정은 일어나지 않는다.
         newNumber = digit + newNumber

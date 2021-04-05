@@ -33,6 +33,10 @@
 
 #===========================================================================================================
 
+
+m ="ABCDEFG"   
+musicinfos = ["12:00,12:14,HELLO,CDEFGAB", "13:00,13:05,WORLD,ABCDEF"]
+
 def changecode(music_): 
     music_ = music_.replace('C#', 'c')
     music_ = music_.replace('D#', 'd')
@@ -44,6 +48,7 @@ def changecode(music_):
 def caltime(musicinfo_): 
     starttime = musicinfo_[0]
     endtime = musicinfo_[1]
+    print(starttime)
     hour = 1 * (int(endtime.split(':')[0]) - int(starttime.split(':')[0]))
     if hour == 0: 
         total = int(endtime.split(':')[1]) - int(starttime.split(':')[1])
@@ -79,3 +84,5 @@ def solution(m, musicinfos):
         return answer[0][2]
     # 정답이 없는 경우
     return "(None)"
+
+solution(m, musicinfos)

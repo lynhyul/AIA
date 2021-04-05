@@ -23,7 +23,7 @@ def solution(s:str):
 # print(solution(s))
 
 #  풀이
-def reverseString(s):
+def reverseString(s):       # 사실 이게 제일 정답인듯하다.
     s.reverse()
     return s
 print(reverseString(s))

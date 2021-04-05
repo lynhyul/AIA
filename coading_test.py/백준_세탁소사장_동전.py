@@ -7,7 +7,20 @@
 손님이 받는 동전의 개수를 최소로 하려고 한다. 
 예를 들어, $1.24를 거슬러 주어야 한다면, 
 손님은 4쿼터, 2다임, 0니켈, 4페니를 받게 된다.
+
+예제 입력
+3
+124
+25
+194
+
+예제 출력
+4 2 0 4
+1 0 0 0
+7 1 1 4
 '''
+
+
 
 for _ in range(int(input())):
     C = int(input())
@@ -16,4 +29,4 @@ for _ in range(int(input())):
     for n in d:
         li.append(C//n)
         C = C%n
-    print(*li)``
+    print(*li)
