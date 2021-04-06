@@ -91,6 +91,8 @@ def solution(new_id) :
 
 import re
 
+# re.sub('패턴', '바꿀문자열', '문자열', 바꿀횟수)
+
 def solution(new_id):
     st = new_id
     st = st.lower() # 1단계
