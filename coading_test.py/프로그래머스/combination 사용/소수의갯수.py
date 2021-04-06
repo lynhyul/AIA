@@ -25,7 +25,6 @@
 
 nums = [1,2,7,6,4]
 
-
 from itertools import combinations 
 def check(a, b, c): 
     total = a + b + c

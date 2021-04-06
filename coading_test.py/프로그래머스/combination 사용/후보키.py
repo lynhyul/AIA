@@ -45,7 +45,8 @@ def solution(relation):
     candidates=[]
     for i in range(1,n_col+1):
         candidates.extend(combinations(range(n_col),i))
-
+    print(candidates)   
+    # [(0,), (1,), (2,), (3,), (0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3), (0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3), (0, 1, 2, 3)]
     final=[]
     for keys in candidates:
         tmp=[tuple([item[key] for key in keys]) for item in relation]
