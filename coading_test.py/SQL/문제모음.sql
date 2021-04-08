@@ -128,4 +128,60 @@ INNER JOIN ANIMAL_OUTS OUTS
 ON INS.ANIMAL_ID = OUTS.ANIMAL_ID AND INS.SEX_UPON_INTAKE != OUTS.SEX_UPON_OUTCOME; -- A값이 B값과 다를 경우 true , 같을경우 fals 반환
 
 
+-- 루시와 엘라 찾기
+-- 동물 보호소에 들어온 동물 중 이름이 Lucy, Ella, Pickle, Rogan, Sabrina, Mitty인 
+-- 동물의 아이디와 이름, 성별 및 중성화 여부를 조회하는 SQL 문을 작성해주세요.
+SELECT animal_id, name, sex_upon_intake
+FROM ANIMAL_INS
+WHERE name in ('Lucy','Ella','Pickle', 'Rogan', 'Sabrina', 'Mitty')
+ORDER BY animal_id
 
+-- 이름에 el 들어가는 아이 찾기
+-- 코드를 입력하세요
+SELECT ANIMAL_ID, NAME 
+FROM ANIMAL_INS 
+WHERE NAME LIKE '%EL%' AND ANIMAL_TYPE = 'Dog' 
+ORDER BY NAME
+
+-- 중성화 여부 파악하기
+-- 코드를 입력하세요
+-- 보호소의 동물이 중성화되었는지 아닌지 파악하려 합니다. 중성화된 동물은 SEX_UPON_INTAKE 컬럼에 'Neutered' 또는 'Spayed'라는 단어가 들어있습니다. 
+-- 동물의 아이디와 이름, 중성화 여부를 아이디 순으로 조회하는 SQL문을 작성해주세요. 이때 중성화가 되어있다면 'O', 아니라면 'X'라고 표시해주세요
+SELECT animal_id, name, if(sex_upon_intake like 'Intact%', 'X', 'O') 
+from animal_ins
+order by animal_id;
+
+-- 오랜기간 보호한 동물
+-- 코드를 입력하세요
+-- 입양을 간 동물 중, 보호 기간이 가장 길었던 동물 
+-- 두 마리의 아이디와 이름을 조회하는 SQL문을 작성해주세요. 이때 결과는 보호 기간이 긴 순으로 조회해야 합니다.
+SELECT A.ANIMAL_ID, A.NAME 
+FROM ANIMAL_INS A, ANIMAL_OUTS B 
+WHERE A.ANIMAL_ID = B.ANIMAL_ID 
+ORDER BY DATEDIFF(A.DATETIME, B.DATETIME)  -- DATEDIFF() 함수는 두개의 날짜값의 차이를 int로 반환하는 Mssql 내장함수이다
+LIMIT 2
+
+
+-- 없어진 기록
+-- 천재지변으로 인해 일부 데이터가 유실되었습니다. 입양을 간 기록은 있는데, 
+-- 보호소에 들어온 기록이 없는 동물의 ID와 이름을 ID 순으로 조회하는 SQL문을 작성해주세요.
+-- 코드를 입력하세요
+SELECT OUTS.ANIMAL_ID, OUTS.NAME
+FROM ANIMAL_OUTS OUTS
+LEFT JOIN ANIMAL_INS INS
+ON OUTS.ANIMAL_ID = INS.ANIMAL_ID
+WHERE INS.ANIMAL_ID is NULL
+ORDER BY OUTS.ANIMAL_ID
+
+
+-- 있었는데요 없었습니다.
+-- 관리자의 실수로 일부 동물의 입양일이 잘못 입력되었습니다. 
+-- 보호 시작일보다 입양일이 더 빠른 동물의 아이디와 이름을 조회하는 SQL문을 작성해주세요. 
+-- 이때 결과는 보호 시작일이 빠른 순으로 조회해야합니다.
+
+SELECT INS.ANIMAL_ID, INS.NAME
+FROM ANIMAL_INS INS
+JOIN ANIMAL_OUTS OUTS
+ON INS.ANIMAL_ID = OUTS.ANIMAL_ID
+WHERE INS.DATETIME > OUTS.DATETIME
+ORDER BY INS.DATETIME
