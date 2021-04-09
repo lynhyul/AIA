@@ -44,12 +44,12 @@ def solution(n):
 
 	# 2
     for i in range(n):          # for i in range(4) :
-        for j in range(i, n):   # for j in range(i,4)
+        for _ in range(i, n):   # for j in range(i,4)
     #3
             #down
             if i % 3 == 0:
                 x += 1
-                
+
             #right 
             elif i % 3 == 1:
                 y += 1
@@ -60,6 +60,7 @@ def solution(n):
                 y -= 1
       #4          
             res[x][y] = num
+            print(res[x][y])
             num += 1
     print(res)  # [[1, 0, 0, 0], [2, 9, 0, 0], [3, 10, 8, 0], [4, 5, 6, 7]]   
     for i in res:

@@ -20,7 +20,7 @@ import collections
 
 def solution(participant, completion):
     answer = collections.Counter(participant) - collections.Counter(completion)
-    print(answer)   # Counter({'leo': 1})
+    print(answer.keys())   # Counter({'leo': 1}) / dict_keys(['leo'])
     return list(answer.keys())[0]
 print(solution(participant,completion)) # leo
 

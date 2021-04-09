@@ -13,7 +13,7 @@ for coin in array :
     count += n // coin
     n %= coin
 
-print(count)
+print(count)    # 6
 
 ##============================================================
 

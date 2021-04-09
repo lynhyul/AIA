@@ -96,6 +96,7 @@ import re
 def solution(new_id):
     st = new_id
     st = st.lower() # 1단계
+    print(st)
     st = re.sub('[^a-z0-9\-_.]', '', st)    # 2단계
     print(st)   # ...bat..y.abcdefghijklm
     st = re.sub('\.+', '.', st) # 3단계
