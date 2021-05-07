@@ -334,7 +334,7 @@ for i in tqdm(range(12)):
   predictions = model.predict(x_test)
   predictions = predictions.reshape(-1)
 
-  # 그래프를 보자구
+  # 그래프
   plt.imshow(predictions.reshape(448,304), interpolation = 'None')
   plt.show()
 
