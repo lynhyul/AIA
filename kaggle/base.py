@@ -59,10 +59,10 @@ from sklearn.model_selection import cross_val_score
 from sklearn.experimental import enable_hist_gradient_boosting
 from sklearn.ensemble import HistGradientBoostingClassifier
 
-# clf = HistGradientBoostingClassifier()
-# clf = AdaBoostClassifier(n_estimators=100)
+clf = HistGradientBoostingClassifier()
+clf = AdaBoostClassifier(n_estimators=100)
 
-clf
+
 
 clf.fit(X_train, y_train)
 scores = cross_val_score(clf, X_train, y_train, cv=5)
