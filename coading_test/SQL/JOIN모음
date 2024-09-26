@@ -1,0 +1,72 @@
+1. 기본 JOIN (= INNER JOIN)
+
+  - 기본적으로 JOIN은 교집합이다.
+
+mysql> select name, phone, selling 
+from demo_people join demo_property 
+on demo_people.pid = demo_property.pid;
+
++-----------+--------------+----------------------+
+| name      | phone        | selling              |
++-----------+--------------+----------------------+
+| Mr Brown  | 01225 708225 | Old House Farm       |
+| Mr Pullen | 01380 724040 | The Willows          |
+| Mr Pullen | 01380 724040 | Tall Trees           |
+| Mr Pullen | 01380 724040 | The Melksham Florist |
++-----------+--------------+----------------------+
+
+
+
+2. LEFT JOIN
+
+ - 왼쪽 테이블을 중심으로 오른쪽의 테이블을 매치시킨다.
+
+ - 왼쪽 테이블의 한개의 레코드에 여러개의 오른쪽 테이블 레코드가 일치할 경우, 
+   해당 왼쪽 레코드를 여러번 표시하게 된다.
+
+ - 왼쪽은 무조건 표시하고, 매치되는 레코드가 오른쪽에 없으면 NULL을 표시한다.
+
+mysql> select name, phone, selling 
+from demo_people left join demo_property 
+on demo_people.pid = demo_property.pid; 
+
++------------+--------------+----------------------+
+| name       | phone        | selling              |
++------------+--------------+----------------------+
+| Mr Brown   | 01225 708225 | Old House Farm       |
+| Miss Smith | 01225 899360 | NULL                 |
+| Mr Pullen  | 01380 724040 | The Willows          |
+| Mr Pullen  | 01380 724040 | Tall Trees           |
+| Mr Pullen  | 01380 724040 | The Melksham Florist |
++------------+--------------+----------------------+
+
+
+
+3. RIGHT JOIN
+
+ - 오른쪽 테이블을 중심으로 왼쪽 테이블을 매치시킨다.
+
+ - LEFT JOIN에서 방향을 오른쪽으로만 바꾼것이므로, 역시 해당 레코드가 여러번 표시되거나, NULL이 표시된다.
+
+mysql> select name, phone, selling 
+from demo_people right join demo_property 
+on demo_people.pid = demo_property.pid;
+
++-----------+--------------+----------------------+
+| name      | phone        | selling              |
++-----------+--------------+----------------------+
+| Mr Brown  | 01225 708225 | Old House Farm       |
+| Mr Pullen | 01380 724040 | The Willows          |
+| Mr Pullen | 01380 724040 | Tall Trees           |
+| Mr Pullen | 01380 724040 | The Melksham Florist |
+| NULL      | NULL         | Dun Roamin           |
++-----------+--------------+----------------------+
+
+
+
+4. OUTER JOIN : 조건에 부합하지 않는 행까지도 포함시켜 결합하는 것
+
+ - 기본적으로 LEFT, RIGHT 또는 FULL이 OUTER JOIN 이다.
+
+ - FULL JOIN 은 사용할 일이 없으며, ODBC에 따라 지원하지 않는 경우도 있다.
+
